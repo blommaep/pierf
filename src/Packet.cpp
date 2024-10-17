@@ -18,12 +18,12 @@
 #include <typeinfo>
 
 Packet::Packet()
-  : mOutPort(NULL), mRawPacket(NULL), mRawSize(0), mAllocSize(0), mAuto(eAutoEnherit),mBinaryReady(false),mAnalysisReady(false), mHasVar(false), mShaper(NULL)
+  : mOutPort(NULL), mRawPacket(NULL), mRawSize(0), mAllocSize(0), mAuto(eAutoEnherit),mBinaryReady(false),mAnalysisReady(false), mHasVar(false), mShaper(NULL), mTxSignaturePos(NULL)
   {
   }
 
 Packet::Packet(char* id)
-  : mOutPort(NULL), mRawPacket(NULL), mRawSize(0), mAllocSize(0), mId(id),mBinaryReady(false),mAnalysisReady(false), mHasVar(false), mShaper(NULL)
+  : mOutPort(NULL), mRawPacket(NULL), mRawSize(0), mAllocSize(0), mId(id),mBinaryReady(false),mAnalysisReady(false), mHasVar(false), mShaper(NULL), mTxSignaturePos(NULL)
   {
   }
 
@@ -64,7 +64,7 @@ bool Packet::getAnalysisReady()
   return mAnalysisReady;
   }
 
-void Packet::setRawPacket(uchar* rawPacket, ulong rawSize) throw (Exception)
+void Packet::setRawPacket(uchar* rawPacket, ulong32 rawSize) throw (Exception)
   {
   if (mBinaryReady)
     {
@@ -95,7 +95,7 @@ void Packet::analyse() throw (Exception)
     }
 
   uchar* packetpos = mRawPacket;
-  ulong remainingSize = mRawSize;
+  ulong32 remainingSize = mRawSize;
 
   Ethernet* eth = new Ethernet;
   if (!eth->analyze_Head(packetpos,remainingSize)) // not an ethernet packet, so can only consider it as raw bytes
@@ -223,7 +223,7 @@ bool Packet::compare(Packet* otherPacket, bool matchByString) // assumed to be e
   vector<Element *>::iterator iterOther;
 
   uchar* packetpos = mRawPacket;
-  ulong remainingSize = mRawSize;
+  ulong32 remainingSize = mRawSize;
   
   
   for (iterOther = otherPacket->mElems.begin();
@@ -351,6 +351,10 @@ bool Packet::tryComplete(bool final)
         {
         Element* elem= *iter;
         curPos = elem->copyTo(curPos);
+        if (typeid(*elem) == typeid(SignatureElem))
+          {
+          mTxSignaturePos = (ulong32*) (curPos-6);
+          }
         }
 
       vector<Element *>::reverse_iterator riter;
@@ -359,11 +363,11 @@ bool Packet::tryComplete(bool final)
         Element* elem= *riter;
         curPos = elem->copyTail(curPos);
         }
-      if ((ulong) (curPos-mRawPacket) != mRawSize)
+      if ((ulong32) (curPos-mRawPacket) != mRawSize)
         {
         stringstream msg;
         msg << "Packet size is not matching the packet content: known size: " 
-          << mRawSize << " vs. raw data size: " << (ulong) (curPos-mRawPacket) << "For packet: " << endl
+          << mRawSize << " vs. raw data size: " << (ulong32) (curPos-mRawPacket) << "For packet: " << endl
           << getString();        
         msg << flush;
         throw Exception(msg.str());
@@ -399,6 +403,16 @@ void Packet::sendTo(Port& outport) throw (Exception)
       mShaper->shape(mRawSize);
       }
     outport.send(mRawPacket,mRawSize);
+    if (mCounter != NULL)
+      {
+      mCounter->increment(1, mRawSize);
+      }
+    if (mTxSignaturePos != NULL)
+      {
+      ulong32 tmp = ntohl32(*mTxSignaturePos);
+      tmp++;
+      *mTxSignaturePos = htonl32(tmp);
+      }
     }
   else
     {
@@ -445,7 +459,7 @@ void Packet::play() throw (Exception)
   send();
   }
 
-ulong Packet::getRawSize()
+ulong32 Packet::getRawSize()
   {
   if (!mBinaryReady)
     {
@@ -475,7 +489,20 @@ vector<Element*>::iterator Packet::end()
   return mElems.end();
   }
 
-string Packet::getString()
+string Packet::getElementsString() const
+  {
+  stringstream retval;
+  vector<Element *>::const_iterator iter;
+  for (iter = mElems.begin();iter != mElems.end();iter++)
+    {
+    Element* elem= *iter;
+    retval << "  " << elem->getString() << endl;
+    }
+  retval << flush;
+  return retval.str();
+  }
+
+string Packet::getString() const
   {
   stringstream retval;
   retval << "<packet";
@@ -484,14 +511,14 @@ string Packet::getString()
     retval << " port=\"" << mOutPort->getId() << "\"";
     }
   retval << ">" << endl;
-  vector<Element *>::iterator iter;
+  vector<Element *>::const_iterator iter;
   for (iter = mElems.begin();iter != mElems.end();iter++)
     {
     Element* elem= *iter;
     retval << "  " << elem->getString() << endl;
     }
 
-  retval << "</packet>" << endl;
+  retval << "</packet>" << endl << flush;
   return retval.str();
   }
 
@@ -503,5 +530,10 @@ void Packet::setShaper(Shaper* shaper)
 Shaper* Packet::getShaper()
   {
   return mShaper;
+  }
+
+void Packet::setCounter(Counter* counter)
+  {
+  mCounter = counter;
   }
 

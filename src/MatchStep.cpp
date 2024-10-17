@@ -14,6 +14,7 @@
 
 #include <iostream> // for cout and cin
 #include <fstream>
+#include <sstream>
 #include <string.h>
 #include "zthread/Thread.h"
 
@@ -100,5 +101,35 @@ void MatchStep::play()
       }
     delete comparePacket;
     }
+  }
+
+string MatchStep::getString() const
+  {
+  stringstream retval;
+  retval << "<match ";
+  if (mMatchByString)
+    {
+    retval << "bystring=\"true\" ";
+    }
+  if (mMatchMethod==eCompare)
+    {
+    retval << "method=\"compare\" ";
+    }
+  retval << ">" << endl;
+
+  if (mMatchPacket != NULL)
+    {
+    string packetString = mMatchPacket->getElementsString();
+    retval << packetString << endl;
+    }
+
+  if (Seq::size() > 0)
+    {
+    string seqString = Seq::getString();  
+    retval << seqString;
+    }
+
+  retval << "</match>" << endl << flush;
+  return retval.str();
   }
 

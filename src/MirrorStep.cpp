@@ -13,6 +13,7 @@
 
 #include <iostream> // for cout and cin
 #include <fstream>
+#include <sstream>
 #include "zthread/Thread.h"
 
 MirrorStep::MirrorStep()
@@ -37,7 +38,20 @@ void MirrorStep::setReceiveStep(ReceiveStep* receiveStep)
 void MirrorStep::play()
   {
   uchar* packet = mReceiveStep->getPacket();
-  ulong size = mReceiveStep->getPacketSize();
+  ulong32 size = mReceiveStep->getPacketSize();
   mPort->send(packet,size);
   }
 
+string MirrorStep::getString() const
+  {
+  stringstream retval;
+  retval << "<mirror ";
+  
+  if (mPort != NULL)
+    {
+    retval << "port=\"" << mPort->getId() << "\" ";
+    }
+
+  retval << " />" << endl << flush;
+  return retval.str();
+  }

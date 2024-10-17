@@ -25,7 +25,7 @@ class FlexField32: public Field
   protected:
     union Flex32
       {
-      ulong  uLong;
+      ulong32  uLong;
       ushort uShort[2];
       uchar  uChar[4];
       };
@@ -48,7 +48,7 @@ class FlexField32: public Field
     void setManualFromValue(const char* inString) throw (Exception);
     void setAuto(const char* inString) throw (Exception);
     void setName(const char* inString);
-    void setLong(const char* fieldname, ulong val, How how);
+    void setLong(const char* fieldname, ulong32 val, How how);
     void setLong(const char* fieldname, const char* val, How how) throw (Exception);
     void setShort(const char* fieldname, int pos, ushort val, How how) throw (Exception);
     void setShort(const char* fieldname, int pos, const char* val, How how) throw (Exception);
@@ -56,14 +56,14 @@ class FlexField32: public Field
     void setChar(const char* fieldname, int pos, const char* val, How how) throw (Exception);
     uchar getChar(int pos);
     ushort getShort(int pos);
-    ulong getLong();
+    ulong32 getLong();
     bool hasValue();
     string getStringFromBinary() const;
     bool getStringFromBinary(string& stringval) const;
     string getString() const;
     bool getString(string& stringval, const string& fieldname) const;
     uchar* copyTo(uchar* toPtr);
-    bool analyze(uchar*& fromPtr, ulong& remainingSize);     
+    bool analyze(uchar*& fromPtr, ulong32& remainingSize);     
     bool match(FlexField32& other);
     bool copyVar() throw (Exception);    
   protected:

@@ -211,6 +211,7 @@ bool IcmpType::getStringFromBinary(string& stringval) const
 /////////////////// ICMP ITSELF ///////////////////////
 
 Icmp::Icmp()
+  : mSpecificDataArePrintable(false)
   {
   }
 
@@ -346,10 +347,10 @@ void Icmp::setType(const char* strType, bool storeAsString) throw (Exception)
       mCode.setDefault((uchar)0); // fallthrough explicitly used here
     case 4: // source quench
     case 11: // time exceeded
-      mSpecificData.setLong("unused", (ulong) 0, FlexField32::eHowDefault);
+      mSpecificData.setLong("unused", (ulong32) 0, FlexField32::eHowDefault);
       break;
     case 5: // redirect
-      mSpecificData.setLong("ipaddress", (ulong) 0, FlexField32::eHowUndef);
+      mSpecificData.setLong("ipaddress", (ulong32) 0, FlexField32::eHowUndef);
       break;
     case 9: // router advertisement
       mCode.setDefault((uchar)0);
@@ -368,7 +369,7 @@ void Icmp::setType(const char* strType, bool storeAsString) throw (Exception)
       mSpecificData.setShort("unused", 1, (ushort) 0, FlexField32::eHowDefault);
       break;
     case 31: // conversion error
-      mSpecificData.setLong("offset", (ulong)  0, FlexField32::eHowUndef);
+      mSpecificData.setLong("offset", (ulong32)  0, FlexField32::eHowUndef);
       break;
     }
   }
@@ -399,6 +400,11 @@ void Icmp::setChecksum(const char* strChecksum, bool storeAsString) throw (Excep
 
 void Icmp::setId(const char* strId, bool storeAsString) throw (Exception)
   {
+  mSpecificDataArePrintable = true;
+  mSpecificDataString += " identifier=\"";
+  mSpecificDataString +=  strId;
+  mSpecificDataString += "\"";
+  
   if (storeAsString)
     {
     // tbd: currently FlexField not really supporting strings and match
@@ -435,6 +441,11 @@ void Icmp::setId(const char* strId, bool storeAsString) throw (Exception)
 
 void Icmp::setSequenceNr(const char* strSeq) throw (Exception)
   {
+  mSpecificDataArePrintable = true;
+  mSpecificDataString += " sequencenr=\"";
+  mSpecificDataString +=  strSeq;
+  mSpecificDataString += "\"";
+  
   switch (mType.getValue())
     {
     case 0: // echo request/reply
@@ -463,6 +474,11 @@ void Icmp::setSequenceNr(const char* strSeq) throw (Exception)
 
 void Icmp::setOffset(const char* strOffset) throw (Exception)
   {
+  mSpecificDataArePrintable = true;
+  mSpecificDataString += " offset=\"";
+  mSpecificDataString +=  strOffset;
+  mSpecificDataString += "\"";
+
   switch (mType.getValue())
     {
     case 31: // conversion error
@@ -482,6 +498,11 @@ void Icmp::setOffset(const char* strOffset) throw (Exception)
 
 void Icmp::setNexthopMtu(const char* strMtu) throw (Exception)
   {
+  mSpecificDataArePrintable = true;
+  mSpecificDataString += " nexthopMtu=\"";
+  mSpecificDataString +=  strMtu;
+  mSpecificDataString += "\"";
+
   switch (mType.getValue())
     {
     case 3: // destination unreachable
@@ -501,6 +522,11 @@ void Icmp::setNexthopMtu(const char* strMtu) throw (Exception)
 
 void Icmp::setIpaddress(const char* strIp) throw (Exception)
   {
+  mSpecificDataArePrintable = true;
+  mSpecificDataString += " ipaddress=\"";
+  mSpecificDataString +=  strIp;
+  mSpecificDataString += "\"";
+
   switch (mType.getValue())
     {
     case 5: // redirect
@@ -520,6 +546,11 @@ void Icmp::setIpaddress(const char* strIp) throw (Exception)
 
 void Icmp::setAdvertisementCount(const char* strCount) throw (Exception)
   {
+  mSpecificDataArePrintable = true;
+  mSpecificDataString += " advertisementCount=\"";
+  mSpecificDataString += "\"";
+  mSpecificDataString +=  strCount;
+
   switch (mType.getValue())
     {
     case 9: // router advertisement
@@ -539,6 +570,11 @@ void Icmp::setAdvertisementCount(const char* strCount) throw (Exception)
 
 void Icmp::setAddressEntrySize(const char* strSize) throw (Exception)
   {
+  mSpecificDataArePrintable = true;
+  mSpecificDataString += " addressEntrySize=\"";
+  mSpecificDataString +=  strSize;
+  mSpecificDataString += "\"";
+
   switch (mType.getValue())
     {
     case 9: // router advertisement
@@ -558,6 +594,10 @@ void Icmp::setAddressEntrySize(const char* strSize) throw (Exception)
 
 void Icmp::setLifetime(const char* strLifetime) throw (Exception)
   {
+  mSpecificDataArePrintable = true;
+  mSpecificDataString += " lifetime=\"";
+  mSpecificDataString +=  strLifetime;
+  mSpecificDataString += "\"";
   switch (mType.getValue())
     {
     case 9: // router advertisement
@@ -577,6 +617,11 @@ void Icmp::setLifetime(const char* strLifetime) throw (Exception)
 
 void Icmp::setPointer(const char* strPointer) throw (Exception)
   {
+  mSpecificDataArePrintable = true;
+  mSpecificDataString += " pointer=\"";
+  mSpecificDataString +=  strPointer;
+  mSpecificDataString += "\"";
+
   switch (mType.getValue())
     {
     case 12: // Parameter problem
@@ -606,22 +651,36 @@ string Icmp::getString()
   if (mType.isPrintable())
     {
     retval << " type=\"";
-    retval << getTypeString();
+    retval << mType.getConfigString();
     retval << "\"";
     }
 
   if (mCode.isPrintable())
     {
-    retval << " code=\"" << mCode.getString() << "\"";
+    retval << " code=\"" << mCode.getConfigString() << "\"";
     }
 
   if (mChecksum.isPrintable())
     {
-    retval << " checksum=\"" << mChecksum.getString() << "\"";
+    retval << " checksum=\"" << mChecksum.getConfigString() << "\"";
     }
-  
-  retval << mSpecificData.getString();
-  retval << " />" << flush;
+ 
+  if (mSpecificDataArePrintable)
+    {
+    retval << mSpecificDataString;
+    }
+
+  if (hasVarAssigns())
+    {
+    retval << ">" << endl << getVarAssignsString();
+    retval << "  </icmp>";
+    }
+  else
+    {
+    retval << "/>";
+    }
+
+  retval << flush;
   return retval.str();
   }
 
@@ -654,12 +713,12 @@ bool Icmp::getString(string& stringval, const char* fieldName)
   return false; // execution should never reach here
   }
 
-ulong Icmp::getSize()
+ulong32 Icmp::getSize()
   {
   return 8;
   }
 
-ulong Icmp::getTailSize()
+ulong32 Icmp::getTailSize()
   {
   return 0;
   }
@@ -708,7 +767,7 @@ uchar* Icmp::copyTail(uchar* toPtr)
   return toPtr;
   }
 
-bool Icmp::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
+bool Icmp::analyze_Head(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (!mType.analyze(fromPtr,remainingSize)) return false;
   if (!mCode.analyze(fromPtr,remainingSize)) return false;
@@ -738,7 +797,7 @@ bool Icmp::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
     case 10: // router solicitation
     case 4: // source quench
     case 11: // time exceeded
-      mSpecificData.setLong("unused", (ulong) 0, FlexField32::eHowUndef);
+      mSpecificData.setLong("unused", (ulong32) 0, FlexField32::eHowUndef);
       break;
     case 5: // redirect
       mSpecificData.setLong("ipaddress", mSpecificData.getLong(), FlexField32::eHowCaptured);
@@ -762,14 +821,14 @@ bool Icmp::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
       mSpecificData.setLong("offset", mSpecificData.getLong(), FlexField32::eHowCaptured);
       break;
     default:
-      mSpecificData.setLong("unused", (ulong) 0, FlexField32::eHowUndef);
+      mSpecificData.setLong("unused", (ulong32) 0, FlexField32::eHowUndef);
       break; // wrong type. Can't interprete
     }
 
   return true;
   }
 
-bool Icmp::analyze_Tail(uchar*& fromPtr, ulong& remainingSize)
+bool Icmp::analyze_Tail(uchar*& fromPtr, ulong32& remainingSize)
   {
   return true;
   }

@@ -15,7 +15,7 @@ ushort ntohs(ushort val)
   return htons(val);
   }
 
-ulong htonl(ulong val) 
+ulong32 htonl32(ulong32 val) 
   {
 #if __BYTE_ORDER==__LITTLE_ENDIAN
   return (val>>24) | ((val&0xff0000)>>8) |
@@ -25,7 +25,7 @@ ulong htonl(ulong val)
 #endif
   }
 
-ulong ntohl(ulong val) 
+ulong32 ntohl32(ulong32 val) 
   {
-  return htonl(val);
+  return htonl32(val);
   }

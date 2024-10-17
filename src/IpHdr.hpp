@@ -70,13 +70,13 @@ class IpHdr: public Element
     bool addPseudoHeaderChecksum(ChecksumIp& cksum);
     string getString();
     bool getString(string& stringval, const char* fieldName);
-    ulong getSize();
-    ulong getTailSize();
+    ulong32 getSize();
+    ulong32 getTailSize();
     bool copyVar() throw (Exception);
     uchar* copyTo(unsigned char* toPtr);
     uchar* copyTail(uchar* toPtr);
-    bool analyze_Head(uchar*& fromPtr, ulong& remainingSize);
-    bool analyze_Tail(uchar*& fromPtr, ulong& remainingSize);
+    bool analyze_Head(uchar*& fromPtr, ulong32& remainingSize);
+    bool analyze_Tail(uchar*& fromPtr, ulong32& remainingSize);
     Element* analyze_GetNextElem();
     bool checkComplete();
     bool tryComplete(ElemStack& stack);

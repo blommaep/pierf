@@ -53,6 +53,8 @@ bool Field::isPrintable() const
     {
     case eCaptured:
     case eManual:
+    case eVar: // added eVar and eString, was apparently missing, not 100% sure if any side effects.
+    case eString:
       return true;
     default:
       return false;
@@ -189,6 +191,22 @@ string Field::getString() const
     return *mString;
     }
   return getStringFromBinary();
+  }
+
+string Field::getConfigString() const
+  {
+  if (isString())
+    {
+    return *mString;
+    }
+  else if (isVar())
+    {
+    return mVar->getName();
+    }
+  else
+    {
+    return getStringFromBinary();
+    }
   }
 
 bool Field::matchByString(const Field& field)

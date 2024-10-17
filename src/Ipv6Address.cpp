@@ -230,7 +230,7 @@ uchar* Ipv6Address::copyTo(uchar* toPtr)
   return toPtr;
   }
 
-bool Ipv6Address::analyze(uchar*& fromPtr, ulong& remainingSize)
+bool Ipv6Address::analyze(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (remainingSize >= 16)
     {

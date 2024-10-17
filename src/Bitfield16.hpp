@@ -43,7 +43,7 @@ class Bitfield16: public Field
     bool operator==(unsigned int value);
     bool operator!=(unsigned int value);
     uchar* copyTo(uchar* toPtr);
-    bool analyze(uchar*& fromPtr, ulong& remainingSize); 
+    bool analyze(uchar*& fromPtr, ulong32& remainingSize); 
     bool match(Bitfield16& other);
   };
 

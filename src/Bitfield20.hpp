@@ -22,12 +22,12 @@ class Bitfield20: public Bitfield32
   {
   private:
     uchar mOffset;
-    void setVal(ulong val) throw (Exception);
+    void setVal(ulong32 val) throw (Exception);
   public:
     Bitfield20();
     void setOffset(uchar offset) throw (Exception);
     uchar* copyTo(uchar* toPtr);
-    bool analyze(uchar*& fromPtr, ulong& remainingSize); 
+    bool analyze(uchar*& fromPtr, ulong32& remainingSize); 
   };
 
 #endif

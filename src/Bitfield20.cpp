@@ -22,7 +22,7 @@ Bitfield20::Bitfield20()
   {
   }
 
-void Bitfield20::setVal(ulong val) throw (Exception)
+void Bitfield20::setVal(ulong32 val) throw (Exception)
   {
   if (val > 0x000FFFFF)
     {
@@ -47,12 +47,12 @@ uchar* Bitfield20::copyTo(uchar* toPtr)
   // Two masks are needed to mask out the part of what is there that needs to be kept
   if (mOffset > 4) // must be spread over 4 bytes
     {
-    ulong temp = htonl(mData << (12-mOffset));
-    ulong mask1 = htonl(0x00000FFF >> mOffset);
-    ulong mask2 = htonl(0xFFF00000 << (12-mOffset));
+    ulong32 temp = htonl32(mData << (12-mOffset));
+    ulong32 mask1 = htonl32(0x00000FFF >> mOffset);
+    ulong32 mask2 = htonl32(0xFFF00000 << (12-mOffset));
     mask1 |= mask2;
 
-    ulong* tmp = (ulong*) toPtr;
+    ulong32* tmp = (ulong32*) toPtr;
     *tmp &= mask1;
 
     // Now insert our value
@@ -62,7 +62,7 @@ uchar* Bitfield20::copyTo(uchar* toPtr)
     }
   else // must do byte per byte to assure not to write out of boundary
     {
-    ulong temp = htonl(mData << (12-mOffset));
+    ulong32 temp = htonl32(mData << (12-mOffset));
     uchar *tmp = (uchar*) &temp; // here serves as source
     uchar mask1 = (uchar) 0xF0 << (4-mOffset);
     uchar mask2 = (uchar) 0x0F >> mOffset;
@@ -82,7 +82,7 @@ uchar* Bitfield20::copyTo(uchar* toPtr)
     }
   }
 
-bool Bitfield20::analyze(uchar*& fromPtr, ulong& remainingSize)
+bool Bitfield20::analyze(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (remainingSize < 3)
     {
@@ -95,21 +95,21 @@ bool Bitfield20::analyze(uchar*& fromPtr, ulong& remainingSize)
       return false;
       }
 
-    ulong temp = ntohl(* ((ulong*)fromPtr));
+    ulong32 temp = ntohl32(* ((ulong32*)fromPtr));
     temp >>= (12-mOffset); // shift mOffset, so that it becomes the base value
     mData = temp & 0x000FFFFF; // now, keep only the lower bits.
     fromPtr += 4;
     }
   else
     {
-    ulong temp = 0;
+    ulong32 temp = 0;
     uchar* tmp = (uchar*) &temp;
     *tmp = *fromPtr;
     tmp++; fromPtr++;
     *tmp = *fromPtr;
     tmp++; fromPtr++;
     *tmp = *fromPtr;
-    temp = ntohl(temp);
+    temp = ntohl32(temp);
     temp >>= (12-mOffset); // becomes base value
     mData = temp & 0x000FFFFF; // now, keep only the lower bits.
     if (mOffset == 4)

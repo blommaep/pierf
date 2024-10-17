@@ -34,6 +34,7 @@ class FirstOfStep: public PlayStep
     Packet* getAnalyzePacket(); // For explicit match
     void matched(); // called by the MatchStep to indicate a match
     void setReceiveStep(ReceiveStep* receiveStep);
+    string getString() const; // return string, no checks
     void play();
   };
 

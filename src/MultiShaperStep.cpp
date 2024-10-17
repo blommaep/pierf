@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,6 +13,7 @@
 
 #include <iostream> // for cout and cin
 #include <fstream>
+#include <sstream>
 #include "zthread/Thread.h"
 
 MultiShaperStep::MultiShaperStep()
@@ -52,7 +53,7 @@ void MultiShaperStep::play()
   struct timeval minSendTime;
   struct timeval minDelay;
   minDelay.tv_sec = -1;
-  ulong minSize = 0;
+  ulong32 minSize = 0;
   Packet* minPacket = NULL;
 
   deque<Packet*>::iterator iterPacket;
@@ -60,11 +61,11 @@ void MultiShaperStep::play()
     {
     Packet* packet = *iterPacket;
     Shaper* shaper = packet->getShaper();
-    ulong size = packet->getRawSize();
+    ulong32 size = packet->getRawSize();
     struct timeval delay;
     struct timeval sendTime;
     shaper->getShapeDelay(size, delay, sendTime, curTime);
-    if ((ulong) delay.tv_sec < (ulong) minDelay.tv_sec)
+    if ((ulong32) delay.tv_sec < (ulong32) minDelay.tv_sec)
       {
       minDelay = delay;
       minPacket = packet;
@@ -95,3 +96,18 @@ void MultiShaperStep::play()
     }
   }
 
+string MultiShaperStep::getString() const
+  {
+  stringstream retval;
+  retval << "<multishaper>" << endl;
+
+  deque<Packet*>::const_iterator iterPacket;
+  for(iterPacket = mPackets.begin(); iterPacket != mPackets.end(); iterPacket++)
+    {
+    Packet* iPacket = *iterPacket;
+    retval << iPacket->getString();
+    }
+
+  retval << "</multishaper>" << endl << flush;
+  return retval.str();  
+  }

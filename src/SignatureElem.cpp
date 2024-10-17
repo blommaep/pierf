@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -76,13 +76,13 @@ uchar* SignatureElem::copyTail(uchar* toPtr)
   return toPtr;
   }
 
-bool SignatureElem::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
+bool SignatureElem::analyze_Head(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (!mSignature.analyze(fromPtr,remainingSize)) return false;
   return true;
   }
 
-bool SignatureElem::analyze_Tail(uchar*& fromPtr, ulong& remainingSize)
+bool SignatureElem::analyze_Tail(uchar*& fromPtr, ulong32& remainingSize)
   {
   return true;
   }
@@ -123,7 +123,18 @@ string SignatureElem::getString()
     {
     retval << "name=\"" << mName << "\" ";
     }
-  retval << "/>" << flush;
+
+  if (hasVarAssigns())
+    {
+    retval << " >" << endl << getVarAssignsString();
+    retval << "  </signature>";
+    }
+  else
+    {
+    retval << " />";
+    }
+  
+  retval << flush;
   return retval.str();
   }
 
@@ -138,12 +149,12 @@ bool SignatureElem::getString(string& stringval, const char* fieldName)
   return false;
   }
 
-ulong SignatureElem::getSize()
+ulong32 SignatureElem::getSize()
   {
   return 8;
   }
 
-ulong SignatureElem::getTailSize()
+ulong32 SignatureElem::getTailSize()
   {
   return 0;
   }

@@ -86,7 +86,7 @@ void IpAddress::setAuto(const char* inString) throw (Exception)
   wasManuallySet();
   }
 
-ulong IpAddress::getAddress()
+ulong32 IpAddress::getAddress()
   {
   return mAddress.whole;
   }
@@ -116,21 +116,21 @@ bool IpAddress::getStringFromBinary(string& stringval) const
 
 uchar* IpAddress::copyTo(uchar* toPtr)
   {
-  return copyTo((ulong*) toPtr);
+  return copyTo((ulong32*) toPtr);
   }
 
-uchar* IpAddress::copyTo(ulong* toPtr)
+uchar* IpAddress::copyTo(ulong32* toPtr)
   {
   *toPtr = mAddress.whole;
   toPtr++;
   return (uchar*) toPtr;
   }
 
-bool IpAddress::analyze(uchar*& fromPtr, ulong& remainingSize)
+bool IpAddress::analyze(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (remainingSize >= 4)
     {
-    mAddress.whole = * ((ulong*) fromPtr);
+    mAddress.whole = * ((ulong32*) fromPtr);
     wasCaptured();
     remainingSize -= 4;
     fromPtr += 4;

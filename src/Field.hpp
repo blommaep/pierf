@@ -45,13 +45,14 @@ class Field
     virtual void setManualFromValue(const char* inString) throw (Exception) = 0;
     virtual void setAuto(const char* inString) throw (Exception) = 0;
     virtual uchar* copyTo(uchar* toPtr) = 0;
-    virtual bool analyze(uchar*& fromPtr, ulong& remainingSize) = 0;
+    virtual bool analyze(uchar*& fromPtr, ulong32& remainingSize) = 0;
     void setManual(const char* varStr, bool storeAsString) throw (Exception);
     void setManualFromVar(const char* varStr) throw (Exception);
     void setString(const char* inputString);
     virtual string getStringFromBinary() const = 0 ; // return string, no checks
     virtual bool getStringFromBinary(string& stringval) const = 0; // return the value in string format
     string getString() const; // return string, no checks
+    string getConfigString() const;
     bool getString(string& stringval) const;
     bool matchByString(const Field& field); // generic implementation, if fields are of different type,will also work but likely should never occur
     Var* getVar();

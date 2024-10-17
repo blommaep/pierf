@@ -61,6 +61,10 @@ void Port::initPort(PortType portType, char* easyName, char* sourceName, char* d
   // generic member initialisation
   mEasyName=easyName;
   mSourceName=sourceName;
+  if (destName != NULL)
+    {
+    mDestName=destName;
+    }
   mPrevReadTime = 0;
   mSleepForReplay = false;
   mPortType = portType;
@@ -81,12 +85,11 @@ void Port::initPort(PortType portType, char* easyName, char* sourceName, char* d
   /* Open the adapter */
   if (portType == eDevice)
     {
-    if ((mSourceFp = pcap_open_live(sourceName,		// name of the device
-          65536,			// portion of the packet to capture. It doesn't matter in this case 
-          1,				// promiscuous mode (nonzero means promiscuous)
-          1000,			// read timeout
-          errbuf			// error buffer
-          )) == NULL)
+    pcap_t *fp;
+    int status;
+
+    fp = pcap_create(sourceName, errbuf);
+    if (fp == NULL)
       {
       cout << "The specified device: " << mSourceName << " cannot be opened by pcap. The following devices exist: " << endl;
       printAllDevices();
@@ -94,6 +97,43 @@ void Port::initPort(PortType portType, char* easyName, char* sourceName, char* d
       throw Exception ("\nUnable to open the device (using pcap)\n"); // tbd: error handling
       return;
       }
+    status = pcap_set_snaplen(fp, 65536);
+    if (status < 0)
+      {
+      throw Exception ("\nUnable to configure the device snaplen (using pcap)\n"); // tbd: error handling
+      }
+    status = pcap_set_promisc(fp, 1);
+    if (status < 0)
+      {
+      throw Exception ("\nUnable to configure the device in promiscue mode (using pcap)\n"); // tbd: error handling
+      }
+    status = pcap_set_timeout(fp, 1000);
+    if (status < 0)
+      {
+      throw Exception ("\nUnable to configure the device timeout (using pcap)\n"); // tbd: error handling
+      }
+    if((pcap_set_buffer_size(fp, 2*1024*1024))!=0) // try 2MB
+      {
+      cout << "Failed to allocate 2 MB\n" << endl;
+      if((pcap_set_buffer_size(fp, 1024*1024))!=0)
+        {
+        cout << "Failed to allocate 1 MB\n" << endl;
+        // do nothing: keep default size
+        }
+      }
+    status=(pcap_activate(fp));
+    if(status!=0)
+      {
+      throw Exception ("\nUnable to configure the device timeout (using pcap)\n"); // tbd: detailed error handling
+      }
+
+//    if ((mSourceFp = pcap_open_live(sourceName,		// name of the device
+//          65536,			// portion of the packet to capture. It doesn't matter in this case 
+//          1,				// promiscuous mode (nonzero means promiscuous)
+//          1000,			// read timeout
+//          errbuf			// error buffer
+//          )) == NULL)
+    mSourceFp=fp;
     mDestFp = mSourceFp;
     }
   else if (portType == eInFileOutDevice)
@@ -267,8 +307,8 @@ void Port::run() // This function is supposed to be used as a separate THREAD!
 
         if (mPortType==eInFileOutDevice || mPortType==eFiles)
           {
-          ulong time = ((header->ts.tv_sec%10000) * 1000) + (header->ts.tv_usec/1000); // tv_secs is too big to fit in a log, so take remainder by division by 10000 and assume that we will never test longer. Then multiply by 1000 to transfer teh seconds into milliseconds. tv_usec is in microseconds. We can do only milliseconds, so that's three digits less. Hence, divide by 1000.
-          ulong diff = time - mPrevReadTime;
+          ulong32 time = ((header->ts.tv_sec%10000) * 1000) + (header->ts.tv_usec/1000); // tv_secs is too big to fit in a log, so take remainder by division by 10000 and assume that we will never test longer. Then multiply by 1000 to transfer teh seconds into milliseconds. tv_usec is in microseconds. We can do only milliseconds, so that's three digits less. Hence, divide by 1000.
+          ulong32 diff = time - mPrevReadTime;
           if (mPrevReadTime > 0 && mSleepForReplay) // First packet must be sent immediately
             {
             if (!mSilent)
@@ -331,12 +371,35 @@ void Port::send(uchar* packet, int packetsize)
 
   if (mPortType == eDevice || mPortType == eInFileOutDevice)
     {
-    if (pcap_sendpacket(mDestFp,	// Adapter
+    int tryloop = 1;
+    while (tryloop)
+      {
+      if (pcap_sendpacket(mDestFp,	// Adapter
           packet,				// buffer with the packet
           packetsize					// size
           ) != 0)
-      {
-      throw Exception ("Error sending the packet: " + string(pcap_geterr(mDestFp)));
+        {
+        char* errorString = pcap_geterr(mDestFp);
+        if (!strncmp(errorString, "send: No buffer", 14))
+          {
+          tryloop ++;
+          }
+        else
+          {
+          throw Exception ("Error sending the packet: " + string(errorString));
+          }
+        }
+      else
+        {
+        if (tryloop > 1)
+          {
+          if (not(mSilent))
+            {
+            cout << "Warning: Send Packet: Buffer full hit: " << tryloop << "times\n";
+            }
+          }
+        tryloop = 0;
+        }
       }
     }
   else if (mPortType == eFiles)
@@ -536,3 +599,38 @@ cout << "Packet received at" << header->ts.tv_sec << "." << header->ts.tv_usec <
 
 }
  */
+
+string Port::getString() const
+  {
+  stringstream retval;
+  retval << "<port id=\"" << mEasyName << "\" ";
+
+  switch (mPortType)
+    {
+    case eDevice:
+      retval << "type=\"device\" device=\"" << mSourceName << "\" " ;
+      break;
+    case eInFileOutDevice:
+      retval << "type=\"inFileOutDevice\" infile=\"" << mSourceName << "\" outdevice=\"" << mDestName << "\" ";
+      break;
+    case eFiles:
+      retval << "type=\"files\" infile=\"" << mSourceName << "\" outfile=\"" << mDestName << "\" ";
+      break;
+    case eLoopback:
+      retval << "type=\"loopback\" outfile=\"" << mDestName << "\" ";
+      break;
+    }
+  
+  if (mSilent)
+    {
+    retval << "silent=\"true\" ";
+    } 
+    
+  retval << "/>" << endl << flush;
+  return retval.str();
+  }
+
+string Port::getName() const
+  {
+  return mEasyName;
+  }

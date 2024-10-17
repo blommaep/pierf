@@ -75,18 +75,18 @@ uchar* StringField::copyTo(uchar* toPtr)
   return ByteString::copyTo(toPtr);
   }
 
-uchar* StringField::copyTo(uchar* toPtr, ulong maxSize) // copy max. maxSize bytes
+uchar* StringField::copyTo(uchar* toPtr, ulong32 maxSize) // copy max. maxSize bytes
   {
   return ByteString::copyTo(toPtr, maxSize);
   }
 
-bool StringField::analyze(uchar*& fromPtr, ulong& remainingSize) // consumes all of remainingSize
+bool StringField::analyze(uchar*& fromPtr, ulong32& remainingSize) // consumes all of remainingSize
   {
   bool result = analyze(fromPtr,remainingSize,remainingSize);
   return result;
   }
 
-bool StringField::analyze(uchar*& fromPtr, ulong& remainingSize, ulong fieldSize) // consumes the specified amount of bytes
+bool StringField::analyze(uchar*& fromPtr, ulong32& remainingSize, ulong32 fieldSize) // consumes the specified amount of bytes
   {
   if (fieldSize > remainingSize)
     {

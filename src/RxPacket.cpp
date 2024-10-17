@@ -37,17 +37,17 @@ struct pcap_pkthdr* RxPacket::getHeader()
   return mHeader;
   }
 
-ulong RxPacket::size()
+ulong32 RxPacket::size()
   {
   return mHeader->caplen;
   }
   
-ulong RxPacket::rxSecs()
+ulong32 RxPacket::rxSecs()
   {
   return mHeader->ts.tv_sec;
   }
 
-ulong RxPacket::rxUsecs()
+ulong32 RxPacket::rxUsecs()
   {
   return mHeader->ts.tv_usec;
   }

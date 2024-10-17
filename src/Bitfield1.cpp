@@ -58,7 +58,7 @@ uchar* Bitfield1::copyTo(uchar* toPtr)
   }
 
 
-bool Bitfield1::analyze(uchar*& fromPtr, ulong& remainingSize)
+bool Bitfield1::analyze(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (remainingSize < 1)
     {

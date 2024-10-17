@@ -53,6 +53,8 @@ class IcmpType: public Bitfield8
 
 /////////////////// ICMP ITSELF ///////////////////////
 
+// This ICMP implementation is shitty. Must be changed to contain all the possible fields in here and remove this FlexField that is an old, wrong idea.
+
 class Icmp: public Element
   {
   public: 
@@ -62,6 +64,8 @@ class Icmp: public Element
     Bitfield8 mCode;
     ChecksumIp mChecksum;
     FlexField32 mSpecificData;
+    bool mSpecificDataArePrintable;
+    string mSpecificDataString;
     uchar* mChecksumPos; // position to insert checksum
     uchar* mContentStart; // used for checksum calculation
 
@@ -83,13 +87,13 @@ class Icmp: public Element
     void setPointer(const char* strPointer) throw (Exception);
     string getString();
     bool getString(string& stringval, const char* fieldName);
-    ulong getSize();
-    ulong getTailSize();
+    ulong32 getSize();
+    ulong32 getTailSize();
     bool copyVar() throw (Exception);
     uchar* copyTo(unsigned char* toPtr);
     uchar* copyTail(uchar* toPtr);
-    bool analyze_Head(uchar*& fromPtr, ulong& remainingSize);
-    bool analyze_Tail(uchar*& fromPtr, ulong& remainingSize);    
+    bool analyze_Head(uchar*& fromPtr, ulong32& remainingSize);
+    bool analyze_Tail(uchar*& fromPtr, ulong32& remainingSize);    
     Element* analyze_GetNextElem();
     bool checkComplete();
     bool tryComplete(ElemStack& stack);

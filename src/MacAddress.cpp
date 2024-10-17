@@ -83,7 +83,7 @@ void MacAddress::autoCopy(const MacAddress& copyFrom)
     }
   }
 
-void MacAddress::setAddressFromMcastIp(ulong mcastIp) throw (Exception)
+void MacAddress::setAddressFromMcastIp(ulong32 mcastIp) throw (Exception)
   {
   // by ethernet spec, igmp/ip/ethernet will get assigned a multicast mac address
   // in the range 01:00:5E:00:00:00 till 01:00:5E:7F:FF:FF.
@@ -93,7 +93,7 @@ void MacAddress::setAddressFromMcastIp(ulong mcastIp) throw (Exception)
   typedef union 
     {
     uchar chars[4];
-    ulong whole;
+    ulong32 whole;
     } u_fourBytes;
 
   u_fourBytes temp;
@@ -144,7 +144,7 @@ uchar* MacAddress::copyTo(uchar* toPtr)
   return toPtr+6;
   }
 
-bool MacAddress::analyze(uchar*& fromPtr, ulong& remainingSize)
+bool MacAddress::analyze(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (remainingSize >= 6)
     {

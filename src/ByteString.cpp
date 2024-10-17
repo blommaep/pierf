@@ -234,10 +234,10 @@ string ByteString::getString(bool asChar) const
   return retval.str();
   }
 
-void ByteString::addBytes(const uchar* inBytes, ulong nrBytes)
+void ByteString::addBytes(const uchar* inBytes, ulong32 nrBytes)
   {
   reserve(size() + nrBytes); // avoids repetitive re-allocations of vector during insertion
-  for (ulong i=0; i<nrBytes;i++)
+  for (ulong32 i=0; i<nrBytes;i++)
     {
     push_back(inBytes[i]);
     }  
@@ -253,9 +253,9 @@ uchar* ByteString::copyTo(uchar* toPtr)
   return toPtr;  
   }
 
-uchar* ByteString::copyTo(uchar* toPtr, ulong maxSize)
+uchar* ByteString::copyTo(uchar* toPtr, ulong32 maxSize)
   {
-  ulong i = 0;
+  ulong32 i = 0;
   vector<uchar>::iterator iter;
   for (iter=begin();iter!=end() && i<maxSize;iter++)
     {

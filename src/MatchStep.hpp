@@ -40,6 +40,7 @@ class MatchStep: public Seq
     void setMatchMethod(const char* matchMethod);
     bool getMatchByString();
     void play();
+    string getString() const;
   };
 
 #endif

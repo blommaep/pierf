@@ -19,6 +19,7 @@
 #include "Exception.hpp"
 #include "PlayStep.hpp"
 #include "Shaper.hpp"
+#include "Counter.hpp"
 
 class Port;
 
@@ -30,14 +31,16 @@ class Packet: public PlayStep
     ElemStack mElems;
     Port* mOutPort; // default port
     uchar* mRawPacket;
-    ulong mRawSize; // size of the raw packet
-    ulong mAllocSize; // size of allocated buffer. May be larger then the actual raw size (in case of dynamic content)
+    ulong32 mRawSize; // size of the raw packet
+    ulong32 mAllocSize; // size of allocated buffer. May be larger then the actual raw size (in case of dynamic content)
     string mId; // The name given to the packet
     AutoComplete mAuto;
     bool mBinaryReady;
     bool mAnalysisReady;
     bool mHasVar; // copyVar needed every time
     Shaper* mShaper;
+    Counter* mCounter;
+    ulong32* mTxSignaturePos;
   public:
     Packet();
     Packet(char* id);
@@ -47,7 +50,7 @@ class Packet: public PlayStep
     void setAnalysisReady(bool ready);
     bool getBinaryReady();
     bool getAnalysisReady();
-    void setRawPacket(uchar* rawPacket, ulong rawSize) throw (Exception);
+    void setRawPacket(uchar* rawPacket, ulong32 rawSize) throw (Exception);
     void analyse() throw (Exception);
     bool match(Packet* otherPacket); // backward compatible, always binary match
     // Element and send tasks
@@ -57,13 +60,15 @@ class Packet: public PlayStep
     void setPort(Port* outport);
     void sendTo(Port& outport) throw (Exception);
     void sendTo(Port* outport) throw (Exception);
-    ulong getRawSize();
+    ulong32 getRawSize();
     void send() throw (Exception);
     void sendNoShaper() throw (Exception);
     void play() throw (Exception);
+    void setCounter(Counter* counter);
     vector<Element*>::iterator begin();
     vector<Element*>::iterator end();
-    string getString();
+    string getString() const;
+    string getElementsString() const;
     void setShaper(Shaper* shaper);
     Shaper* getShaper();
   };

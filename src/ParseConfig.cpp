@@ -37,6 +37,7 @@ using namespace ZThread;
 #include "MatchStep.hpp"
 #include "VarAssignStep.hpp"
 #include "SignatureElem.hpp"
+#include "SeqRef.hpp"
 
 using namespace std;
 
@@ -69,14 +70,6 @@ ParseConfig::~ParseConfig()
     delete scene;
     }
 
-  // delete named sequences are not deleted anywhere else
-  map<string,Seq*>::iterator seqIter;
-  for (seqIter=mSeqs.begin(); seqIter != mSeqs.end(); seqIter++)
-    {
-    Seq* seq = (*seqIter).second;
-    delete seq;
-    }
-  
 // Since introduction of threaded Ports, the Thread library will cleanup the ports...
   map<string,Port*>::iterator portsIter;
   for (portsIter = mPorts.begin(); portsIter != mPorts.end(); portsIter++)
@@ -129,6 +122,7 @@ Packet* ParseConfig::handlePacketTag(const char** attr, PlayStep* root)
   char* portName=NULL;
   char* autoStr=NULL;
   char* shaperStr=NULL;
+  char* counterStr=NULL;
   int i=0;
   while (attr[i] != NULL)
     {
@@ -141,6 +135,11 @@ Packet* ParseConfig::handlePacketTag(const char** attr, PlayStep* root)
       {
       i++;
       shaperStr = (char*) attr[i++];
+      }
+    else if (!strcmp(attr[i],"counter"))
+      {
+      i++;
+      counterStr = (char*) attr[i++];
       }
     else if (!strcmp(attr[i],"auto"))
       {
@@ -183,7 +182,53 @@ Packet* ParseConfig::handlePacketTag(const char** attr, PlayStep* root)
       parserException("Unknown shaper: " + string(shaperStr) + " in <packet> tag");
       }
     }
+  if ((counterStr != NULL))
+    {
+    Counter* counter = (Counter*) mVarContainer.getVar(counterStr);
+    packet->setCounter(counter);
+    }
   return packet;
+  }
+
+string ParseConfig::getString() const
+  {
+  stringstream retval;
+  retval << "<pierf>" << endl;
+
+// Since introduction of threaded Ports, the Thread library will cleanup the ports...
+  map<string,Port*>::const_iterator portsIter;
+  for (portsIter = mPorts.begin(); portsIter != mPorts.end(); portsIter++)
+    {
+    Port* port = (*portsIter).second;
+    if (port != NULL)
+      {
+      retval << port->getString();
+      }
+    }
+
+  retval << endl;
+  retval << mVarContainer.getString();
+  retval << endl;
+
+  map<string,Shaper*>::const_iterator shaperIter;
+  for (shaperIter=mShapers.begin(); shaperIter != mShapers.end(); shaperIter++)
+    {
+    Shaper* shaper = (*shaperIter).second;
+    retval << shaper->getString();
+    }
+
+  retval << endl;
+
+  map<string,Scene*>::const_iterator sceneIter;
+  for (sceneIter=mScenes.begin(); sceneIter != mScenes.end(); sceneIter++)
+    {
+    Scene* scene = (*sceneIter).second;
+    retval << scene->getString() << endl;
+    }
+  
+
+  retval << endl << "</pierf>" << endl << flush;
+  return retval.str();  
   }
 
 
@@ -253,6 +298,7 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
         if (name != NULL)
           {
           Scene* scene = new Scene();
+          scene->setName(name);
           mCurScene = scene;
           mScenes[name]=scene;
           if (autoStr != NULL)
@@ -598,14 +644,22 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
           }
         if (sceneName != NULL)
           {
-          Scene* scene = mScenes[sceneName];
-          if (scene != NULL)
+          if (!strncmp(sceneName,"!!printThis!!",13)) // debug feature: for testing getString
             {
-            scene->send();
+            string thisString = getString();
+            cout << "*********** THIS CONFIG *********" << endl << endl << thisString << endl << endl << "*********** END OF THIS CONFIG **********" << endl;
             }
           else
             {
-            parserException("Unknown scene in <play> tag: " + string(sceneName));
+            Scene* scene = mScenes[sceneName];
+            if (scene != NULL)
+              {
+              scene->play();
+              }
+            else
+              {
+              parserException("Unknown scene in <play> tag: " + string(sceneName));
+              }
             }
           }
         else
@@ -658,34 +712,44 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
           }
 
         Seq* seq;
-        if (idStr != NULL)
+
+        if (refStr != NULL)
           {
-          if (refStr != NULL)
+          if (idStr != NULL)
             {
             parserException("Seq tag cannot have id and ref attribute at the same time");
             }
-          seq = new Seq();
-          seq->setName(idStr);
-          mSeqs[idStr] = seq;
-          }
-        else if (refStr != NULL)
-          {
+          if (repeatStr != NULL)
+            {
+            parserException("Seq tag cannot have ref and repeat attribute at the same time");
+            }
           seq = mSeqs[refStr];
           mCurrentSequenceUpdateAllowed=false;
+          SeqRef* seqRef = new SeqRef();
+          seqRef->setSeq(seq);
+
+          mCurScene->push_back(seqRef);
           }
         else
           {
           seq = new Seq();
+          if (idStr != NULL)
+            {
+            seq->setName(idStr);
+            mSeqs[idStr] = seq;
+            }
+          seq->setOrEnheritAuto(autoStr, mCurScene);
+
+          if (repeatStr != NULL)
+            {
+            seq->setRepeat(repeatStr);
+            }
+
+          mCurScene->push_back(seq);
           }
 
         mCurSeq = seq;
         mSeqStack.push_back(seq);
-        mCurScene->push_back(seq);
-        seq->setOrEnheritAuto(autoStr, mCurScene);
-        if (repeatStr != NULL)
-          {
-          seq->setRepeat(repeatStr);
-          }
         }
       else
         {
@@ -746,6 +810,7 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
         char* idStr=NULL;
         char* actionStr=NULL;
         char* valueStr=NULL;
+        char* bytesStr=NULL;
         char* varStr=NULL;
         int i=0;
         while (attr[i] != NULL)
@@ -764,6 +829,11 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
             {
             i++;
             valueStr = (char*) attr[i++];
+            }
+          else if (!strcmp(attr[i],"bytes"))
+            {
+            i++;
+            bytesStr = (char*) attr[i++];
             }
           else if (!strcmp(attr[i],"var"))
             {
@@ -794,6 +864,10 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
           if (valueStr != NULL)
             {
             counterStep->setValue(valueStr);
+            }
+          if (bytesStr != NULL)
+            {
+            counterStep->setBytesValue(bytesStr);
             }
           if (varStr != NULL)
             {
@@ -928,34 +1002,44 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
           }
 
         Seq* seq;
-        if (idStr != NULL)
+
+        if (refStr != NULL)
           {
-          if (refStr != NULL)
+          if (idStr != NULL)
             {
             parserException("Seq tag cannot have id and ref attribute at the same time");
             }
-          seq = new Seq();
-          seq->setName(idStr);
-          mSeqs[idStr] = seq;
-          }
-        else if (refStr != NULL)
-          {
+          if (repeatStr != NULL)
+            {
+            parserException("Seq tag cannot have ref and repeat attribute at the same time");
+            }
           seq = mSeqs[refStr];
           mCurrentSequenceUpdateAllowed=false;
+          SeqRef* seqRef = new SeqRef();
+          seqRef->setSeq(seq);
+
+          mCurSeq->push_back(seqRef);
           }
         else
           {
           seq = new Seq();
+          if (idStr != NULL)
+            {
+            seq->setName(idStr);
+            mSeqs[idStr] = seq;
+            }
+          seq->setOrEnheritAuto(autoStr, mCurScene);
+
+          if (repeatStr != NULL)
+            {
+            seq->setRepeat(repeatStr);
+            }
+
+          mCurSeq->push_back(seq);
           }
         
         mSeqStack.push_back(seq);
-        mCurSeq->push_back(seq);
-        seq->setOrEnheritAuto(autoStr, mCurSeq);
         mCurSeq = seq;
-        if (repeatStr != NULL)
-          {
-          seq->setRepeat(repeatStr);
-          }
         }
       else if (elem == "text")
         {
@@ -1015,16 +1099,10 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
 
         char* strName=NULL;
         char* strValue=NULL;
-        char* strAuto=NULL;
         int i=0;
         while (attr[i] != NULL)
           {
-          if (!strcmp(attr[i],"auto"))
-            {
-            i++;
-            strAuto = (char*) attr[i++];
-            }
-          else if (!strcmp(attr[i],"name"))
+          if (!strcmp(attr[i],"name"))
             {
             i++;
             strName = (char*) attr[i++];
@@ -1071,16 +1149,10 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
 
         mStateStack.push_back(eMirror);
 
-        char* autoStr=NULL;
         char* portStr=NULL;
         int i=0;
         while (attr[i] != NULL)
           {
-          if (!strcmp(attr[i],"auto"))
-            {
-            i++;
-            autoStr = (char*) attr[i++];
-            }
           if (!strcmp(attr[i],"port"))
             {
             i++;
@@ -1139,16 +1211,10 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
         {
         mStateStack.push_back(eMirror);
 
-        char* autoStr=NULL;
         char* portStr=NULL;
         int i=0;
         while (attr[i] != NULL)
           {
-          if (!strcmp(attr[i],"auto"))
-            {
-            i++;
-            autoStr = (char*) attr[i++];
-            }
           if (!strcmp(attr[i],"port"))
             {
             i++;
@@ -1748,7 +1814,6 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
         {
         Packet* packet = handlePacketTag(attr,mCurMultiShaper);
         mCurMultiShaper->addPacket(packet);
-        // tdb : add multishaper specific things
         }
       else
         { // syntax error
@@ -1780,16 +1845,10 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
 
         char* strName=NULL;
         char* strValue=NULL;
-        char* strAuto=NULL;
         int i=0;
         while (attr[i] != NULL)
           {
-          if (!strcmp(attr[i],"auto"))
-            {
-            i++;
-            strAuto = (char*) attr[i++];
-            }
-          else if (!strcmp(attr[i],"name"))
+          if (!strcmp(attr[i],"name"))
             {
             i++;
             strName = (char*) attr[i++];
@@ -1854,7 +1913,7 @@ void ParseConfig::end_hndl(const char *el) throw (Exception)
   {
   //cout << "End tag: " << el << endl;
   State state = curState();
-  switch (state) // tdb: check that the right element is ended
+  switch (state) // tbd: check that the right element is ended
     {
     case ePacket:
       mCurrentPacket->tryComplete(false); // If complete now, execution will be faster
@@ -1954,7 +2013,7 @@ void ParseConfig::char_hndl(const char *txt, int txtlen) throw (Exception)
   string chars = string(txt,txtlen);
 
   State state = curState();
-  switch (state) // tdb: check that the right element is ended
+  switch (state) // tbd: check that the right element is ended
     {
     case eRaw:
       mCurRaw->addString(chars);

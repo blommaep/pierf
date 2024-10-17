@@ -13,6 +13,7 @@
 
 #include <iostream> // for cout and cin
 #include <fstream>
+#include <sstream>
 #include "zthread/Thread.h"
 
 FirstOfStep::FirstOfStep()
@@ -73,5 +74,22 @@ void FirstOfStep::play()
     }
   mCurrentPacket = NULL;
   mMatched = false; //at the end of running, reset it, to be ready for a possible next loop...
+  }
+
+string FirstOfStep::getString() const
+  {
+  stringstream retval;
+  retval << "<firstof>" << endl;
+
+  vector<MatchStep *>::const_iterator iter;
+  for (iter = mMatches.begin();iter != mMatches.end();iter++)
+    {
+    MatchStep* elem= *iter;
+    retval << elem->getString();
+    }
+
+  retval << "</firstof>" << endl << flush;
+  return retval.str();
+  
   }
 

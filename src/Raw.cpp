@@ -20,6 +20,7 @@ Raw::Raw()
 //  mSize.setDefault((ushort)0); // removed: there is no reason to have a default for size (default is the size of the binary data, but that is coded) and it disturbs analyze_Head to have a value for mSize (could change that too, but didn't)
   mType.setDefault((ushort)0); // in absence of better design, using a 16 bits integer for the type: 0 = hex, 1 = text
   mData.setStrict(false);
+  mSize.displayDecimal();
   mDataFieldEntered = false;
   }
 
@@ -102,7 +103,7 @@ void Raw::addString(const string& inString) throw (Exception)
     }
   }
 
-void Raw::setSize(ulong size)
+void Raw::setSize(ulong32 size)
   {
   mSize.setManual(intToString(size).c_str(), false);
   }
@@ -116,13 +117,13 @@ void Raw::setType(const char* type) throw (Exception)
   {
   if (!strcmp(type,"hex"))
     {
-    mType.setManual(intToString(ulong(0)).c_str(), false);
+    mType.setManual(intToString(ulong32(0)).c_str(), false);
     mFiller.setInputChar(false);
     mData.setInputChar(false);
     }
   else if (!strcmp(type,"text"))
     {
-    ulong ltype = 1;
+    ulong32 ltype = 1;
     mType.setManual(intToString(ltype).c_str(), false);
     mFiller.setInputChar(true);
     mData.setInputChar(true);
@@ -143,15 +144,34 @@ string Raw::getString()
   {
   stringstream retval;
   retval << "<raw";
+  if (mType.getValue() == 1)
+    {
+    retval << " type=\"text\"";
+    }
   if (mSize.isManual())
     {
-    retval << " size=\"" << mSize.getString() << "\"";
+    retval << " size=\"" << mSize.getConfigString() << "\"";
     }
   if (mFiller.isManual())
     {
-    retval << " filler=\"" << mFiller.getString() << "\"";
+    retval << " filler=\"" << mFiller.getConfigString() << "\"";
     }
-  retval << ">" << mData.getString() << "</raw>";
+
+  if (mData.isString() || mData.isVar())
+    {
+    retval << " data=\"" << mData.getConfigString() << "\" >";
+    }
+  else
+    {
+    retval << ">" << mData.getString();
+    }
+ 
+  if (hasVarAssigns())
+    {
+    retval << endl << getVarAssignsString() << "  ";
+    }
+ 
+  retval << "</raw>" << flush;
   return retval.str();
   }
 
@@ -172,16 +192,16 @@ bool Raw::getString(string& stringval, const char* fieldName)
   return false;
   }
 
-ulong Raw::getSize()
+ulong32 Raw::getSize()
   {
   if (mSize.isManual())
     {
-    return (ulong) mSize.getValue();
+    return (ulong32) mSize.getValue();
     }
   return mData.size();
   }
 
-ulong Raw::getTailSize()
+ulong32 Raw::getTailSize()
   {
   return 0;
   }
@@ -201,11 +221,11 @@ bool Raw::copyVar() throw (Exception)
 
 uchar* Raw::copyTo(uchar* toPtr)
   {
-  ulong curSize = mData.size();
-  ulong targetSize = 0;
+  ulong32 curSize = mData.size();
+  ulong32 targetSize = 0;
   if (mSize.isManual())
     {
-    targetSize = (ulong) mSize.getValue();
+    targetSize = (ulong32) mSize.getValue();
     }
   if (curSize < targetSize || targetSize==0)
     {
@@ -213,7 +233,7 @@ uchar* Raw::copyTo(uchar* toPtr)
     toPtr = mData.copyTo(toPtr);
 
     // Now the filler
-    ulong fillerSize = mFiller.size();
+    ulong32 fillerSize = mFiller.size();
     if (fillerSize > 0) // use a specific filler
       {
       vector<uchar>::iterator fillerStart, fillerEnd;
@@ -254,11 +274,11 @@ uchar* Raw::copyTail(uchar* toPtr)
   return toPtr;
   }
 
-bool Raw::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
+bool Raw::analyze_Head(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (mSize.hasValue()) // copied from match packet in compare: in compare mode, always take exactly same size if it is specified
     {
-    ulong rawSize = (ulong) mSize.getValue();
+    ulong32 rawSize = (ulong32) mSize.getValue();
     if (remainingSize < rawSize)
       {
       return false;
@@ -277,7 +297,7 @@ bool Raw::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
   return true;
   }
 
-bool Raw::analyze_Tail(uchar*& fromPtr, ulong& remainingSize)
+bool Raw::analyze_Tail(uchar*& fromPtr, ulong32& remainingSize)
   {
   return true;
   }

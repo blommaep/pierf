@@ -100,7 +100,7 @@ void IgmpV2Type::setDefault(const char* inString) throw (Exception)
     }
   }
 
-string IgmpV2Type::getStringFromBinary()
+string IgmpV2Type::getStringFromBinary() const
   {
   stringstream retval;
 
@@ -246,7 +246,7 @@ string IgmpV2::getString()
 
     if (mResponseTime.isPrintable()) // default for query
       {
-      retval << " responsetime=\"" << mResponseTime.getString();
+      retval << " responsetime=\"" << mResponseTime.getConfigString();
       }
     
     retval << "\"";
@@ -254,15 +254,25 @@ string IgmpV2::getString()
 
   if (mMcastIp.isPrintable())
     {
-    retval << " to=\"" << mMcastIp.getString() << "\"";
+    retval << " to=\"" << mMcastIp.getConfigString() << "\"";
     }
 
   if (mChecksum.isPrintable())
     {
-    retval << " checksum=\"" << mChecksum.getString() << "\"";
+    retval << " checksum=\"" << mChecksum.getConfigString() << "\"";
     }
-  
-  retval << " />" << flush;
+ 
+  if (hasVarAssigns())
+    {
+    retval << ">" << endl << getVarAssignsString();
+    retval << "  </igmp>";
+    }
+  else
+    {
+    retval << "/>";
+    }
+ 
+  retval << flush;
   return retval.str();
   }
 
@@ -298,12 +308,12 @@ bool IgmpV2::getString(string& stringval, const char* fieldName)
   return false;
   }
 
-ulong IgmpV2::getSize()
+ulong32 IgmpV2::getSize()
   {
   return 8;
   }
 
-ulong IgmpV2::getTailSize()
+ulong32 IgmpV2::getTailSize()
   {
   return 0;
   }
@@ -349,7 +359,7 @@ uchar* IgmpV2::copyTail(uchar* toPtr)
   return toPtr;
   }
 
-bool IgmpV2::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
+bool IgmpV2::analyze_Head(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (!mMsgType.analyze(fromPtr,remainingSize)) return false;
   if (!mResponseTime.analyze(fromPtr,remainingSize)) return false;
@@ -358,7 +368,7 @@ bool IgmpV2::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
   return true;
   }
 
-bool IgmpV2::analyze_Tail(uchar*& fromPtr, ulong& remainingSize)
+bool IgmpV2::analyze_Tail(uchar*& fromPtr, ulong32& remainingSize)
   {
   return true;
   }

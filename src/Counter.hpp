@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,8 +23,8 @@ using namespace std;
 class Counter: public Var
   {
   private:
-    ulong mCount;
-    ulong mByteCount;
+    ulong32 mCount;
+    unsigned long long mByteCount;
     struct timeval mStartTime;
     struct timeval mStopTime;
     struct timeval mTotalTime;
@@ -35,21 +35,25 @@ class Counter: public Var
     Counter(string& name);
     ~Counter();
     void reset();
-    void reset(ulong newCount);
-    void increment(ulong incr, ulong sizeIncr);
+    void reset(ulong32 newCount);
+    void increment(ulong32 incr, ulong32 sizeIncr);
+    void overrule(ulong32 nrPackets, ulong32 totalSize);
+    void overruleXl(ulong32 nrPackets, unsigned long long totalSize);
     void timeClick(); //update mTotalTime and restart with a new StartTime
     void timeClick(struct timeval pktTime); //idem, but using the packet capture time, provided as argument
     void hold();
     void hold(struct timeval pktTime);
     void cont();
     void cont(struct timeval pktTime);
-    ulong getCount();
-    ulong getByteCount();
-    ulong getRate(); // packets per second. no decimals
-    ulong getBitrate(); // bits per second. 
-    ulong getTotalTime();
+    ulong32 getCount();
+    ulong32 getByteCount();
+    ulong32 getRate(); // packets per second. no decimals
+    ulong32 getBitrate(); // bits per second. 
+    double getTotalTime();
+    string getBitrateString(); // return bitrate as a string
     void setStringValue(const char* inString) throw (Exception);
     string getStringValue();
+    string getString() const;
   };
 
 #endif

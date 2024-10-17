@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,6 +12,7 @@
 #include "Shaper.hpp"
 #include "zthread/Thread.h"
 #include <iostream> // for cout and cin
+#include <sstream>
 
 #include <stdio.h>
 #include <time.h>
@@ -38,12 +39,13 @@ Shaper::~Shaper()
 
 void Shaper::setRate(const char* rateStr) throw (Exception)
   {
-  //tbd : complete this function and all the rest of Shaper
   char* ratePos = (char*) rateStr;
   int decimals = 0;
   int nrDigits = 0;
   int multi = 1;
   char digits[9]; // max 8 digits + 0
+  mRateString = rateStr; // for later print use only
+
   while (*ratePos != 0)
     {
     if (*ratePos == '0')
@@ -69,13 +71,18 @@ void Shaper::setRate(const char* rateStr) throw (Exception)
         }
       decimals ++; // Will be set to 1, although te first decimal is still to be read. Will be compensated later
       }
-    else if (*ratePos == 'M' || *ratePos == 'k' || *ratePos == 'b' || *ratePos =='f')
+    else if (*ratePos == 'G' || *ratePos == 'M' || *ratePos == 'k' || *ratePos == 'b' || *ratePos =='f')
       {
       if (multi != 1)
         {
         throw Exception("Bad rate format. Problems reading \"M\" where not expected.");
         }
-      if (*ratePos == 'M')
+      if (*ratePos == 'G')
+        {
+        multi = 1024*1024*1024;
+        ratePos++;
+        }
+      else if (*ratePos == 'M')
         {
         multi = 1024*1024;
         ratePos++;
@@ -140,7 +147,7 @@ void Shaper::setRate(const char* rateStr) throw (Exception)
     }
   }
 
-void Shaper::swap(struct timeval& curTime, ulong size)
+void Shaper::swap(struct timeval& curTime, ulong32 size)
   {
   mPrev2Time = mPrevTime;
   mPrevTime = curTime;
@@ -150,7 +157,7 @@ void Shaper::swap(struct timeval& curTime, ulong size)
     }
   }
 
-void Shaper::getShapeDelay(const ulong size, struct timeval& delay, struct timeval& sendTime, struct timeval& curTime)
+void Shaper::getShapeDelay(const ulong32 size, struct timeval& delay, struct timeval& sendTime, struct timeval& curTime)
   {
   // Effectively shaping over two packets, in this way somehow taking into account the packet sending delay and being more accurate.
 
@@ -205,8 +212,8 @@ void Shaper::getShapeDelay(const ulong size, struct timeval& delay, struct timev
     }
 
   // Calculate the sum comparetime + packetInterval == time to send
-  long seconds = (ulong) packetInterval;
-  long microseconds = (ulong) ((packetInterval - seconds) * 1000000);
+  long seconds = (ulong32) packetInterval;
+  long microseconds = (ulong32) ((packetInterval - seconds) * 1000000);
   
   // sum
   microseconds += compareTime.tv_usec;
@@ -257,7 +264,7 @@ void Shaper::getShapeDelay(const ulong size, struct timeval& delay, struct timev
   }
 
 
-void Shaper::shapeDelay(const ulong size, struct timeval& delay, struct timeval& sendTime, struct timeval& curTime)
+void Shaper::shapeDelay(const ulong32 size, struct timeval& delay, struct timeval& sendTime, struct timeval& curTime)
   {
   if (delay.tv_sec == 0 && delay.tv_usec == 0)
     {
@@ -275,7 +282,7 @@ void Shaper::shapeDelay(const ulong size, struct timeval& delay, struct timeval&
     highPrecision = false;
     }
 
-  ulong milliseconds = delay.tv_sec * 1000 + delay.tv_usec / 1000;
+  ulong32 milliseconds = delay.tv_sec * 1000 + delay.tv_usec / 1000;
 
   if (milliseconds > 10) // Maybe there's only microseconds delay?
     {
@@ -308,7 +315,7 @@ void Shaper::shapeDelay(const ulong size, struct timeval& delay, struct timeval&
   swap(sendTime,size); // currently using the wanted time and not real time because getting the real time again seems to cause too high delays... (inaccuracy of approx. 10 ms)
   }
 
-void Shaper::shape(const ulong size)
+void Shaper::shape(const ulong32 size)
   {
   struct timezone tz;
   struct timeval curTime; 
@@ -334,4 +341,13 @@ void Shaper::reset()
 string Shaper::getName()
   {
   return mName;
+  }
+
+string Shaper::getString() const
+  {
+  stringstream retval;
+  retval << "<shaper id=\"" << mName << "\" rate=\"" << mRateString << "\" />";
+
+  retval << endl << flush;
+  return retval.str();    
   }

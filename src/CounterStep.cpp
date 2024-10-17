@@ -13,12 +13,13 @@
 
 #include <iostream> // for cout and cin
 #include <fstream>
+#include <sstream>
 #include "zthread/Thread.h"
 #include <string.h>
 #include "VarContainer.hpp"
 
 CounterStep::CounterStep()
-  : mReceiveStep(NULL), mCounter(NULL), mValue(0), mActionVar(NULL)
+  : mReceiveStep(NULL), mCounter(NULL), mValue(0), mBytesValue(0), mActionVar(NULL)
   {
   }
 
@@ -74,6 +75,11 @@ void CounterStep::setValue(const char* value) throw (Exception)
   mValue = textToLong(value);
   }
 
+void CounterStep::setBytesValue(const char* bytesValue) throw (Exception)
+  {
+  mBytesValue = textToLong(bytesValue);
+  }
+
 void CounterStep::setVar(const char* varName) throw (Exception)
   {
   Var* var = VarContainer::getVar(varName);
@@ -100,7 +106,7 @@ void CounterStep::play()
     {
     case eIncrement:
       {
-      ulong size = 0; // No packet size possible when not in a receive
+      ulong32 size = mBytesValue; // No packet size possible when not in a receive
       if (mReceiveStep != NULL)
         {
         size = mReceiveStep->getPacketSize();
@@ -154,9 +160,61 @@ void CounterStep::play()
            << " - Count: " << mCounter->getCount() 
            << " - Rate: " << mCounter->getRate()
            << " - Bytes: " << mCounter->getByteCount()
-           << " - Bitrate: " << mCounter->getBitrate()
+           << " - Bitrate: " << mCounter->getBitrateString()
            << endl;
       break;
     }
+  }
+
+string CounterStep::getString() const
+  {
+  stringstream retval;
+  retval << "<counter ";
+
+  if (mCounter != NULL)
+    {
+    retval << "ref=\"" << mCounter->getName() << "\" ";
+    }
+
+  stringstream valueString;
+  if (mActionVar != NULL)
+    {
+    valueString << "value=\"" << mActionVar->getName() << "\" ";
+    }
+
+  retval << "action=\"";
+  switch (mAction)
+    {
+    case eIncrement:
+      retval << "increment\" ";
+      if (mActionVar == NULL && mValue != 1)
+        {
+        valueString << "value=\"" << mValue << "\" ";
+        }
+      valueString << flush;
+      retval << valueString.str();
+      break;
+    case eReset:
+      retval << "reset\" ";
+      if (mActionVar == NULL && mValue != 0)
+        {
+        valueString << "value=\"" << mValue << "\" ";
+        }
+      valueString << flush;
+      retval << valueString.str();
+      break;
+    case eHold:
+      retval << "hold\" ";
+      break;
+    case eCont:
+      retval << "cont\" ";
+      break;
+    case eReport:
+      retval << "report\" ";
+      break;
+    }
+
+  retval << " />" << endl << flush;
+  return retval.str();
   }
 

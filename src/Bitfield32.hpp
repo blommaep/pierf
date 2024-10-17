@@ -22,28 +22,28 @@ using namespace std;
 class Bitfield32: public Field
   {
   protected:
-    ulong mData;
+    ulong32 mData;
     enum DisplayType {eHex, eDec, eChar}; //Hex, Decimal or ascii char display
     DisplayType mDisplayType;
     void stringToVal(const char* inString) throw (Exception);
-    void setVal(ulong val) throw (Exception);
+    void setVal(ulong32 val) throw (Exception);
   public:
     Bitfield32();
     void setDefault(const char* inString) throw (Exception);
     void setManualFromValue(const char* inString) throw (Exception);
     void setAuto(const char* inString) throw (Exception);
-    void setDefault(const ulong inValue) throw (Exception);
-    void setManualFromValue(const ulong inValue) throw (Exception);
-    void setAuto(const ulong inValue) throw (Exception);
+    void setDefault(const ulong32 inValue) throw (Exception);
+    void setManualFromValue(const ulong32 inValue) throw (Exception);
+    void setAuto(const ulong32 inValue) throw (Exception);
     void displayDecimal();
     void displayChar();
     string getStringFromBinary() const;
     bool getStringFromBinary(string& stringval) const;
-    ulong getValue();
+    ulong32 getValue();
     bool operator==(unsigned int value);
     bool operator!=(unsigned int value);
     uchar* copyTo(uchar* toPtr);
-    bool analyze(uchar*& fromPtr, ulong& remainingSize); 
+    bool analyze(uchar*& fromPtr, ulong32& remainingSize); 
     bool match(Bitfield32& other);
   };
 

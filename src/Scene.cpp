@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -10,19 +10,25 @@
 
 
 #include "Scene.hpp"
+#include <sstream>
 
 void Scene::push_back(Seq* seq)
   {
   mParts.push_back(seq);
   }
 
-void Scene::send()
+void Scene::push_back(SeqRef* seqRef)
   {
-  vector<Seq *>::iterator iter;
+  mParts.push_back(seqRef);
+  }
+
+void Scene::play()
+  {
+  vector<PlayStep *>::iterator iter;
   for (iter = mParts.begin();iter != mParts.end();iter++)
     {
-    Seq* elem= *iter;
-    elem->send();
+    PlayStep* elem= *iter;
+    elem->play();
     }
   }
 
@@ -33,14 +39,39 @@ Scene::Scene()
 
 Scene::~Scene()
   {
-  vector<Seq *>::iterator iter;
+  vector<PlayStep *>::iterator iter;
   for (iter = mParts.begin();iter != mParts.end();iter++)
     {
-    Seq* elem= *iter;
-    if (!elem->isRef())
-      {
-      delete elem;
-      }
+    PlayStep* elem= *iter;
+    delete elem;
     }
+  // if it is a SeqRef, SeqRef will only delete the reference, not the named Seq itself. 
   }
 
+void Scene::setName(char* name)
+  {
+  mName = name;
+  }
+
+string Scene::getString() const
+  {
+  stringstream retval;
+  retval << "<scene ";
+
+  if (mName.size() > 0)
+    {
+    retval << "id=\"" << mName << "\" ";
+    }
+
+  retval << ">" << endl;
+
+  vector<PlayStep *>::const_iterator iter;
+  for (iter = mParts.begin();iter != mParts.end();iter++)
+    {
+    PlayStep* elem= *iter;
+    retval << elem->getString();
+    }    
+
+  retval << "</scene>" << endl << flush;
+  return retval.str();
+  }

@@ -23,7 +23,7 @@ Bitfield16::Bitfield16()
 
 void Bitfield16::stringToVal(const char* inString) throw (Exception)
   {
-  ulong temp = textToLong(inString);
+  ulong32 temp = textToLong(inString);
   if (temp < 0 || temp > 0xFFFF)
     {
     throw Exception("Invalid input string for what should be a 2 byte integer value");
@@ -138,7 +138,7 @@ uchar* Bitfield16::copyTo(uchar* toPtr)
   return (uchar*) tmp;
   }
 
-bool Bitfield16::analyze(uchar*& fromPtr, ulong& remainingSize)
+bool Bitfield16::analyze(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (remainingSize < 2)
     {

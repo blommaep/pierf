@@ -28,7 +28,7 @@ class SignatureField: public Bitfield32
   public:
     SignatureField();
     uchar* copyTo(uchar* toPtr);
-    bool analyze(uchar*& fromPtr, ulong& remainingSize);
+    bool analyze(uchar*& fromPtr, ulong32& remainingSize);
     bool match(SignatureField& other);
     bool copyVar() throw (Exception);
     bool isVar() const;

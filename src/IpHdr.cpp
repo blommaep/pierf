@@ -31,6 +31,8 @@ IpHdr::IpHdr()
   mHeaderLength.setOffset(0); 
   mFragmentOffset.setDefault((ushort)0);
   mTtl.displayDecimal();
+  mContentLength.displayDecimal();
+  mPacketId.displayDecimal();
   }
 
 void IpHdr::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
@@ -345,39 +347,49 @@ string IpHdr::getString() //tbd: some fields missing
   
   if (mFromIp.isPrintable())
     {
-    retval << "from=\"" << mFromIp.getString() << "\" ";
+    retval << "from=\"" << mFromIp.getConfigString() << "\" ";
     }
   if (mToIp.isPrintable())
     {
-    retval << "to=\"" << mToIp.getString() << "\" ";
+    retval << "to=\"" << mToIp.getConfigString() << "\" ";
     }
   if (mProtocol.isPrintable())
     {
     retval << "protocol=\"";
-    retval << mProtocol.getString();
+    retval << mProtocol.getConfigString();
     retval << "\"";
     }
   if (mContentLength.isPrintable())  
     {
-    retval << " contentlength=\"" << mContentLength.getValue() << "\"";
+    retval << " contentlength=\"" << mContentLength.getConfigString() << "\"";
     }
 
   if (mPacketId.isPrintable())
     {
-    retval << " packetid=\"" << mPacketId.getValue() << "\"";
+    retval << " packetid=\"" << mPacketId.getConfigString() << "\"";
     }
 
   if (mTtl.isPrintable())
     {
-    retval << " ttl=\"" << mTtl.getString() << "\"";
+    retval << " ttl=\"" << mTtl.getConfigString() << "\"";
     }
 
   if (mOptions.isPrintable() != 0)
     {
-    retval << " options=\"" << mOptions.getString() << "\"";
+    retval << " options=\"" << mOptions.getConfigString() << "\"";
     }
 
-  retval << " />" << flush;
+  if (hasVarAssigns())
+    {
+    retval << " >" << endl << getVarAssignsString();
+    retval << "  </iphdr>";
+    }
+  else
+    {
+    retval << " />";
+    }
+
+  retval << flush;
   return retval.str();
   }
 
@@ -434,14 +446,14 @@ bool IpHdr::getString(string& stringval, const char* fieldName)
   return false;
   }
 
-ulong IpHdr::getSize()
+ulong32 IpHdr::getSize()
   {
   ushort optionsPlusPadding = mOptions.size();
   optionsPlusPadding = ((optionsPlusPadding + 3) / 4) * 4; //round up to the next multiple of 4
   return 20+optionsPlusPadding; // See the spec: 5 x 32 bit + options
   }
 
-ulong IpHdr::getTailSize()
+ulong32 IpHdr::getTailSize()
   {
   return 0;
   }
@@ -519,9 +531,9 @@ uchar* IpHdr::copyTail(uchar* toPtr)
   return toPtr;
   }
 
-bool IpHdr::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
+bool IpHdr::analyze_Head(uchar*& fromPtr, ulong32& remainingSize)
   {
-  ulong startingSize = remainingSize; // Need this to calculate the header size
+  ulong32 startingSize = remainingSize; // Need this to calculate the header size
   if (remainingSize <1)
     {
     return false;
@@ -561,8 +573,8 @@ bool IpHdr::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
 
   // finding end of option
   uchar* optionType = fromPtr;
-  ulong optionSize = (mHeaderLength.getValue()*4) - (startingSize - remainingSize); // signed, to allow <0, eases the loop; (startingSize - remaininSize is the part of the header already analysed, the remaining is option and padding
-  long remainingHdrSize = ulong(optionSize);
+  ulong32 optionSize = (mHeaderLength.getValue()*4) - (startingSize - remainingSize); // signed, to allow <0, eases the loop; (startingSize - remaininSize is the part of the header already analysed, the remaining is option and padding
+  long remainingHdrSize = ulong32(optionSize);
 
   while (*optionType != 0 && remainingHdrSize > 0)
     {
@@ -583,7 +595,7 @@ bool IpHdr::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
     return false; // inproper length in option field
     }
   
-  optionSize -= (ulong) remainingHdrSize; // remainingHdrSize now is in fact the paddig size
+  optionSize -= (ulong32) remainingHdrSize; // remainingHdrSize now is in fact the paddig size
   if (!mOptions.analyze(fromPtr,remainingSize,optionSize)) return false;
 
   // padding is currently ignored
@@ -593,7 +605,7 @@ bool IpHdr::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
   return true;
   }
 
-bool IpHdr::analyze_Tail(uchar*& fromPtr, ulong& remainingSize)
+bool IpHdr::analyze_Tail(uchar*& fromPtr, ulong32& remainingSize)
   {
   return true;
   }

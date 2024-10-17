@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,6 +13,7 @@
 
 #include <iostream> // for cout and cin
 #include <fstream>
+#include <sstream>
 #include <typeinfo>
 
 Seq::Seq()
@@ -26,22 +27,7 @@ Seq::~Seq()
   for (iter = mPlaySteps.begin();iter != mPlaySteps.end();iter++)
     {
     PlayStep* playStep= *iter;
-    if (typeid(*playStep) == typeid(Seq))
-      {
-      Seq* seq = (Seq*) playStep;
-      if (seq->isRef())
-        {
-        // don't delete named sequences here, will be deleted as last
-        }
-      else
-        {
-        delete playStep;
-        }
-      }
-    else
-      {
-      delete playStep;
-      }
+    delete playStep;
     }
   }
 
@@ -61,10 +47,10 @@ void Seq::setRepeat(char* repeat) throw (Exception)
   mRepeat = textToLong(repeat);
   }
 
-void Seq::send()
+void Seq::play()
   {
   vector<PlayStep *>::iterator iter;
-  ulong i;
+  ulong32 i;
   for (i=0; i<mRepeat; i++)
     {
     for (iter = mPlaySteps.begin();iter != mPlaySteps.end();iter++)
@@ -73,11 +59,6 @@ void Seq::send()
       elem->play();
       }
     }
-  }
-
-void Seq::play()
-  {
-  send();
   }
 
 int Seq::size()
@@ -94,3 +75,53 @@ bool Seq::isRef()
   {
   return mName.size() > 0;
   }
+
+string Seq::getName()
+  {
+  return mName;
+  }
+
+string Seq::getString() const
+  {
+  stringstream retval;
+  retval << "<seq ";
+
+  if (mName.size() > 0)
+    {
+    retval << "id=\"" << mName << "\" ";
+    }
+
+  if (mRepeat != 1)
+    {
+    retval << "repeat=\"" << mRepeat << "\" ";
+    }
+
+  retval << ">" << endl;
+
+  vector<PlayStep *>::const_iterator iter;
+  for (iter = mPlaySteps.begin();iter != mPlaySteps.end();iter++)
+    {
+    PlayStep* elem= *iter;
+    retval << elem->getString();
+    }    
+
+  retval << "</seq>" << endl << flush;
+  return retval.str();
+  }
+
+string Seq::getSeqElementsString() const
+  {
+  stringstream retval;
+
+  vector<PlayStep *>::const_iterator iter;
+  for (iter = mPlaySteps.begin();iter != mPlaySteps.end();iter++)
+    {
+    PlayStep* elem= *iter;
+    retval << elem->getString();
+    }    
+
+  retval << endl << flush;
+  return retval.str();
+  }
+
+

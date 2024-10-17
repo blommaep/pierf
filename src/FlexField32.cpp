@@ -31,13 +31,13 @@ FlexField32::FlexField32()
 
 void FlexField32::stringToVal(const char* inString) throw (Exception)
   {
-  ulong temp = textToLong(inString);
+  ulong32 temp = textToLong(inString);
   mData.uLong = temp; 
   }
 
 uchar FlexField32::stringToChar(const char* val) throw (Exception)
   {
-  ulong temp = textToLong(val);
+  ulong32 temp = textToLong(val);
   if (temp < 0 || temp > 0xFF)
     {
     throw Exception("Invalid input string for what should be a 2 byte integer value");
@@ -47,7 +47,7 @@ uchar FlexField32::stringToChar(const char* val) throw (Exception)
 
 ushort FlexField32::stringToShort(const char* val) throw (Exception)
   {
-  ulong temp = textToLong(val);
+  ulong32 temp = textToLong(val);
   if (temp < 0 || temp > 0xFFFF)
     {
     throw Exception("Invalid input string for what should be a 2 byte integer value");
@@ -111,9 +111,9 @@ void FlexField32::setName(const char* inString)
 // tbd: major rework, allowing the variables to also work with a Flexfield:
 //      Must have elements mLong, mShort and mChar that each are of the Field type...
 //      Maybe immeditely make a more generic container that allows conditional filling
-void FlexField32::setLong(const char* fieldname, ulong val, How how)
+void FlexField32::setLong(const char* fieldname, ulong32 val, How how)
   {
-  mData.uLong=htonl(val);
+  mData.uLong=htonl32(val);
   int i;
   ValueState valueState = how2ValueState(how);
   for (i=0;i<4;i++)
@@ -125,7 +125,7 @@ void FlexField32::setLong(const char* fieldname, ulong val, How how)
 
 void FlexField32::setLong(const char* fieldname, const char* val, How how) throw (Exception)
   {
-  ulong temp = textToLong(val);
+  ulong32 temp = textToLong(val);
   setLong(fieldname, temp, how);
   }
 
@@ -203,7 +203,7 @@ ushort FlexField32::getShort(int pos)
   return mData.uShort[pos];
   }
 
-ulong FlexField32::getLong()
+ulong32 FlexField32::getLong()
   {
   return mData.uLong;
   }
@@ -232,7 +232,7 @@ string FlexField32::getStringFromBinary() const
     {
     if (mFieldNames[0] != "unused")
       {
-      retval << " " << mFieldNames[0] << "=\"" << mData.uLong << "\"";
+      retval << " " << mFieldNames[0] << "=\"" << ntohl32(mData.uLong) << "\"";
       }
     }
   else 
@@ -241,7 +241,7 @@ string FlexField32::getStringFromBinary() const
       {
       if (mFieldNames[0] != "unused")
         {
-        retval << " " << mFieldNames[0] << "=\"" << mData.uShort[0] << "\"";
+        retval << " " << mFieldNames[0] << "=\"" << ntohs(mData.uShort[0]) << "\"";
         }
       }
     else
@@ -260,7 +260,7 @@ string FlexField32::getStringFromBinary() const
       {
       if (mFieldNames[2] != "unused")
         {
-        retval << " " << mFieldNames[2] << "=\"" << mData.uShort[1] << "\"";
+        retval << " " << mFieldNames[2] << "=\"" << ntohs(mData.uShort[1]) << "\"";
         }
       }
     else
@@ -369,18 +369,18 @@ bool FlexField32::getString(string& stringval, const string& fieldname) const
 
 uchar* FlexField32::copyTo(uchar* toPtr)
   {
-  ulong* tmp = (ulong*) toPtr;
+  ulong32* tmp = (ulong32*) toPtr;
   *tmp++ = mData.uLong;
   return (uchar*) tmp;
   }
 
-bool FlexField32::analyze(uchar*& fromPtr, ulong& remainingSize)
+bool FlexField32::analyze(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (remainingSize < 4)
     {
     return false;
     }
-  mData.uLong = * (ulong*) fromPtr;
+  mData.uLong = * (ulong32*) fromPtr;
 
   //valueStates remain undef: must be set by the higher protocol
 

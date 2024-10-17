@@ -129,13 +129,26 @@ string IgmpGroupRec::getString()
       retval << "  <source address=\"" << iter->getString() <<"\" />" << endl;
       }
     
-    retval << "</group>" << endl;
+    if (hasVarAssigns())
+      {
+      retval << ">" << endl << getVarAssignsString();
+      }
+
+    retval << "  </group>" << endl;
     }
   else
     {
-    retval << " />"; // close igmp
-    }  
-  
+    if (hasVarAssigns())
+      {
+      retval << ">" << endl << getVarAssignsString();
+      retval << "  </group>";
+      }
+    else
+      {
+      retval << "/>";
+      }
+    }   
+ 
   retval << flush;
   return retval.str();
   }
@@ -163,12 +176,12 @@ bool IgmpGroupRec::getString(string& stringval, const char* fieldName)
   return false;
   }
 
-ulong IgmpGroupRec::getSize()
+ulong32 IgmpGroupRec::getSize()
   {
   return 8+(4*mSourceList.size());
   }
 
-ulong IgmpGroupRec::getTailSize()
+ulong32 IgmpGroupRec::getTailSize()
   {
   return 0;
   }
@@ -214,7 +227,7 @@ uchar* IgmpGroupRec::copyTail(uchar* toPtr)
   return toPtr;
   }
 
-bool IgmpGroupRec::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
+bool IgmpGroupRec::analyze_Head(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (!mType.analyze(fromPtr,remainingSize)) return false;
   if (remainingSize < 1 || *fromPtr != 0)
@@ -237,7 +250,7 @@ bool IgmpGroupRec::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
   return true;  
   }
 
-bool IgmpGroupRec::analyze_Tail(uchar*& fromPtr, ulong& remainingSize)
+bool IgmpGroupRec::analyze_Tail(uchar*& fromPtr, ulong32& remainingSize)
   {
   return true;
   }

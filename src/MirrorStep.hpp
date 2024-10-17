@@ -30,6 +30,7 @@ class MirrorStep: public PlayStep
     void setPort(Port* port);
     void setReceiveStep(ReceiveStep* receiveStep);
     void play();
+    string getString() const;
   };
 
 #endif

@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,6 +14,7 @@
 
 #include "generics.hpp"
 #include <vector>
+#include <string>
 
 #include <sys/time.h>
 
@@ -23,28 +24,30 @@ class Shaper
   {
   private:
     string mName;
+    string mRateString;
     double mByteInterval; // in seconds
     bool mPacketRate; // when true, mByteInterval and mRate actually represent packet interva/rate
     double mRate; // Just for information: also keep the rate value
     struct timeval mPrevTime; // (approx) send time of the previous packet
     struct timeval mPrev2Time; // send time of the packet before the previous packet
-    ulong mPreviousSize;
-    ulong mLastCalculatedSize;
-    ulong mLastCalculatedSeconds;
-    ulong mLastCalculatedMicroseconds;
-    void swap(struct timeval& curTime, ulong size);
+    ulong32 mPreviousSize;
+    ulong32 mLastCalculatedSize;
+    ulong32 mLastCalculatedSeconds;
+    ulong32 mLastCalculatedMicroseconds;
+    void swap(struct timeval& curTime, ulong32 size);
   public:
     Shaper(const char* name);
     Shaper(string& name);
     ~Shaper();
     void setRate(const char* rateStr) throw (Exception);
-    void getShapeDelay(const ulong size, struct timeval& delay, struct timeval& sendTime, struct timeval& curTime);
-    void shapeDelay(const ulong size, struct timeval& delay, struct timeval& sendTime, struct timeval& curTime);
-    void shape(const ulong size);
+    void getShapeDelay(const ulong32 size, struct timeval& delay, struct timeval& sendTime, struct timeval& curTime);
+    void shapeDelay(const ulong32 size, struct timeval& delay, struct timeval& sendTime, struct timeval& curTime);
+    void shape(const ulong32 size);
 
     void reset();
 
     string getName();
+    string getString() const;
   };
 
 #endif

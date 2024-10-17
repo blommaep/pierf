@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -10,6 +10,7 @@
 
 
 #include "Counter.hpp"
+#include <sstream>
 
 Counter::Counter(char* name)
   :Var(name)
@@ -39,16 +40,28 @@ void Counter::reset()
   mTotalTime.tv_usec=0;
   }
 
-void Counter::reset(ulong newCount)
+void Counter::reset(ulong32 newCount)
   {
   reset();
   mCount = newCount;
   }
 
-void Counter::increment(ulong incr, ulong sizeIncr)
+void Counter::increment(ulong32 incr, ulong32 sizeIncr)
   {
   mCount += incr;
   mByteCount += sizeIncr;
+  }
+
+void Counter::overrule(ulong32 nrPackets, ulong32 totalSize)
+  {
+  mCount = nrPackets;
+  mByteCount = totalSize;
+  }
+
+void Counter::overruleXl(ulong32 nrPackets, unsigned long long totalSize)
+  {
+  mCount = nrPackets;
+  mByteCount = totalSize;
   }
 
 void Counter::timeClick()
@@ -140,17 +153,17 @@ void Counter::cont(struct timeval pktTime)
     }
   }
 
-ulong Counter::getCount()
+ulong32 Counter::getCount()
   {
   return mCount;
   }
 
-ulong Counter::getByteCount()
+ulong32 Counter::getByteCount()
   {
   return mByteCount;
   }
 
-ulong Counter::getRate() 
+ulong32 Counter::getRate() 
   {
   if (mTotalTime.tv_sec == 0 && mTotalTime.tv_usec == 0) // Have been measuring for 0 time (so not)
     {
@@ -164,10 +177,11 @@ ulong Counter::getRate()
 
   // adding time/2 to do a correct rounding, relevant with a small rate
   int rate = int((double(mCount) + (time/2))/time);
+
   return rate;
   }
    
-ulong Counter::getBitrate()
+ulong32 Counter::getBitrate()
   {
   if (mTotalTime.tv_sec == 0 && mTotalTime.tv_usec == 0) // Have been measuring for 0 time (so not)
     {
@@ -181,7 +195,44 @@ ulong Counter::getBitrate()
 
   // adding time/2 to do a correct rounding, relevant with a small rate
   // Multiply by 8 to get  bitrate rather then byterate
-  return int(((double(mByteCount) * 8) + (time/2)) /time);
+  return ulong32(((double(mByteCount) * 8) + (time/2)) /time);
+  }
+
+string Counter::getBitrateString() // return bitrate as a string
+  {
+  if (mTotalTime.tv_sec == 0 && mTotalTime.tv_usec == 0) // Have been measuring for 0 time (so not)
+    {
+    return 0;
+    }
+
+  // calculating in doubles to easily cover all cases. On modern processers, this shouldn't be too expensive
+  double time = mTotalTime.tv_usec;
+  time = time/1000000; // microsecs
+  time += (double) mTotalTime.tv_sec;
+
+  double rate = ((double(mByteCount) * 8) + (time/2)) /time;
+
+  int scale = 0;
+  while (rate > 1000)
+    {
+    rate = rate / 1000;
+    scale++;
+    }
+  char scaleToKey[] = " kMGT";
+  char scaleChar = scaleToKey[scale];
+  
+  stringstream retval;
+  retval << rate << " " << scaleChar << "bps" << flush;
+  return retval.str();
+  }
+
+double Counter::getTotalTime()
+  {
+  double time = mTotalTime.tv_usec;
+  time = time/1000000; // microsecs
+  time += (double) mTotalTime.tv_sec;
+ 
+  return time; 
   }
 
 void Counter::setStringValue(const char* inString) throw (Exception)
@@ -194,3 +245,10 @@ string Counter::getStringValue()
   return intToString((int) mCount);
   }
 
+string Counter::getString() const
+  {
+  stringstream retval;
+  retval << "<var type=\"counter\" id=\"" << mName << "\"";
+  retval << "/>" << endl << flush;
+  return retval.str();
+  }

@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -236,21 +236,34 @@ string Vlan::getStackString()
 string Vlan::getString()
   {
   stringstream retval;
-  retval << "<vlans stack=\"";
-  retval << mVlanString.getString();
-  retval << "\"";
+  retval << "<vlans";
+
+  if (mVlanString.size() > 0)
+    {
+    retval << " stack=\"" << mVlanString.getConfigString() << "\"";
+    }
 
   if (mVlanEthertype.isPrintable())
     {
-    retval << " vlanEthertype=\"" << mVlanEthertype.getString() << "\"";
+    retval << " vlanEthertype=\"" << mVlanEthertype.getConfigString() << "\"";
     }
 
   if (mBodyEthertype.isPrintable())
     {
-    retval << " bodyEthertype=\"" << mBodyEthertype.getString() << "\"";
+    retval << " bodyEthertype=\"" << mBodyEthertype.getConfigString() << "\"";
     }
-  
-  retval << " />" << flush;
+ 
+  if (hasVarAssigns())
+    {
+    retval << " >" << endl << getVarAssignsString();
+    retval << "  </vlans>";
+    }
+  else
+    {
+    retval << " />";
+    }
+
+  retval << flush;
   return retval.str();
   }
 
@@ -303,12 +316,12 @@ ushort Vlan::getEthertype() // Gives the ethertype of the tag, so what must be u
     }
   }
 
-ulong Vlan::getSize()
+ulong32 Vlan::getSize()
   {
   return mVlans.size()*4; // 4 bytes per vlan tag
   }
 
-ulong Vlan::getTailSize()
+ulong32 Vlan::getTailSize()
   {
   return 0;
   }
@@ -361,7 +374,7 @@ uchar* Vlan::copyTail(uchar* toPtr)
   return toPtr;
   }
 
-bool Vlan::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
+bool Vlan::analyze_Head(uchar*& fromPtr, ulong32& remainingSize)
   {
   bool state = true;
 
@@ -394,7 +407,7 @@ bool Vlan::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
   return true; // Will also return true if no vlan was found. This is a bit strange, but the vlan layer allows any number of vlans (stacked). For now, keeping this concept.
   }
 
-bool Vlan::analyze_Tail(uchar*& fromPtr, ulong& remainingSize)
+bool Vlan::analyze_Tail(uchar*& fromPtr, ulong32& remainingSize)
   {
   return true;
   }

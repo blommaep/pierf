@@ -83,7 +83,7 @@ uchar charToNible(char inChar) throw (Exception)
   return nible;
   }
 
-ulong textToLong(const char* inString) throw (Exception)
+ulong32 textToLong(const char* inString) throw (Exception)
   {
   if (!strcmp(inString,"0") || !strcmp(inString,"0x0"))
     {
@@ -92,7 +92,7 @@ ulong textToLong(const char* inString) throw (Exception)
 
   if (!strncmp(inString,"0x",2)) // hex
     {
-    ulong temp = 0;
+    ulong32 temp = 0;
     int i;
     for (i=2;(i<10 && inString[i] != 0);i++) // first 2 characters are 0x, so read char 2 till 10
       {
@@ -107,7 +107,7 @@ ulong textToLong(const char* inString) throw (Exception)
       {
       throw Exception("Failed to decode as integer value: " + string(inString));
       }
-    return (ulong) temp;
+    return (ulong32) temp;
     }
 
   return 0; // pro forma
@@ -156,9 +156,9 @@ void char2HexString(char* toString, uchar value)
     }
   }
 
-std::string longToHexString(ulong i)
+std::string longToHexString(ulong32 i)
   {
-  ulong j = htonl(i);
+  ulong32 j = htonl32(i);
   uchar* bytes = (uchar*) &j;
   char retval[12];
   char* curPos = retval;

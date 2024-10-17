@@ -23,9 +23,9 @@ extern "C"
 void setChecksum(uchar* ckLoc, uchar* start, uchar* stop);
 std::string intToString(int i);
 uchar charToNible(char inChar) throw (Exception);
-ulong textToLong(const char* inString) throw (Exception);
+ulong32 textToLong(const char* inString) throw (Exception);
 ushort atos(char* instr) throw (Exception);
 ushort atob(char* instr) throw (Exception);
-std::string longToHexString(ulong i);
+std::string longToHexString(ulong32 i);
 
 #endif

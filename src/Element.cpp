@@ -10,6 +10,7 @@
 
 
 #include "Element.hpp"
+#include <sstream>
 
 Element::Element()
   :mVarAssignSeq(NULL)
@@ -49,5 +50,34 @@ void Element::playVarAssigns(Element* receivedElem)
     varStep->setElement(NULL); // and set it back to NULL
     }
 
+  }
+
+bool Element::hasVarAssigns() const
+  {
+  if (mVarAssignSeq==NULL)
+    {
+    return false;
+    }
+  return (mVarAssignSeq->size() > 0);
+  }
+
+string Element::getVarAssignsString() const
+  {
+  stringstream retval;
+
+  if (mVarAssignSeq == NULL)
+    {
+    return "";
+    }
+
+  vector<VarAssignStep *>::const_iterator iter;
+  for (iter = mVarAssignSeq->begin();iter != mVarAssignSeq->end();iter++)
+    {
+    VarAssignStep* varStep= *iter;
+    retval << "    " << varStep->getString();
+    }
+
+  retval << flush;
+  return retval.str();
   }
 

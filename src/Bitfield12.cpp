@@ -60,7 +60,7 @@ uchar* Bitfield12::copyTo(uchar* toPtr)
   return (uchar*) tmp;
   }
 
-bool Bitfield12::analyze(uchar*& fromPtr, ulong& remainingSize)
+bool Bitfield12::analyze(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (remainingSize < 2)
     {

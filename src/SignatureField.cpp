@@ -27,8 +27,8 @@ uchar* SignatureField::copyTo(uchar* toPtr)
   {
   *toPtr++ = 0xCD;
   *toPtr++ = 0x40;
-  ulong* tmp = (ulong*) toPtr;
-  *tmp++ = htonl(mData);
+  ulong32* tmp = (ulong32*) toPtr;
+  *tmp++ = htonl32(mData);
   toPtr = (uchar*) tmp;
   *toPtr++ = 0xCD;
   *toPtr++ = 0x40;
@@ -37,7 +37,7 @@ uchar* SignatureField::copyTo(uchar* toPtr)
   return toPtr;
   }
 
-bool SignatureField::analyze(uchar*& fromPtr, ulong& remainingSize)
+bool SignatureField::analyze(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (remainingSize < 8)
     {
@@ -60,7 +60,7 @@ bool SignatureField::analyze(uchar*& fromPtr, ulong& remainingSize)
 
   fromPtr += 2; // else: next comes the counter value
 
-  mData = ntohl(* (ulong*) fromPtr);
+  mData = ntohl32(* (ulong32*) fromPtr);
   fromPtr += 6;
   remainingSize -= 8;
   wasCaptured();

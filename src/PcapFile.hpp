@@ -31,7 +31,7 @@ class PcapFile
     void openForWriting(const char* name) throw (Exception); // Opens the file for writing and creates a header record
     void openForWriting(string& name) throw (Exception);
     void addPacket(struct pcap_pkthdr *h, u_char *pkt_data) throw (Exception);
-    void addPacket(u_char *pkt_data, ulong size) throw (Exception); // Adds packet with current timestamp
+    void addPacket(u_char *pkt_data, ulong32 size) throw (Exception); // Adds packet with current timestamp
     void close();
   };
 

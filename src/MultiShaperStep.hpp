@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,7 @@ class MultiShaperStep: public PlayStep
     ~MultiShaperStep();
     void addPacket(Packet* packet) throw (Exception);
     void play();
+    string getString() const;
   };
 
 #endif

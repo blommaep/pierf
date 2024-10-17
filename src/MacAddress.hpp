@@ -32,8 +32,8 @@ class MacAddress: public Field
     void setManualFromValue(const char* inString) throw (Exception);
     void setAuto(const char* inString) throw (Exception);
     void autoCopy(const MacAddress& copyFrom);
-    void setAddressFromMcastIp(ulong mcastIp) throw (Exception);
-    bool analyze(uchar*& fromPtr, ulong& remainingSize); //uchar*&: call by reference of uchar*
+    void setAddressFromMcastIp(ulong32 mcastIp) throw (Exception);
+    bool analyze(uchar*& fromPtr, ulong32& remainingSize); //uchar*&: call by reference of uchar*
     string getStringFromBinary() const;
     bool getStringFromBinary(string& stringval) const;
     uchar* copyTo(uchar* toPtr);

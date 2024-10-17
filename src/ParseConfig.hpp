@@ -102,6 +102,7 @@ class ParseConfig
   void end_hndl(const char *el) throw (Exception);
   void char_hndl(const char *txt, int txtlen) throw (Exception);
   string stateToString(State state);
+  string getString() const;
   };
 
 #endif

@@ -50,7 +50,7 @@ void PcapFile::addPacket(struct pcap_pkthdr *header, u_char *pkt_data) throw (Ex
   mBinFH.write((const char*)pkt_data,header->caplen);
   }
 
-void PcapFile::addPacket(u_char *pkt_data, ulong size) throw (Exception)
+void PcapFile::addPacket(u_char *pkt_data, ulong32 size) throw (Exception)
   {
   if (!mBinFH.is_open())
     {

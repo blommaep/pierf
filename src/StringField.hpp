@@ -34,9 +34,9 @@ class StringField: public Field, public ByteString
     bool getString(string& stringval) const;
     bool getStringFromBinary(string& stringval) const;    
     uchar* copyTo(uchar* toPtr);
-    uchar* copyTo(uchar* toPtr, ulong maxSize); // copy max. maxSize bytes
-    bool analyze(uchar*& fromPtr, ulong& remainingSize); // consumes all of remainingSize
-    bool analyze(uchar*& fromPtr, ulong& remainingSize, ulong fieldSize); // consumes the specified amount of bytes
+    uchar* copyTo(uchar* toPtr, ulong32 maxSize); // copy max. maxSize bytes
+    bool analyze(uchar*& fromPtr, ulong32& remainingSize); // consumes all of remainingSize
+    bool analyze(uchar*& fromPtr, ulong32& remainingSize, ulong32 fieldSize); // consumes the specified amount of bytes
     bool match(StringField& other);
     };
 

@@ -26,6 +26,7 @@ class PlayStep: public AutoObject
     virtual ~PlayStep();
     virtual void play()=0;
     bool isRef();
+    virtual string getString() const =0; // return string, no checks
   };
 
 #endif

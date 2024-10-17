@@ -33,7 +33,7 @@ class Ipv6Address: public Field
     string getStringFromBinary() const;
     bool getStringFromBinary(string& stringval) const;
     uchar* copyTo(uchar* toPtr);
-    bool analyze(uchar*& fromPtr, ulong& remainingSize); 
+    bool analyze(uchar*& fromPtr, ulong32& remainingSize); 
     bool match(Ipv6Address& other);
     void addToSum(ChecksumIp& cksum);
   };

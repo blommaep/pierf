@@ -22,12 +22,12 @@ using namespace std;
 class ChecksumIp: public Bitfield16
   {
   private:
-    ulong mPreCarry;
+    ulong32 mPreCarry;
   public:
     ChecksumIp();
     // either use addToSum (possibly multiple times) and finish with calculateCarry
     void addToSum(uchar* start, uchar* stop);
-    void addToSum(ulong val);
+    void addToSum(ulong32 val);
     void addToSum(ushort val);
     void calculateCarry();
     // or use the calculate to finish at once

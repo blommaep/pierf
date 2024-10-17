@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,6 +13,7 @@
 
 #include <iostream> // for cout and cin
 #include <fstream>
+#include <sstream>
 #include "zthread/Thread.h"
 
 ReceiveStep::ReceiveStep()
@@ -73,7 +74,7 @@ uchar* ReceiveStep::getPacket()
   return mRxPacket.getPacket();
   }
 
-ulong ReceiveStep::getPacketSize()
+ulong32 ReceiveStep::getPacketSize()
   {
   return mRxPacket.size();
   }
@@ -83,3 +84,20 @@ struct timeval ReceiveStep::getPktTime()
   return mRxPacket.getPktTime();
   }
 
+string ReceiveStep::getString() const
+  {
+  stringstream retval;
+  retval << "<receive port=\"" << mPort->getName() << "\" ";
+
+  if (mNomatchLoop)
+    {
+    retval << "nomatch=\"loop\" ";
+    }
+
+  retval << ">" << endl;
+
+  retval << getSeqElementsString();
+
+  retval << "</receive>" << endl << flush;
+  return retval.str();
+  }

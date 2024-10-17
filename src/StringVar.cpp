@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -10,6 +10,7 @@
 
 
 #include "StringVar.hpp"
+#include <sstream>
 
 StringVar::StringVar(char* name)
   :Var(name)
@@ -35,3 +36,25 @@ string StringVar::getStringValue()
   return mValue;
   }
 
+string StringVar::getString() const
+  {
+  stringstream retval;
+  retval << "<var type=\"string\" id=\"" << mName << "\" const=\"";
+
+  if (mConst)
+    {
+    retval << "yes\" ";
+    }
+  else
+    {
+    retval << "no\" ";
+    }
+
+  if (mValue.size() != 0)
+    {
+    retval << "value=\"" << mValue << "\" ";
+    }
+
+  retval << "/>" << endl << flush;
+  return retval.str();  
+  }

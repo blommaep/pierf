@@ -38,9 +38,9 @@ class RxPacket
     void setPacket(uchar* packet, struct pcap_pkthdr* header);
     uchar* getPacket();
     struct pcap_pkthdr* getHeader();
-    ulong size();
-    ulong rxSecs();
-    ulong rxUsecs();
+    ulong32 size();
+    ulong32 rxSecs();
+    ulong32 rxUsecs();
     struct timeval getPktTime(); 
   };
 

@@ -32,12 +32,12 @@ class ByteString: public vector<uchar>
     ByteString(const string& inString) throw (Exception);
     void addString(const char* inString) throw (Exception);
     void addString(const string& inString) throw (Exception);
-    void addBytes(const uchar* inBytes, ulong nrBytes);
+    void addBytes(const uchar* inBytes, ulong32 nrBytes);
     void resetString();
     string getString() const;
     string getString(bool asChar) const; // allow explicit request for ascii interpret
     uchar* copyTo(uchar* toPtr);
-    uchar* copyTo(uchar* toPtr, ulong maxSize); // copy max. maxSize bytes
+    uchar* copyTo(uchar* toPtr, ulong32 maxSize); // copy max. maxSize bytes
     void setStrict(bool strict);
     void setInputChar(bool asChar);
     bool hasInputChar() const;

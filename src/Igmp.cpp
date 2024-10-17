@@ -68,12 +68,12 @@ bool Igmp::getString(string& stringval, const char* fieldName)
   }
 
 
-ulong Igmp::getSize()
+ulong32 Igmp::getSize()
   {
   return 0;
   }
 
-ulong Igmp::getTailSize()
+ulong32 Igmp::getTailSize()
   {
   return 0;
   }
@@ -93,7 +93,7 @@ uchar* Igmp::copyTail(uchar* toPtr)
   return toPtr;
   }
 
-bool Igmp::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
+bool Igmp::analyze_Head(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (remainingSize < 1)
     {
@@ -138,7 +138,7 @@ bool Igmp::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
 
   }
 
-bool Igmp::analyze_Tail(uchar*& fromPtr, ulong& remainingSize)
+bool Igmp::analyze_Tail(uchar*& fromPtr, ulong32& remainingSize)
   {
   return true;
   }

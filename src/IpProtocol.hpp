@@ -39,8 +39,9 @@ class IpProtocol: public Bitfield8
       {
       Bitfield8::setAuto(inValue);
       }
-    string getString();
-    bool getString(string& stringval);
+    string getString() const;
+    bool getString(string& stringval) const;
+    string getStringFromBinary() const;
   };
 
 #endif

@@ -50,7 +50,7 @@ class Port: public ZThread::Runnable
     PcapFile mDestFile;
     string mSourceName;
     string mDestName;
-    ulong mPrevReadTime; // Previous time (in microsec) read from an input file (source)
+    ulong32 mPrevReadTime; // Previous time (in microsec) read from an input file (source)
     bool mSleepForReplay;
     ZThread::Mutex mTraceThreadMutex; // Mutex needed for the Condition
     ZThread::Condition mTraceThreadCondition; // Used to wait() the trace thread for a signal() from the main thread that it must start doing something (start tracing).
@@ -87,6 +87,8 @@ class Port: public ZThread::Runnable
     void waitReceive(); // Wait loop waiting for the next packet to come in
     RxPacket receive(); // Always call waitReceive first. This gives you the received packet. Also includes waiting system: to avoid memory allocations, no (additional) buffering is done, but the receive thread will simply wait till everybody can handle the packet
     void setSilent(const char* silent) throw (Exception); // true not to print to stdout
+    string getString() const;
+    string getName() const;
   };
 
 #endif

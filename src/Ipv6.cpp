@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,10 +29,10 @@ Ipv6::Ipv6()
   mVersion.setOffset(4);
   mTrafficClass.setOffset(4);
   mTrafficClass.setDefault((uchar)0); // former dscp
-  mTrafficClass.displayDecimal();
   mFlowLabel.setOffset(4);
-  mFlowLabel.setDefault((ulong)0);
+  mFlowLabel.setDefault((ulong32)0);
   mHopLimit.displayDecimal(); // ttl
+  mPayloadLength.displayDecimal();
   }
 
 void Ipv6::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
@@ -172,41 +172,55 @@ bool Ipv6::addPseudoHeaderChecksum(ChecksumIp& cksum)
   }
 
 
-string Ipv6::getString() //tbd: some fields missing
+string Ipv6::getString() 
   {
   stringstream retval;
   retval << "<ipv6 ";
   
   if (mFromIp.isPrintable())
     {
-    retval << "from=\"" << mFromIp.getString() << "\" ";
+    retval << "from=\"" << mFromIp.getConfigString() << "\" ";
     }
   if (mToIp.isPrintable())
     {
-    retval << "to=\"" << mToIp.getString() << "\" ";
+    retval << "to=\"" << mToIp.getConfigString() << "\" ";
+    }
+  if (mTrafficClass.isPrintable())
+    {
+    retval << "trafficClass=\"" << mTrafficClass.getConfigString() << "\" ";
     }
   if (mVersion.isPrintable())
     {
-    retval << " version=\"" << mVersion.getValue() << "\"";
+    retval << " version=\"" << mVersion.getConfigString() << "\"";
     }
   if (mFlowLabel.isPrintable())
     {
-    retval << " flowLabel=\"" << mFlowLabel.getString() << "\"";
+    retval << " flowLabel=\"" << mFlowLabel.getConfigString() << "\"";
     }
   if (mPayloadLength.isPrintable() != 0)
     {
-    retval << " payloadLength=\"" << mPayloadLength.getString() << "\"";
+    retval << " payloadLength=\"" << mPayloadLength.getConfigString() << "\"";
     }
   if (mNextHeader.isPrintable())
     {
-    retval << "protocol=\"" << mNextHeader.getString() << "\"";
+    retval << " nextHeader=\"" << mNextHeader.getConfigString() << "\"";
     }
   if (mHopLimit.isPrintable() != 0)
     {
-    retval << " hopLimit=\"" << mHopLimit.getString() << "\"";
+    retval << " hopLimit=\"" << mHopLimit.getConfigString() << "\"";
     }
 
-  retval << " />" << flush;
+  if (hasVarAssigns())
+    {
+    retval << " >" << endl << getVarAssignsString();
+    retval << "  </ipv6>";
+    }
+  else
+    {
+    retval << " />";
+    }
+
+  retval << flush;
   return retval.str();
   }
 
@@ -250,12 +264,12 @@ bool Ipv6::getString(string& stringval, const char* fieldName)
 
 // tbd: everything from here
 
-ulong Ipv6::getSize()
+ulong32 Ipv6::getSize()
   {
   return 40; 
   }
 
-ulong Ipv6::getTailSize()
+ulong32 Ipv6::getTailSize()
   {
   return 0;
   }
@@ -301,7 +315,7 @@ uchar* Ipv6::copyTail(uchar* toPtr)
   return toPtr;
   }
 
-bool Ipv6::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
+bool Ipv6::analyze_Head(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (remainingSize < 40)
     {
@@ -319,7 +333,7 @@ bool Ipv6::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
   return true;
   }
 
-bool Ipv6::analyze_Tail(uchar*& fromPtr, ulong& remainingSize)
+bool Ipv6::analyze_Tail(uchar*& fromPtr, ulong32& remainingSize)
   {
   return true;
   }

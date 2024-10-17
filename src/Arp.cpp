@@ -231,27 +231,41 @@ string Arp::getTypeString()
 string Arp::getString()
   {
   stringstream retval;
-  retval << "<arp type=\"";
-  retval << getTypeString();
+  retval << "<arp";
+ 
+  if (mArpType.isPrintable())
+    {
+    retval << " type=\"" << mArpType.getConfigString() << "\"";
+    }
 
   if (mSourceMac.isPrintable())
     {
-    retval << "\" fromMac=\"" << mSourceMac.getString();
+    retval << " fromMac=\"" << mSourceMac.getConfigString() << "\"";
     }
-  if (mDestMac.isPrintable() && mArpType.getValue() != 1)
+  if (mDestMac.isPrintable())
     {
-    retval << "\" toMac=\"" << mDestMac.getString();
+    retval << " toMac=\"" << mDestMac.getConfigString() << "\"";
     }
   if (mSourceIp.isPrintable())
     {
-    retval << "\" fromIp=\"" << mSourceIp.getString();
+    retval << " fromIp=\"" << mSourceIp.getConfigString() << "\"";
     }
   if (mDestIp.isPrintable())
     {
-    retval << "\" toIp=\"" << mDestIp.getString();
+    retval << " toIp=\"" << mDestIp.getConfigString() << "\"";
     }
-    
-  retval << "\" />" << flush;
+   
+  if (hasVarAssigns())
+    {
+    retval << " >" << endl << getVarAssignsString();
+    retval << "  </arp>";
+    }
+  else
+    {
+    retval << " />";
+    }
+ 
+  retval << flush;
   return retval.str();
   }
 
@@ -288,12 +302,12 @@ bool Arp::getString(string& stringval, const char* fieldName)
   return false;
   }
 
-ulong Arp::getSize()
+ulong32 Arp::getSize()
   {
   return 28; // feel free to count: 8 bytes header + 12 bytes for two mac@ + 8 bytes for 2 IP@
   }
 
-ulong Arp::getTailSize()
+ulong32 Arp::getTailSize()
   {
   return 0;
   }
@@ -348,7 +362,7 @@ uchar* Arp::copyTail(uchar* toPtr)
   return toPtr;
   }
 
-bool Arp::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
+bool Arp::analyze_Head(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (remainingSize < 6)
     {
@@ -373,7 +387,7 @@ bool Arp::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
   return true;
   }
 
-bool Arp::analyze_Tail(uchar*& fromPtr, ulong& remainingSize)
+bool Arp::analyze_Tail(uchar*& fromPtr, ulong32& remainingSize)
   {
   return true;
   }

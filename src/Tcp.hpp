@@ -46,8 +46,8 @@ class TcpFlags: public Bitfield8
       {
       Bitfield8::setAuto(inValue);
       }
-    string getStringFromBinary();
-    bool getStringFromBinary(string& stringval);
+    string getStringFromBinary() const;
+    bool getStringFromBinary(string& stringval) const;
   };
 
 class Tcp: public Element
@@ -77,13 +77,13 @@ class Tcp: public Element
     void setOptions(const char* optionStr, bool storeAsString) throw (Exception);
     string getString();
     bool getString(string& stringval, const char* fieldName);
-    ulong getSize();
-    ulong getTailSize();
+    ulong32 getSize();
+    ulong32 getTailSize();
     bool copyVar() throw (Exception);
     uchar* copyTo(unsigned char* toPtr);
     uchar* copyTail(uchar* toPtr);
-    bool analyze_Head(uchar*& fromPtr, ulong& remainingSize);
-    bool analyze_Tail(uchar*& fromPtr, ulong& remainingSize);    
+    bool analyze_Head(uchar*& fromPtr, ulong32& remainingSize);
+    bool analyze_Tail(uchar*& fromPtr, ulong32& remainingSize);    
     Element* analyze_GetNextElem();
     bool checkComplete();
     bool tryComplete(ElemStack& stack);

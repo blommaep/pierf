@@ -169,7 +169,7 @@ uchar* Bitfield8::copyTo(uchar* toPtr)
     }
   }
 
-bool Bitfield8::analyze(uchar*& fromPtr, ulong& remainingSize)
+bool Bitfield8::analyze(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (mOffset==0)
     {

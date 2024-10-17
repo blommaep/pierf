@@ -13,6 +13,7 @@
 
 #include <iostream> // for cout and cin
 #include <fstream>
+#include <sstream>
 #include "zthread/Thread.h"
 
 
@@ -38,5 +39,14 @@ void StringStep::addString(string& txt)
 void StringStep::play()
   {
   cout << mTxt << endl;
+  }
+
+string StringStep::getString() const
+  {
+  stringstream retval;
+  retval << "<text>";
+  retval << mTxt;
+  retval << "</text>" << endl << flush;
+  return retval.str();
   }
 

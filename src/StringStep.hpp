@@ -23,13 +23,13 @@ class StringStep: public PlayStep
   {
   private:
     string mTxt;
-    void testje();
   public:
     StringStep();
     ~StringStep();
     void addString(const char* txt);
     void addString(string& txt);
     void play();
+    string getString() const;
   };
 
 #endif

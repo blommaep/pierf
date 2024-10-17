@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -146,22 +146,32 @@ string Udp::getString()
   
   if (mSourcePort.isPrintable())
     {
-    retval << "sourceport=\"" << mSourcePort.getString() << "\" ";
+    retval << "sourceport=\"" << mSourcePort.getConfigString() << "\" ";
     }
   if (mDestPort.isPrintable())
     {
-    retval << "destport=\"" << mDestPort.getString() << "\" ";
+    retval << "destport=\"" << mDestPort.getConfigString() << "\" ";
     }
   if (mLength.isPrintable())
     {
-    retval << "length=\"" << mLength.getString() << "\" ";
+    retval << "length=\"" << mLength.getConfigString() << "\" ";
     }
   if (mChecksum.isPrintable())  
     {
-    retval << "checksum=\"" << mChecksum.getString() << "\" ";
+    retval << "checksum=\"" << mChecksum.getConfigString() << "\" ";
     }
 
-  retval << " />" << flush;
+  if (hasVarAssigns())
+    {
+    retval << ">" << endl << getVarAssignsString();
+    retval << "  </udp>";
+    }
+  else
+    {
+    retval << "/>";
+    }
+  
+  retval << flush;
   return retval.str();
   }
 
@@ -186,12 +196,12 @@ bool Udp::getString(string& stringval, const char* fieldName)
   return false;
   }
 
-ulong Udp::getSize()
+ulong32 Udp::getSize()
   {
   return 8; // See the spec: 5 x 32 bit + options + 2 bytes for the ethertype
   }
 
-ulong Udp::getTailSize()
+ulong32 Udp::getTailSize()
   {
   return 0;
   }
@@ -243,7 +253,7 @@ uchar* Udp::copyTail(uchar* toPtr)
   return toPtr;
   }
 
-bool Udp::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
+bool Udp::analyze_Head(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (!mSourcePort.analyze(fromPtr,remainingSize)) return false;
   if (!mDestPort.analyze(fromPtr,remainingSize)) return false;
@@ -252,7 +262,7 @@ bool Udp::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
   return true;
   }
 
-bool Udp::analyze_Tail(uchar*& fromPtr, ulong& remainingSize)
+bool Udp::analyze_Tail(uchar*& fromPtr, ulong32& remainingSize)
   {
   return true;
   }

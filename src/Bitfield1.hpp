@@ -28,7 +28,7 @@ class Bitfield1: public Bitfield8
     Bitfield1();
     void setOffset(uchar offset) throw (Exception);
     uchar* copyTo(uchar* toPtr);
-    bool analyze(uchar*& fromPtr, ulong& remainingSize); 
+    bool analyze(uchar*& fromPtr, ulong32& remainingSize); 
   };
 
 #endif

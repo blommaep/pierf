@@ -13,6 +13,7 @@
 
 #include <iostream> // for cout and cin
 #include <fstream>
+#include <sstream>
 #include <string.h>
 #include <typeinfo>
 #include "VarContainer.hpp"
@@ -140,7 +141,7 @@ void VarAssignStep::play()
       throw Exception("Use of unexisting variable in variable-assign: " + varName);
       }
     string integerStr = var->getStringValue();
-    ulong integer = textToLong(integerStr.c_str());
+    ulong32 integer = textToLong(integerStr.c_str());
     newValue += longToHexString(integer);
     }
   else if (!strncmp(curPos,"field(",6))
@@ -170,9 +171,35 @@ void VarAssignStep::play()
     }
   else
     {
-    throw Exception ("Syntax error in variable-assing formula (bad start)");
+    throw Exception ("Syntax error in variable-assing formula (bad start: must start with function)");
     }
 
   mVar->setStringValue(newValue.c_str());
+  }
+
+string VarAssignStep::getString() const // return string, no checks
+  {
+  stringstream retval;
+  retval << "<assign-variable ";
+  if (mVar != NULL)
+    {
+    retval << "name=\"" << mVar->getName() << "\" ";
+    }
+  if (mFormula.size() != 0)
+    {
+    retval << "value=\'" << mFormula << "\' ";
+    }
+  retval << "/>" << endl << flush;
+  return retval.str();  
+  }
+
+Var* VarAssignStep::getVar()
+  {
+  return mVar;
+  }
+   
+string VarAssignStep::getFormula()
+  {
+  return mFormula;
   }
 

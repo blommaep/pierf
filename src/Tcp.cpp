@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -118,7 +118,7 @@ void TcpFlags::setDefault(const char* inString) throw (Exception)
     }
   }
 
-string TcpFlags::getStringFromBinary()
+string TcpFlags::getStringFromBinary() const
   {
   bool firstPrinted=false;
   string result;
@@ -194,7 +194,7 @@ string TcpFlags::getStringFromBinary()
   return result;
   }
 
-bool TcpFlags::getStringFromBinary(string& stringval)
+bool TcpFlags::getStringFromBinary(string& stringval) const
   {
   if (hasValue())
     {
@@ -215,8 +215,11 @@ Tcp::Tcp()
   mDestPort.displayDecimal();
   mHeaderLength.displayDecimal();
   mHeaderLength.setOffset(4);
-  mAckNr.setDefault(ulong(0)); // Common default: when no ack, default is 0. 
+  mAckNr.setDefault(ulong32(0)); // Common default: when no ack, default is 0. 
+  mSeqNr.displayDecimal();
+  mAckNr.displayDecimal();
   mWindowSize.setDefault(ushort(0xFFFF)); // Typically used default
+  mWindowSize.displayDecimal();
   mFlags.setDefault(uchar(0x0));
   mUrgentPointer.setDefault(ushort(0x0)); // Rarely used, default=0
   mOptions.setDefault("");
@@ -418,46 +421,56 @@ string Tcp::getString()
   
   if (mSourcePort.isPrintable())
     {
-    retval << "sourceport=\"" << mSourcePort.getString() << "\" ";
+    retval << "sourceport=\"" << mSourcePort.getConfigString() << "\" ";
     }
   if (mDestPort.isPrintable())
     {
-    retval << "destport=\"" << mDestPort.getString() << "\" ";
+    retval << "destport=\"" << mDestPort.getConfigString() << "\" ";
     }
   if (mSeqNr.isPrintable())
     {
-    retval << "sequencenr=\"" << mSeqNr.getString() << "\" ";
+    retval << "sequencenr=\"" << mSeqNr.getConfigString() << "\" ";
     }
   if (mAckNr.isPrintable())
     {
-    retval << "acknowledgenr=\"" << mAckNr.getString() << "\" ";
+    retval << "acknowledgenr=\"" << mAckNr.getConfigString() << "\" ";
     }
   if (mHeaderLength.isPrintable())
     {
-    retval << "headerlength=\"" << mHeaderLength.getString() << "\" ";
+    retval << "headerlength=\"" << mHeaderLength.getConfigString() << "\" ";
     }
   if (mFlags.isPrintable())
     {
-    retval << "flags=\"" << mFlags.getString() << "\" ";
+    retval << "flags=\"" << mFlags.getConfigString() << "\" ";
     }
   if (mWindowSize.isPrintable())
     {
-    retval << "windowsize=\"" << mWindowSize.getString() << "\" ";
+    retval << "windowsize=\"" << mWindowSize.getConfigString() << "\" ";
     }
   if (mUrgentPointer.isPrintable())
     {
-    retval << "urgentpointer=\"" << mUrgentPointer.getString() << "\" ";
+    retval << "urgentpointer=\"" << mUrgentPointer.getConfigString() << "\" ";
     }
   if (mOptions.isPrintable())
     {
-    retval << "options=\"" << mOptions.getString() << "\" ";
+    retval << "options=\"" << mOptions.getConfigString() << "\" ";
     }
   if (mChecksum.isPrintable())  
     {
-    retval << "checksum=\"" << mChecksum.getString() << "\" ";
+    retval << "checksum=\"" << mChecksum.getConfigString() << "\" ";
     }
 
-  retval << " />" << flush;
+  if (hasVarAssigns())
+    {
+    retval << ">" << endl << getVarAssignsString();
+    retval << "  </tcp>";
+    }
+  else
+    {
+    retval << "/>";
+    }
+
+  retval << flush;
   return retval.str();
   }
 
@@ -506,14 +519,14 @@ bool Tcp::getString(string& stringval, const char* fieldName)
   return false;
   }
 
-ulong Tcp::getSize()
+ulong32 Tcp::getSize()
   {
   ushort optionsPlusPadding = mOptions.size();
   optionsPlusPadding = ((optionsPlusPadding + 3) / 4) * 4; //round up to the next multiple of 4
   return 20+optionsPlusPadding; // See the spec: 5 x 32 bit + options
   }
 
-ulong Tcp::getTailSize()
+ulong32 Tcp::getTailSize()
   {
   return 0;
   }
@@ -592,9 +605,9 @@ uchar* Tcp::copyTail(uchar* toPtr)
   return toPtr;
   }
 
-bool Tcp::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
+bool Tcp::analyze_Head(uchar*& fromPtr, ulong32& remainingSize)
   {
-  ulong startingSize = remainingSize; // Need this to calculate the header size
+  ulong32 startingSize = remainingSize; // Need this to calculate the header size
   if (!mSourcePort.analyze(fromPtr,remainingSize)) return false;
   if (!mDestPort.analyze(fromPtr,remainingSize)) return false;
   if (!mSeqNr.analyze(fromPtr,remainingSize)) return false;
@@ -606,14 +619,14 @@ bool Tcp::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
   if (!mWindowSize.analyze(fromPtr,remainingSize)) return false;
   if (!mChecksum.analyze(fromPtr,remainingSize)) return false;
   if (!mUrgentPointer.analyze(fromPtr,remainingSize)) return false;
-  ulong optionSize = (mHeaderLength.getValue()*4) - (startingSize - remainingSize); // signed, to allow <0, eases the loop; (startingSize - remaininSize is the part of the header already analysed, the remaining is option and padding
+  ulong32 optionSize = (mHeaderLength.getValue()*4) - (startingSize - remainingSize); // signed, to allow <0, eases the loop; (startingSize - remaininSize is the part of the header already analysed, the remaining is option and padding
   //tbd: complete option detection and any further option and other field functions
   if (!mOptions.analyze(fromPtr,remainingSize,optionSize)) return false;
 
   return true;
   }
 
-bool Tcp::analyze_Tail(uchar*& fromPtr, ulong& remainingSize)
+bool Tcp::analyze_Tail(uchar*& fromPtr, ulong32& remainingSize)
   {
   return true;
   }

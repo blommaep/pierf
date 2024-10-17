@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,7 +14,9 @@
 
 #include "generics.hpp"
 #include <vector>
+#include <string>
 #include "Seq.hpp"
+#include "SeqRef.hpp"
 #include "Element.hpp"
 
 using namespace std;
@@ -22,13 +24,17 @@ using namespace std;
 class Scene: public AutoObject
   {
   private:
-    vector<Seq*> mParts;
+    vector<PlayStep*> mParts;
     AutoComplete mAuto;
+    string mName;
   public:
     Scene();
     ~Scene();
     void push_back(Seq* seq);
-    void send();
+    void push_back(SeqRef* seqRef);
+    void play();
+    void setName(char* name);
+    string getString() const;
   };
 
 #endif

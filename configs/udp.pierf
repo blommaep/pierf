@@ -1,8 +1,8 @@
 <pierf>
-<port id="broadcom" device="\Device\NPF_{06484B56-54BD-4B23-82A5-FAF3088EBD76}" />
+<port id="broadcom" device="\Device\NPF_{21B29D88-2861-4727-831C-69567EA5E732}"  silent="true" />
 
 <scene id="udp">
-<seq repeat="100000">
+<seq repeat="1000000">
 
 <packet port="broadcom">
 <eth from="02:02:02:02:02:02" to="02:02:02:02:02:03"/>

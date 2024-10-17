@@ -144,7 +144,7 @@ uchar* Ethernet::copyTail(uchar* toPtr)
   return toPtr;
   }
 
-bool Ethernet::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
+bool Ethernet::analyze_Head(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (!mTo.analyze(fromPtr,remainingSize)) return false;
   if (!mFrom.analyze(fromPtr,remainingSize)) return false;
@@ -152,7 +152,7 @@ bool Ethernet::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
   return true;
   }
 
-bool Ethernet::analyze_Tail(uchar*& fromPtr, ulong& remainingSize)
+bool Ethernet::analyze_Tail(uchar*& fromPtr, ulong32& remainingSize)
   {
   return true;
   }
@@ -213,17 +213,28 @@ string Ethernet::getString()
   retval << "<eth ";
   if (mFrom.isPrintable())
     {
-    retval << "from=\"" << mFrom.getString() << "\" ";
+    retval << "from=\"" << mFrom.getConfigString() << "\" ";
     }
   if (mTo.isPrintable())
     {
-    retval << "to=\"" << mTo.getString() << "\" ";
+    retval << "to=\"" << mTo.getConfigString() << "\" ";
     }
   if (mEthertype.isPrintable())
     {
-    retval << "ethertype=\"" << mEthertype.getString() << "\"";
+    retval << "ethertype=\"" << mEthertype.getConfigString() << "\"";
     }
-  retval << "/>" << flush;
+
+  if (hasVarAssigns())
+    {
+    retval << ">" << endl << getVarAssignsString();
+    retval << "  </eth>";
+    }
+  else
+    {
+    retval << "/>";
+    }
+  
+  retval << flush;
   return retval.str();
   }
 
@@ -244,12 +255,12 @@ bool Ethernet::getString(string& stringval, const char* fieldName)
   return false;
   }
 
-ulong Ethernet::getSize()
+ulong32 Ethernet::getSize()
   {
   return 14; // 2 x mac address + ethertype
   }
 
-ulong Ethernet::getTailSize()
+ulong32 Ethernet::getTailSize()
   {
   return 0;
   }

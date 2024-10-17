@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -8,41 +8,46 @@
 
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef VARASSIGNSTEP_PREDECL__
-#define VARASSIGNSTEP_PREDECL__
 
-// Pre declaration may be needed due to bidirectional include
-class VarAssignStep;
+#include "SeqRef.hpp"
 
-#endif
+#include <iostream> // for cout and cin
+#include <fstream>
+#include <sstream>
+#include <typeinfo>
 
-#ifndef VARASSIGNSTEP_HPP__
-#define VARASSIGNSTEP_HPP__
-
-#include "generics.hpp"
-#include "PlayStep.hpp"
-#include "Var.hpp"
-#include "Element.hpp"
-
-using namespace std;
-
-class VarAssignStep: public PlayStep
+void SeqRef::setSeq(Seq* seq)
   {
-  private:
-    Var* mVar;
-    string mFormula;
-    Element* mElement;
-  public:
-    VarAssignStep();
-    ~VarAssignStep();
-    void setVar(const char* varName) throw (Exception);
-    void setFormula(const char* formula);
-    void setElement(Element* element); // optional: only for assings part of a packet layer
-    void copyFormula(VarAssignStep* other);
-    void play();
-    string getString() const; // return string, no checks
-    Var* getVar();
-    string getFormula();
-  };
+  mSeq = seq;
+  }
 
-#endif
+
+void SeqRef::play()
+  {
+  mSeq->play();
+  }
+
+int SeqRef::size()
+  {
+  return mSeq->size();
+  }
+
+
+bool SeqRef::isRef()
+  {
+  return true;
+  }
+
+string SeqRef::getString() const
+  {
+  stringstream retval;
+  retval << "<seq ";
+
+  retval << "ref=\"" << mSeq->getName() << "\" ";
+
+  retval << "/>" << endl << flush;
+
+  return retval.str();
+  }
+
+

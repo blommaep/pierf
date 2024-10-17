@@ -100,7 +100,7 @@ void IpProtocol::setDefault(const char* inString) throw (Exception)
     }
   }
 
-string IpProtocol::getString()
+string IpProtocol::getString() const
   {
   if (mData == 0x01)
     {
@@ -122,7 +122,7 @@ string IpProtocol::getString()
   return Bitfield8::getString();
   }
 
-bool IpProtocol::getString(string& stringval)
+bool IpProtocol::getString(string& stringval) const
   {
   if (hasValue())
     {
@@ -132,4 +132,7 @@ bool IpProtocol::getString(string& stringval)
   return false;
   }
 
-
+string IpProtocol::getStringFromBinary() const
+  {
+  return getString();
+  }

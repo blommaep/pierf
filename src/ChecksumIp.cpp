@@ -42,7 +42,7 @@ void ChecksumIp::addToSum(uchar* start, uchar* stop)
   }
 
 
-void ChecksumIp::addToSum(ulong val)
+void ChecksumIp::addToSum(ulong32 val)
   {
   uchar* tmp = (uchar*) &val;
   addToSum(tmp,tmp+4);

@@ -36,13 +36,13 @@ class Element: public AutoObject
     virtual bool copyVar() throw (Exception) = 0; // Copy head (in network order)
     virtual uchar* copyTo(uchar* toPtr) = 0; // Copy head (in network order)
     virtual uchar* copyTail(uchar* toPtr) = 0; // Copy tail, if there is any
-    virtual bool analyze_Head(uchar*& fromPtr, ulong& remainingSize) = 0; // Analyze incoming packet, header part
-    virtual bool analyze_Tail(uchar*& fromPtr, ulong& remainingSize) = 0; // Analyze incoming packet, tailer part: analyzeTail must no take its input from fromPotr, but backward from fromPtr+remainingSize (- analyzed size). It must equally decrement remainingSize.
+    virtual bool analyze_Head(uchar*& fromPtr, ulong32& remainingSize) = 0; // Analyze incoming packet, header part
+    virtual bool analyze_Tail(uchar*& fromPtr, ulong32& remainingSize) = 0; // Analyze incoming packet, tailer part: analyzeTail must no take its input from fromPotr, but backward from fromPtr+remainingSize (- analyzed size). It must equally decrement remainingSize.
     virtual Element* analyze_GetNextElem() = 0; // After analyze_Head,give the next Element (layer). Return NULL if none could be identified
     virtual string getString() = 0; // Get the xml string representing the elem
     virtual bool getString(string& stringval, const char* fieldName) = 0; // return the value in string format
-    virtual ulong getSize() = 0; // Size of the head part in the actual packet in bytes
-    virtual ulong getTailSize() = 0; // Size of the tail part in the actual packet in bytes
+    virtual ulong32 getSize() = 0; // Size of the head part in the actual packet in bytes
+    virtual ulong32 getTailSize() = 0; // Size of the tail part in the actual packet in bytes
     virtual bool checkComplete() = 0; // Confirm if the Element is complete
     virtual bool tryComplete(ElemStack& stack) = 0; // Try to complete the element
     virtual string whatsMissing() = 0; // Print what fields are missing
@@ -51,6 +51,8 @@ class Element: public AutoObject
     virtual Element* getNewBlank() = 0; // Must return a new Element of the same type (e.g Ethernet must return Ethernet* (pointing to a brand new Ethernet instance),...)
     VarAssignStep* getNewVarAssignStep();
     void playVarAssigns(Element* receivedElem); 
+    bool hasVarAssigns() const;
+    string getVarAssignsString() const;
   };
 
 #endif

@@ -1,4 +1,4 @@
-// Copyright (c) 2006, Pieter Blommaert
+// Copyright (c) 2006-2011, Pieter Blommaert
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,19 +25,22 @@ class Seq: public PlayStep
   private:
     vector<PlayStep*> mPlaySteps;
     AutoComplete mAuto;
-    ulong mRepeat; 
+    ulong32 mRepeat; 
     string mName;
+    bool mFirstPrint;
   public:
     Seq();
     ~Seq();
     void push_back(Packet& packet);
     void push_back(PlayStep* playstep);
     void setRepeat(char* repeat) throw (Exception);
-    void send(); // depreciated. use play()
     void play();
     void setName(char* name);
     bool isRef();
+    string getName();
     int size();
+    string getString() const;
+    string getSeqElementsString() const;
   };
 
 #endif

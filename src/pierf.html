@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
+
 <meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Pierf main documentation page</title>
 
 <style type="text/css">
@@ -26,9 +27,7 @@ border-width: 2;
 padding: 0.4em;
 vertical-align: top;
 }
-</style>
-</head>
-<body>
+</style></head><body>
 <h1>pierf main documentation</h1>
 <h2>Intro</h2>
 pierf is an advanced packet simulation tool. In basics, it can easily
@@ -1065,7 +1064,7 @@ A. Overview of supported tags</h2>
 <th colspan="4">Control tags</th>
 </tr>
 <tr>
-<td colspan="1" rowspan="52"><br>
+<td colspan="1" rowspan="55"><br>
 <br>
 <br>
 <br>
@@ -1095,7 +1094,7 @@ that executing on another PC only requires to change the port
 definition(s) to send them on the ethernet ports available on that PC.</td>
 </tr>
 <tr>
-<td colspan="1" rowspan="7"><br>
+<td colspan="1" rowspan="8"><br>
 </td>
 <td>id</td>
 <td>The name by which to reference the port later</td>
@@ -1110,17 +1109,18 @@ from.</td>
 <tr>
 <td>infile</td>
 <td>Filename of the input file. Will read packets from that
-file rather then from the device.</td>
+file rather then from the device. Can be combined with either a device
+or a file for "sending" packets. Cf. resp. outdevice or outfile
+attributes.</td>
 </tr>
-<tr>
+<tr><td>outdevice</td><td>The device name for files of type inFileOutDevice.</td></tr><tr>
 <td>outfile</td>
 <td>Filename of the output file. Will write packets to that
 file rather then to send them on the device.</td>
 </tr>
 <tr>
 <td>type</td>
-<td>Types can be device, files, inFileOutDevice,
-inDeviceOutFile, loopback. Only in case of loopback, this type is
+<td>Types can be device, files, inFileOutDevice, loopback. Only in case of loopback, this type is
 relevant. In any other case, it is automatically detected from the
 other arguments and is ignored. For a loopback interface you must
 specify only the outfile.</td>
@@ -1185,7 +1185,12 @@ variables may not change value during execution. The effect of using
 non const string values is a small delay for re-evaluation before
 transmission of a packet that uses the variable.</td>
 </tr>
-<tr>
+<tr><td><br>
+</td><td>value</td><td>Only allowed for string variables (not
+for counters). Give a starting value. Neccessary to provide for
+constant string variables. For non constant string variables, it may
+also be necessary for initial parsing to provide a syntactical correct
+initial value.</td></tr><tr>
 <td colspan="2" rowspan="1"><a name="counter"></a>counter</td>
 <td>Do something with a counter. What is done is defined by
 the option action="...". The tag can be part of a sequence
@@ -1440,6 +1445,14 @@ mirror packet.</td>
 <td colspan="2" rowspan="1"><a name="print"></a>print</td>
 <td>Print the recieved packet in xml format.</td>
 </tr>
+    <tr>
+      <td colspan="2" rowspan="1" style="vertical-align: top;"><a name="text"></a>text<br>
+      </td>
+      <td style="vertical-align: top;">Takes no options. Any text
+between &lt;text&gt; and &lt;/text&gt; is printed to the screen. Has no
+function other then logging/progress indications.<br>
+      </td>
+    </tr>
 <tr>
 <td colspan="2" rowspan="1"><a name="play"></a>play</td>
 <td>Effectively execute a given scene.</td>

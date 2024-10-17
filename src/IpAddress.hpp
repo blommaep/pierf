@@ -25,7 +25,7 @@ class IpAddress: public Field
     typedef union 
       {
       uchar chars[4];
-      ulong whole;
+      ulong32 whole;
       } u_fourBytes;
 
     u_fourBytes mAddress;
@@ -35,12 +35,12 @@ class IpAddress: public Field
     void setDefault(const char* inString) throw (Exception);
     void setManualFromValue(const char* inString) throw (Exception);
     void setAuto(const char* inString) throw (Exception);
-    ulong getAddress();
+    ulong32 getAddress();
     string getStringFromBinary() const;
     bool getStringFromBinary(string& stringval) const;
     uchar* copyTo(uchar* toPtr);
-    uchar* copyTo(ulong* toPtr);
-    bool analyze(uchar*& fromPtr, ulong& remainingSize); 
+    uchar* copyTo(ulong32* toPtr);
+    bool analyze(uchar*& fromPtr, ulong32& remainingSize); 
     bool match(IpAddress& other);
   };
 

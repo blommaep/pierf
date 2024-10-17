@@ -23,6 +23,7 @@ class Var
     virtual void setStringValue(const char* inString) throw (Exception) = 0;
     // Get the value in string format (this is the most generic way, possibly the only way that can be really common to all variables)
     virtual string getStringValue() = 0;
+    virtual string getString() const = 0;
     void setConst(bool isConst);
     bool isConst();
   };

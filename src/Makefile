@@ -1,4 +1,4 @@
-# Makefile for cygwin gcc
+# Makefile for cygwin gcc // ubunutu 
 # Copyright (c) 2006, Pieter Blommaert
 # All rights reserved.
 #
@@ -41,7 +41,7 @@ LIBS= ${EXPAT_ROOT}/.libs/libexpat.a ${ZTHREAD_LIB} ${PCRE_LIB}
 ifeq ($(OSTYPE),CYGWIN_NT)
 LIBS += ${PCAP_PATH}/libwpcap.a 
 else
-LIBS += ${PCAP_PATH}/libpcap.a
+LIBS += ${PCAP_PATH}/libpcap.a ${PCAP_PATH}/libpfring.a
 endif
 #CCC=g++
 
@@ -92,8 +92,10 @@ PIERFDEPENDS := ${patsubst %.o,%.d,${PIERFOBJS}}
 
 ifeq ($(OSTYPE),CYGWIN_NT)
 PIERFEXE := pierf.exe
+QUICKEXE := quickCount.exe
 else
 PIERFEXE := pierf
+QUICKEXE := quickCount
 endif
 
 define PIERF_MAKE_EXE
@@ -110,6 +112,11 @@ threadTest.exe: threadTest.cpt
 	cp threadTest.cpt ${OBJPATH}/threadTest.cpp
 	${CXX} ${CFLAGS} -c -o ${OBJPATH}/threadTest.o ${OBJPATH}/threadTest.cpp
 	${LINK} -g -o threadTest.exe ${OBJPATH}/threadTest.o ${LIBS}
+
+${QUICKEXE}: ${OBJPATH}/quickCount.o ${OBJPATH}/Counter.o ${OBJPATH}/Var.o ${OBJPATH}/generics.o ${OBJPATH}/generics_pp.o ${OBJPATH}/Exception.o
+	echo Building quickCount for ${OSTYPE}.
+	${LINK} -g -o ${QUICKEXE} ${OBJPATH}/quickCount.o ${OBJPATH}/Counter.o ${OBJPATH}/Var.o ${OBJPATH}/generics.o ${OBJPATH}/generics_pp.o ${OBJPATH}/Exception.o ${LIBS}
+	
 
 objs/released:
 	mkdir -p objs/released
@@ -130,7 +137,7 @@ released: commit clean ${PIERFEXE} count
 	echo ${TOOLVERS} > lastReleasedVersion.txt
 	/usr/bin/zip pierf.zip ${PIERFEXE} pierf.html license.txt Readme.txt configs/*
 	rm -f pierf_sources.zip
-	/usr/bin/zip pierf_sources.zip $(wildcard *.cpp) $(wildcard *.c) $(wildcard *.hpp) $(wildcard *.h) Makefile license.txt lastReleasedVersion.txt pierf.html Readme.txt configs/* lib/Makefile lib/ZThread-2.3.2.patch $(wildcard configs/*)
+	/usr/bin/zip pierf_sources.zip $(wildcard *.cpp) $(wildcard *.c) $(wildcard *.hpp) $(wildcard *.h) Makefile license.txt lastReleasedVersion.txt pierf.html Readme.txt quickCount.sources/* configs/* lib/Makefile lib/ZThread-2.3.2.patch $(wildcard configs/*)
 ifeq ($(OSTYPE),CYGWIN_NT)
 	svn commit -m "Update pierf.zip/pierf_sources.zip for released version"
 endif
@@ -170,6 +177,9 @@ ${OBJPATH}/%.o : %.c;
 
 ${OBJPATH}/%.o : %.cpp;
 	${CXX} ${CFLAGS} -c -o ${OBJPATH}/$*.o $<
+
+${OBJPATH}/quickCount.o : quickCount.sources/quickCount.cpp;
+	${CXX} ${CFLAGS} -c -o ${OBJPATH}/quickCount.o quickCount.sources/quickCount.cpp
 
 #From the gnu manual chapter 4.14: Automatic dependency list generation from the source (include statements)
 #Must be on one line for the temp filename $$ to be identical

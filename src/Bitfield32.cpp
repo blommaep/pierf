@@ -23,11 +23,11 @@ Bitfield32::Bitfield32()
 
 void Bitfield32::stringToVal(const char* inString) throw (Exception)
   {
-  ulong temp = textToLong(inString);
-  setVal((ulong) temp);
+  ulong32 temp = textToLong(inString);
+  setVal((ulong32) temp);
   }
   
-void Bitfield32::setVal(ulong val) throw (Exception)
+void Bitfield32::setVal(ulong32 val) throw (Exception)
   {
   mData = val;
   // no exception/checks. This is merely here for easing enherited classes to overload the setVal
@@ -51,19 +51,19 @@ void Bitfield32::setAuto(const char* inString) throw (Exception)
   wasAutoSet();
   }
 
-void Bitfield32::setDefault(const ulong inValue) throw (Exception)
+void Bitfield32::setDefault(const ulong32 inValue) throw (Exception)
   {
   setVal(inValue);
   wasDefaulted();
   }
 
-void Bitfield32::setManualFromValue(const ulong inValue) throw (Exception)
+void Bitfield32::setManualFromValue(const ulong32 inValue) throw (Exception)
   {
   setVal(inValue);
   wasManuallySet();
   }
    
-void Bitfield32::setAuto(const ulong inValue) throw (Exception)
+void Bitfield32::setAuto(const ulong32 inValue) throw (Exception)
   {
   setVal(inValue);
   wasAutoSet();
@@ -112,7 +112,7 @@ bool Bitfield32::getStringFromBinary(string& stringval) const
   return false;
   }
   
-ulong Bitfield32::getValue()
+ulong32 Bitfield32::getValue()
   {
   return mData;
   }
@@ -129,19 +129,19 @@ bool Bitfield32::operator!=(unsigned int value)
 
 uchar* Bitfield32::copyTo(uchar* toPtr)
   {
-  ulong* tmp = (ulong*) toPtr;
-  *tmp++ = htonl(mData);
+  ulong32* tmp = (ulong32*) toPtr;
+  *tmp++ = htonl32(mData);
   return (uchar*) tmp;
   }
 
-bool Bitfield32::analyze(uchar*& fromPtr, ulong& remainingSize)
+bool Bitfield32::analyze(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (remainingSize < 4)
     {
     return false;
     }
   
-  mData = ntohl(* (ulong*) fromPtr);
+  mData = ntohl32(* (ulong32*) fromPtr);
   fromPtr += 4;
   remainingSize -= 4;
   wasCaptured();

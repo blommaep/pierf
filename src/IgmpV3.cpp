@@ -253,34 +253,37 @@ string IgmpV3::getTypeString()
 string IgmpV3::getString()
   {
   stringstream retval;
-  retval << "<igmp version=\"3\" type=\"";
-  retval << getTypeString();
-  retval << "\"";
+  retval << "<igmp version=\"3";
+
+  if (mType.isPrintable())
+    {
+    retval <<  "\" type=\"" << getTypeString();
+    }
   if (mMcastIp.isPrintable())
     {
-    retval << " to=\"" << mMcastIp.getString();
+    retval << "\" to=\"" << mMcastIp.getConfigString();
     }
 
   // the Query fields
   if (mResponseTime.isPrintable())
     {
-    retval << "\" responsetime=\"" << mResponseTime.getString();
+    retval << "\" responsetime=\"" << mResponseTime.getConfigString();
     }
   if (mSFlag.isPrintable())
     {
-    retval << "\" sflag=\"" << mSFlag.getString();
+    retval << "\" sflag=\"" << mSFlag.getConfigString();
     }
   if (mQrv.isPrintable())
     {
-    retval << "\" qrv=\"" << mQrv.getString();
+    retval << "\" qrv=\"" << mQrv.getConfigString();
     }
   if (mQqic.isPrintable())
     {
-    retval << "\" qqic=\"" << mQqic.getString();
+    retval << "\" qqic=\"" << mQqic.getConfigString();
     }
   if (mNrRecords.isPrintable())
     {
-    retval << "\" nrrecords=\"" << mNrRecords.getString();
+    retval << "\" nrrecords=\"" << mNrRecords.getConfigString();
     }
 
   retval << "\"";
@@ -291,7 +294,7 @@ string IgmpV3::getString()
     vector<IpAddress>::iterator iter;
     for (iter = mSourceList.begin();iter != mSourceList.end();iter++)
       {
-      retval << "  <source address=\"" << iter->getString() <<"\" />" << endl;
+      retval << "  <source address=\"" << iter->getConfigString() <<"\" />" << endl;
       }
     
     retval << "</igmp>" << endl;
@@ -305,11 +308,25 @@ string IgmpV3::getString()
       IgmpGroupRec* rec = *iter;
       retval << "  " << rec->getString();
       }
-    retval << "</igmp>" << endl;
+
+    if (hasVarAssigns())
+      {
+      retval << ">" << endl << getVarAssignsString();
+      }
+
+    retval << "  </igmp>" << endl;
     }
   else
     {
-    retval << "/>";
+    if (hasVarAssigns())
+      {
+      retval << ">" << endl << getVarAssignsString();
+      retval << "  </igmp>";
+      }
+    else
+      {
+      retval << "/>";
+      }
     }
 
   // tbd: currently not possible to query for igmp sources because for that to work, each tag must match an "Element" object, so we should create a class IgmpV3SourceRec class. In fact, the coupling of both source and group records with the igmpv3 class should be loosened and the nrRecords should be filled via the autocompletion technique.
@@ -365,7 +382,7 @@ bool IgmpV3::getString(string& stringval, const char* fieldName)
   return false;
   }
 
-ulong IgmpV3::getSize()
+ulong32 IgmpV3::getSize()
   {
   if (mType.getValue() == 0x11) // query
     {
@@ -373,7 +390,7 @@ ulong IgmpV3::getSize()
     }
   else if (mType.getValue() == 0x22) // report
     {
-    ulong size = 8;
+    ulong32 size = 8;
     vector<IgmpGroupRec*>::iterator iter;
     for (iter = mGroupList.begin();iter != mGroupList.end();iter++)
       {
@@ -385,7 +402,7 @@ ulong IgmpV3::getSize()
   return 8;
   }
 
-ulong IgmpV3::getTailSize()
+ulong32 IgmpV3::getTailSize()
   {
   return 0;
   }
@@ -494,7 +511,7 @@ uchar* IgmpV3::copyTail(uchar* toPtr)
   return toPtr;
   }
 
-bool IgmpV3::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
+bool IgmpV3::analyze_Head(uchar*& fromPtr, ulong32& remainingSize)
   {
   if (remainingSize <1)
     {
@@ -561,7 +578,7 @@ Element* IgmpV3::analyze_GetNextElem()
   }
 
 
-bool IgmpV3::analyze_Tail(uchar*& fromPtr, ulong& remainingSize)
+bool IgmpV3::analyze_Tail(uchar*& fromPtr, ulong32& remainingSize)
   {
   return true;
   }
