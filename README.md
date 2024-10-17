@@ -7,8 +7,8 @@ The source was maintained on sourceforge until release 0.137.0 - some binaries u
 # ToC
 + [Legal Notice](#legal-notice)
 + [Introduction](#introduction)
-+ [Very brief summary of packet layers] (very-brief-summary-of-packet-layers)
-+ [Sending a basic packet] (#sending-a-basic-packet)
++ [Very brief summary of packet layers](#very-brief-summary-of-packet-layers)
++ [Sending a basic packet](#sending-a-basic-packet)
 
 # Legal Notice
 
@@ -111,5 +111,5 @@ Clarification of the above example:
 
 # Further manuals and help
 
-See [pierf.html] (pierf.html)
+See [pierf.html](pierf.html)
 
