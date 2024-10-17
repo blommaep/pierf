@@ -1,0 +1,27 @@
+<pierf>
+<port id="broadcom" device="\Device\NPF_{06484B56-54BD-4B23-82A5-FAF3088EBD76}" />
+<var type="string" id="$eth1" value="12:34:56:22:22:22" />
+<var type="string" id="$eth2" value="6a:00:1c:c1:b6:00" />
+
+<scene id="test">
+<seq repeat="10">
+
+<!-- LOOPBACK MESSAGE --> 
+<packet port="broadcom">
+<eth from="$eth1" to="$eth2" />
+<vlans stack="10/5" bodyEthertype="0x8902" />
+<!-- highest 3 bits of first byte: level, second byte: opcode (LBM=03) -->
+<raw>a0 03</raw>
+<!-- LBM PDU header -->
+<raw>00 04 00 00 00 0e</raw>
+<!-- LBM TLV: sender id 0, end TLV and padding -->
+<raw>01 00 01 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00</raw>
+</packet>
+
+</seq>
+</scene>
+
+<play scene="test" />
+</pierf>

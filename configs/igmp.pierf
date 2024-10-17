@@ -1,0 +1,30 @@
+<pierf>
+<port id="broadcom" device="\Device\NPF_{F8C7658E-8536-4DA1-BC85-F2EC10B37656}" />
+
+<scene id="igmp">
+<seq repeat="500">
+
+<!-- general query -->
+<packet port="broadcom">
+<eth from="02:02:02:02:02:03"/>
+<vlans stack="402" />
+<iphdr from="192.168.10.1" packetid="1"/>
+<igmp version="2" type="query" to="0.0.0.0"/>
+</packet>
+
+<!-- Sleep 60 seconds, then repeat the query -->
+<sleep millisec="60000" />
+
+<!-- specific query
+<packet port="broadcom">
+<eth from="02:02:02:02:02:03" to="01:00:5E:01:01:01"/>
+<vlans stack="103/4"></vlans>
+<iphdr from="192.168.103.3" to="224.1.1.1" protocol="igmp" contentlength="8" options="94:04:00:00"/>
+<igmp version="2" type="query" to="224.1.1.1"/>
+</packet>
+-->
+</seq>
+</scene>
+
+<play scene="igmp" />
+</pierf>

@@ -1,0 +1,29 @@
+<pierf>
+<port id="filesample" infile="igmp.cap" outfile="filesample.cap" realtime="no" />
+
+<scene id="igmp">
+<seq repeat="5">
+
+<!-- general query -->
+<packet port="filesample">
+<eth from="02:02:02:02:02:03"/>
+<vlans stack="402" />
+<iphdr from="192.168.10.1" packetid="1"/>
+<igmp version="2" type="query" to="0.0.0.0"/>
+</packet>
+
+<!-- specific query
+<packet port="filesample">
+<eth from="02:02:02:02:02:03" to="01:00:5E:01:01:01"/>
+<vlans stack="103/4"></vlans>
+<iphdr from="192.168.103.3" to="224.1.1.1" protocol="igmp" contentlength="8" options="94:04:00:00"/>
+<igmp version="2" type="query" to="224.1.1.1"/>
+</packet>
+-->
+</seq>
+</scene>
+
+<log port="filesample" file="logsample.cap" />
+
+<play scene="igmp" />
+</pierf>

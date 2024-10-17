@@ -1,0 +1,21 @@
+<pierf>
+<port id="filesample" infile="igmp.cap" outfile="filesample.cap" realtime="yes"  silent="true" />
+
+<shaper id="slow" rate="1fps" />
+
+<scene id="rawTest">
+<seq repeat="2">
+
+<seq repeat="100">
+<packet port="filesample" shaper="slow">
+<eth to="12:34:56:78:9:ab" from="CD EF AB cd ef ff" ethertype="0x0000"/>
+<raw filler="0:1:2:3:4:5:6:7:8:9" size="986">0:1:2:3:4:5:6:7:8:9 />
+</raw>
+</packet>
+</seq>
+</seq>
+
+</scene>
+
+<play scene="rawTest" />
+</pierf>

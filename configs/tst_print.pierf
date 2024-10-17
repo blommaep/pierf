@@ -1,0 +1,15 @@
+<pierf>
+<port id="filesample2" infile="filesample.cap" outfile="filesample2.cap" realtime="yes" />
+
+<scene id="test">
+<seq repeat="8">
+
+<receive port="filesample2">
+<print />
+</receive>
+
+</seq>
+</scene>
+
+<play scene="test" />
+</pierf>

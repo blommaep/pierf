@@ -1,0 +1,95 @@
+<pierf>
+<include file="ports.pieri" />
+
+<var type="string" id="$eth1" value="CD:EF:AB:CD:EF:FF" />
+<var type="string" id="$hex1" value="0x1000" />
+<var type="string" id="$hex2" value="0x8100" />
+<var type="string" id="$hex3" value="0x50" />
+<var type="string" id="$num1" value="10" />
+<var type="string" id="$num2" value="2" />
+<var type="string" id="$num3" value="0" />
+<var type="string" id="$num4" value="8500" />
+<var type="string" id="$ip1" value="10.10.10.01" />
+<var type="string" id="$igmp" value="igmp" />
+<var type="string" id="$query" value="query" />
+<var type="string" id="$req" value="req" />
+<var type="string" id="$echoRequest" value="echoRequest" />
+
+<scene id="main">
+<seq>
+
+<text>This config is similar to tst_print_prepare but using variable to as much extent as possible in order to verify all protocols against the use of variable. The resulting packets may be rather stupid, as focus is fully on the variable handling.
+</text>
+
+<packet port="filesample">
+  <eth from="$eth1" to="$eth1" ethertype="$hex1"/>
+  <vlans stack="$num1" bodyEthertype="$hex1" vlanEthertype="$hex2" />
+  <raw>12:34:56:78:09:AB:CD:EF:AB:CD:EF:12:34:56:78:09</raw>
+</packet>
+
+<packet port="filesample">
+  <eth from="$eth1" to="$eth1"/>
+  <vlans stack="$num1" vlanEthertype="$hex2" />
+  <iphdr from="$ip1" to="$ip1" protocol="$igmp" packetid="$num1" contentlength="$num1" options="94:04:00:00" />
+  <igmp version="$num2" type="$query" responsetime="$num1" to="$ip1" />
+</packet>
+
+
+<packet port="filesample">
+  <eth from="02:02:02:02:02:03" to="01:00:5E:00:00:01" ethertype="0x8100"/>
+  <vlans stack="701" bodyEthertype="0x0800" />
+  <iphdr from="192.168.10.1" to="224.0.0.1" protocol="igmp" contentlength="20" packetid="1" ttl="$num1" options="$eth1" />  
+  <igmp version="3" type="$query" to="$ip1" responsetime="$hex3" sflag="$num3" qrv="$num2" qqic="$hex3">
+    <source address="$ip1" />
+    <source address="$ip1" />
+  </igmp>
+</packet>
+
+<!-- igmp v3 report -->
+<packet port="filesample">
+  <eth from="02:02:02:02:02:03" to="01:00:5E:00:00:01" ethertype="0x8100"/>
+  <vlans stack="701" bodyEthertype="0x0800" />
+  <iphdr from="192.168.10.1" to="224.0.0.1" protocol="igmp" contentlength="24" packetid="1" ttl="1" options="94:04:00:00" />
+  
+  <igmp version="3" type="report">
+  <group type="include" to="$ip1">
+  <source address="$ip1" />
+  <source address="$ip1" />
+</group>
+</igmp>
+</packet>
+
+<packet port="filesample">
+  <eth from="02:02:02:02:02:02" to="02:02:02:02:02:03" ethertype="0x8100"/>
+  <vlans stack="243/4" bodyEthertype="0x0800" />
+  <iphdr from="192.168.103.3" to="192.168.103.4" protocol="udp" contentlength="16" packetid="1" ttl="128" options="" />
+  <udp sourceport="$num4" destport="$num4" length="16" checksum="$hex1"  />
+  <raw>01:23:45:67:89:AB:CD:EF</raw>
+</packet>
+
+<!-- Arp request and reply -->
+<packet port="filesample">
+  <eth from="02:02:02:02:02:02" to="FF:FF:FF:FF:FF:FF" ethertype="0x8100"/>
+  <vlans stack="700:120" bodyEthertype="0x0806" />
+  <arp type="$req" fromMac="$eth1" toMac="$eth1" fromIp="$ip1" toIp="$ip1" />
+</packet>
+
+<packet port="filesample">
+  <eth from="02:02:02:02:02:03" to="02:02:02:02:02:02" ethertype="0x8100"/>
+  <vlans stack="700:120" bodyEthertype="0x0806" />
+  <arp type="rep" fromMac="$eth1" toMac="$eth1" fromIp="$ip1" toIp="$ip1" />
+</packet>
+
+<packet port="filesample">
+  <eth from="02:02:02:02:02:03" to="00:13:21:61:3D:F2" ethertype="0x8100"/>
+  <vlans stack="333:2" bodyEthertype="0x0800" />
+  <iphdr from="192.168.10.2" to="192.168.10.5" protocol="icmp" contentlength="18" packetid="1" ttl="128" options="" />
+  <icmp type="$echoRequest" code="$num3" checksum="$hex2" identifier="$num3" sequencenr="$num3" />
+  <raw>12:34:56:78:09:AB:CD:EF:AB:CD:EF:12:34:56:78:09</raw>
+</packet>
+
+</seq>
+</scene>
+
+<play scene="main" />
+</pierf>

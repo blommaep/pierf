@@ -1,0 +1,28 @@
+<pierf>
+<include file="ports.pieri" />
+
+<scene id="rawTest">
+<seq repeat="1">
+
+<seq repeat="3">
+<packet port="filesample">
+<eth to="12:34:56:78:9:ab" from="CD EF AB cd ef ff" ethertype="0x0000"/>
+<raw>12:3456 78 
+:9:ab:CD:EF
+AB cd!ef:
+12345678
+9
+</raw>
+</packet>
+</seq>
+
+<packet port="filesample">
+<eth to="12:34:56:78:9:ab" from="CD EF AB cd ef ff" ethertype="0x0000"/>
+<raw filler="0:1:2:3:4:5:6:7:8:9" size="33">0:1:2:3:4:5:6:7:8:9
+</raw>
+</packet>
+</seq>
+</scene>
+
+<play scene="rawTest" />
+</pierf>

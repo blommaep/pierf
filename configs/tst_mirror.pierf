@@ -1,0 +1,14 @@
+<pierf>
+<port id="filesample" infile="filesample.cap" outfile="filesample2.cap" realtime="yes" />
+
+<scene id="igmp">
+<seq repeat="5">
+<receive port="filesample">
+<mirror port="filesample" /> <!-- Same port. Can only be done with file ports -->
+</receive>
+
+</seq>
+</scene>
+
+<play scene="igmp" />
+</pierf>

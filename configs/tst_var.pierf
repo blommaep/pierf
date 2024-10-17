@@ -1,0 +1,43 @@
+<pierf>
+<include file="ports.pieri" />
+
+<var type="counter" id="$counter1" />
+<var type="string" id="$eth1" value="12:34:56:78:9:ab" />
+<var type="string" id="$eth2" value="12:34:56:78:9:00" />
+<var type="string" id="$change" value="00:00" const="no" />
+<var type="string" id="$hexCounter" value="0" const="no" />
+<var type="counter" id="$size" />
+
+<scene id="test">
+<seq>
+<counter ref="$counter1" action="reset" />
+<counter ref="$size" action="reset" value="200"/>
+
+<seq repeat="5">
+
+<assign-variable name="$hexCounter" value='hex($size)' />
+
+<packet port="filesample">
+<eth to="$eth1" from="$eth2" ethertype="$counter1"/>
+<raw size="984" filler="$change"></raw>
+</packet>
+
+<packet port="filesample">
+<eth to="$eth2" from="$eth1" ethertype="0x0000"/>
+<raw size="$size" filler="0:1:2:3:4:5:6:7:8:9"></raw>
+</packet>
+
+<assign-variable name="$change" value='concat("0:1:2:3:4:5:6:7:8:9:",$eth1,":",$eth2,":",$hexCounter)' />
+<counter ref="$counter1" action="increment" />
+<counter ref="$size" action="increment" value="100" />
+
+</seq>
+
+<counter ref="$counter1" action="report" />
+
+</seq>
+
+</scene>
+
+<play scene="test" />
+</pierf>

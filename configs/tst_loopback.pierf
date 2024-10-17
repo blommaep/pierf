@@ -1,0 +1,546 @@
+<pierf>
+<port id="loopback" type="loopback" outfile="loopback.cap" silent="true"/>
+
+<var id="$eth1" type="string" const="no" value="00:00:00:00:00:00" />
+<var id="$eth2" type="string" const="no" value="00:00:00:00:00:00" />
+<var id="$eth3" type="string" const="no" value="00:00:00:00:00:00" />
+<var id="$eth4" type="string" const="no" value="00:00:00:00:00:00" />
+<var id="$ethertype1" type="string" const="no" value="0x0" />
+<var id="$ethertype2" type="string" const="no" value="0x0" />
+<var id="$stack1" type="string" const="no" value="0" />
+<var id="$ip1" type="string" const="no" value="125.125.125.125" />
+<var id="$ip2" type="string" const="no" value="125.125.125.125" />
+<var id="$ip3" type="string" const="no" value="125.125.125.125" />
+<var id="$protocol1" type="string" const="no" value="icmp" />
+<var id="$packetid1" type="string" const="no" value="0" />
+<var id="$contentlength1" type="string" const="no" value="99" />
+<var id="$options1" type="string" const="no" value="CD:40" />
+<var id="$igmpversion1" type="string" const="no" value="2" />
+<var id="$responsetime1" type="string" const="no" value="0" />
+<var id="$igmptype1" type="string" const="no" value="report" />
+<var id="$sflag1" type="string" const="no" value="0x01" />
+<var id="$qrv1" type="string" const="no" value="0x0" />
+<var id="$qqic1" type="string" const="no" value="0x0" />
+<var id="$ttl1" type="string" const="no" value="20" />
+<var id="$udpport1" type="string" const="no" value="20" />
+<var id="$udpport2" type="string" const="no" value="20" />
+<var id="$udplength1" type="string" const="no" value="20" />
+<var id="$checksum1" type="string" const="no" value="20" />
+<var id="$arptype1" type="string" const="no" value="rep" />
+<var id="$raw1" type="string" const="no" value="00:11:22:33" />
+<var id="$icmpType1" type="string" const="no" value="0" />
+<var id="$icmpCode1" type="string" const="no" value="9" />
+<var id="$identifier1" type="string" const="no" value="9" />
+<var id="$sequencenr1" type="string" const="no" value="9" />
+
+<scene id="main">
+<seq>
+
+<text>This config will generate a file "loopback.cap" that contains various packets. It will also receive them again and assign variables to the various fields.
+</text>
+
+<packet port="loopback">
+  <eth from="CD:EF:AB:CD:EF:FF" to="12:34:56:78:09:AB" ethertype="0x0000"/>
+  <raw>12:34:56:78:09:AB:CD:EF:AB:CD:EF:12:34:56:78:09</raw>
+</packet>
+
+<receive port="loopback" nomatch="next">
+  <firstof>
+    <match>
+      <eth>
+        <assign-variable name="$eth1" value="field(from)" />
+        <assign-variable name="$eth2" value="field(to)" />
+        <assign-variable name="$ethertype1" value="field(ethertype)" />
+      </eth>
+      <raw>
+        <assign-variable name="$raw1" value="field(data)" />
+      </raw>
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test for eth/raw variable capture NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="$eth1" to="$eth2" ethertype="$ethertype1"/>
+  <raw data="$raw1"></raw>
+</packet>
+
+<receive port="loopback" nomatch="next">
+  <firstof>
+    <match>
+      <eth from="CD:EF:AB:CD:EF:FF" to="12:34:56:78:09:AB" ethertype="0x0000"/>
+      <raw>12:34:56:78:09:AB:CD:EF:AB:CD:EF:12:34:56:78:09</raw>
+      <seq>
+        <text>Loopback test on eth/raw OK</text>
+      </seq>
+    </match>
+    <match>
+      <eth />
+      <seq>
+        <text>Loopback test on eth/raw NOK</text>
+      </seq>
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="$eth1" to="$eth2" ethertype="$ethertype1"/>
+  <raw filler="$raw1" size="16"></raw>
+</packet>
+
+<receive port="loopback" nomatch="next">
+  <firstof>
+    <match>
+      <eth from="CD:EF:AB:CD:EF:FF" to="12:34:56:78:09:AB" ethertype="0x0000"/>
+      <raw>12:34:56:78:09:AB:CD:EF:AB:CD:EF:12:34:56:78:09</raw>
+      <seq>
+        <text>Loopback test on eth/raw (filler+size) OK</text>
+      </seq>
+    </match>
+    <match>
+      <eth />
+      <seq>
+        <text>Loopback test on eth/raw (filler+size) NOK</text>
+      </seq>
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="02:02:02:02:02:03" to="01:00:5E:00:00:01" ethertype="0x8100"/>
+  <vlans stack="402" bodyEthertype="0x0800" />
+  <iphdr from="192.168.10.1" to="224.0.0.1" protocol="igmp" packetid="1" contentlength="8" options="94:04:00:00" />
+  <igmp version="2" type="query" responsetime="100" to="0.0.0.0" />
+</packet>
+
+<receive port="loopback">
+  <firstof>
+    <match>
+      <eth>
+        <assign-variable name="$eth1" value="field(from)" />
+        <assign-variable name="$eth2" value="field(to)" />
+        <assign-variable name="$ethertype1" value="field(ethertype)" />
+      </eth>
+      <vlans>
+        <assign-variable name="$stack1" value="field(stack)" />
+        <assign-variable name="$ethertype2" value="field(bodyEthertype)" />
+      </vlans>
+      <iphdr>
+        <assign-variable name="$ip1" value="field(from)" />
+        <assign-variable name="$ip2" value="field(to)" />
+        <assign-variable name="$protocol1" value="field(protocol)" />
+        <assign-variable name="$packetid1" value="field(packetid)" />
+        <assign-variable name="$contentlength1" value="field(contentlength)" />
+        <assign-variable name="$options1" value="field(options)" />
+      </iphdr>
+      <igmp version="2">
+        <assign-variable name="$igmpversion1" value="field(version)" />
+        <assign-variable name="$igmptype1" value="field(type)" />
+        <assign-variable name="$responsetime1" value="field(responsetime)" />
+        <assign-variable name="$ip3" value="field(to)" />
+      </igmp>
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test for igmp query variable capture NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="$eth1" to="$eth2" ethertype="$ethertype1"/>
+  <vlans stack="$stack1" bodyEthertype="$ethertype2" />
+  <iphdr from="$ip1" to="$ip2" protocol="$protocol1" packetid="$packetid1" contentlength="$contentlength1" options="$options1" />
+  <igmp version="2" type="$igmptype1" responsetime="$responsetime1" to="$ip3" />
+</packet>
+
+<receive port="loopback">
+  <firstof>
+    <match>
+      <eth from="02:02:02:02:02:03" to="01:00:5E:00:00:01" ethertype="0x8100"/>
+      <vlans stack="402" bodyEthertype="0x0800" />
+      <iphdr from="192.168.10.1" to="224.0.0.1" protocol="igmp" packetid="1" contentlength="8" options="94:04:00:00" />
+      <igmp version="2" type="query" responsetime="100" to="0.0.0.0" />
+
+      <seq>
+        <text>Loopback test for igmp v2 query OK</text>
+      </seq>      
+    </match>
+    <match>
+      <eth />
+      <seq>
+        <text>Loopback test on igmp v2 query NOK</text>
+      </seq>
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="02:02:02:02:02:03" to="01:00:5E:00:00:01" ethertype="0x8100"/>
+  <vlans stack="701" bodyEthertype="0x0800" />
+  <iphdr from="192.168.10.1" to="224.0.0.1" protocol="igmp" contentlength="20" packetid="1" ttl="1" options="94:04:00:00" />  
+  <igmp version="3" type="query" to="0.0.0.0" responsetime="0x64" sflag="0x00" qrv="0x02" qqic="0x7D">
+    <source address="192.168.10.100" />
+    <source address="192.168.10.101" />
+  </igmp>
+</packet>
+
+<receive port="loopback">
+  <firstof>
+    <match>
+      <eth>
+        <assign-variable name="$eth1" value="field(from)" />
+        <assign-variable name="$eth2" value="field(to)" />
+        <assign-variable name="$ethertype1" value="field(ethertype)" />
+      </eth>
+      <vlans>
+        <assign-variable name="$stack1" value="field(stack)" />
+        <assign-variable name="$ethertype2" value="field(bodyEthertype)" />
+      </vlans>
+      <iphdr>
+        <assign-variable name="$ip1" value="field(from)" />
+        <assign-variable name="$ip2" value="field(to)" />
+        <assign-variable name="$protocol1" value="field(protocol)" />
+        <assign-variable name="$packetid1" value="field(packetid)" />
+        <assign-variable name="$contentlength1" value="field(contentlength)" />
+        <assign-variable name="$options1" value="field(options)" />
+        <assign-variable name="$ttl1" value="field(ttl)" />
+      </iphdr>
+      <igmp version="3">
+        <assign-variable name="$igmpversion1" value="field(version)" />
+        <assign-variable name="$igmptype1" value="field(type)" />
+        <assign-variable name="$responsetime1" value="field(responsetime)" />
+        <assign-variable name="$ip3" value="field(to)" />
+        <assign-variable name="$sflag1" value="field(sflag)" />
+        <assign-variable name="$qrv1" value="field(qrv)" />
+        <assign-variable name="$qqic1" value="field(qqic)" />
+      </igmp>
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test for igmp v3 query (variable capture) NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="$eth1" to="$eth2" ethertype="$ethertype1"/>
+  <vlans stack="$stack1" bodyEthertype="$ethertype2" />
+  <iphdr from="$ip1" to="$ip2" protocol="igmp" contentlength="$contentlength1" packetid="$packetid1" ttl="$ttl1" options="$options1" />  
+  <igmp version="3" type="query" to="$ip1" responsetime="$responsetime1" sflag="$sflag1" qrv="$qrv1" qqic="$qqic1">
+    <source address="192.168.10.100" />
+    <source address="192.168.10.101" />
+  </igmp>
+</packet>
+
+<receive port="loopback">
+  <firstof>
+    <match>
+      <eth from="02:02:02:02:02:03" to="01:00:5E:00:00:01" ethertype="0x8100"/>
+      <vlans stack="701" bodyEthertype="0x0800" />
+      <iphdr from="192.168.10.1" to="224.0.0.1" protocol="igmp" contentlength="20" packetid="1" ttl="1" options="94:04:00:00" />  
+      <igmp version="3" type="query" to="0.0.0.0" responsetime="0x64" sflag="0x00" qrv="0x02" qqic="0x7D">
+        <source address="192.168.10.100" />
+        <source address="192.168.10.101" />
+      </igmp>
+
+      <seq>
+        <text>Loopback test for igmp v3 query OK</text>
+      </seq>      
+    </match>
+    <match>
+      <eth />
+      <seq>
+        <text>Loopback test on igmp v2 query NOK</text>
+      </seq>
+    </match>
+  </firstof>
+</receive>
+
+
+
+
+<packet port="loopback">
+  <eth from="02:02:02:02:02:02" to="02:02:02:02:02:03" ethertype="0x8100"/>
+  <vlans stack="243/4" bodyEthertype="0x0800" />
+  <iphdr from="192.168.103.3" to="192.168.103.4" protocol="udp" contentlength="16" packetid="1" ttl="128" options="" />
+  <udp sourceport="1234" destport="1235" length="16" checksum="0x08AB"  />
+  <raw>01:23:45:67:89:AB:CD:EF</raw>
+</packet>
+
+<receive port="loopback">
+  <firstof>
+    <match>
+      <eth>
+        <assign-variable name="$eth1" value="field(from)" />
+        <assign-variable name="$eth2" value="field(to)" />
+        <assign-variable name="$ethertype1" value="field(ethertype)" />
+      </eth>
+      <vlans>
+        <assign-variable name="$stack1" value="field(stack)" />
+        <assign-variable name="$ethertype2" value="field(bodyEthertype)" />
+      </vlans>
+      <iphdr>
+        <assign-variable name="$ip1" value="field(from)" />
+        <assign-variable name="$ip2" value="field(to)" />
+        <assign-variable name="$protocol1" value="field(protocol)" />
+        <assign-variable name="$packetid1" value="field(packetid)" />
+        <assign-variable name="$contentlength1" value="field(contentlength)" />
+        <assign-variable name="$options1" value="field(options)" />
+        <assign-variable name="$ttl1" value="field(ttl)" />
+      </iphdr>
+      <udp>
+        <assign-variable name="$udpport1" value="field(sourceport)" />
+        <assign-variable name="$udpport2" value="field(destport)" />
+        <assign-variable name="$udplength1" value="field(length)" />
+        <assign-variable name="$checksum1" value="field(checksum)" />
+      </udp>
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test for udp (variable capture) NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="$eth1" to="$eth2" ethertype="$ethertype1"/>
+  <vlans stack="$stack1" bodyEthertype="$ethertype2" />
+  <iphdr from="$ip1" to="$ip2" protocol="$protocol1" contentlength="$contentlength1" packetid="$packetid1" ttl="$ttl1" options="$options1" />
+  <udp sourceport="$udpport1" destport="$udpport2" length="$udplength1" checksum="$checksum1"  />
+  <raw>01:23:45:67:89:AB:CD:EF</raw>
+</packet>
+
+<receive port="loopback">
+  <firstof>
+    <match>
+      <eth from="02:02:02:02:02:02" to="02:02:02:02:02:03" ethertype="0x8100"/>
+      <vlans stack="243/4" bodyEthertype="0x0800" />
+      <iphdr from="192.168.103.3" to="192.168.103.4" protocol="udp" contentlength="16" packetid="1" ttl="128" options="" />
+      <udp sourceport="1234" destport="1235" length="16" checksum="0x08AB"  />
+      <raw>01:23:45:67:89:AB:CD:EF</raw>
+
+      <seq>
+        <text>Loopback test on udp OK</text>
+      </seq>      
+    </match>
+    <match>
+      <eth />
+      <seq>
+        <text>Loopback test on udp NOK</text>
+      </seq>
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="02:02:02:02:02:06" to="FF:FF:FF:FF:FF:FF" ethertype="0x8100"/>
+  <vlans stack="800:120" bodyEthertype="0x0806" />
+  <arp type="req" fromMac="02:02:02:02:02:07" toMac="FF:FF:FF:FF:FF:FF" fromIp="192.168.10.7" toIp="192.168.10.9" />
+</packet>
+
+<receive port="loopback">
+  <firstof>
+    <match>
+      <eth>
+        <assign-variable name="$eth1" value="field(from)" />
+        <assign-variable name="$eth2" value="field(to)" />
+        <assign-variable name="$ethertype1" value="field(ethertype)" />
+      </eth>
+      <vlans>
+        <assign-variable name="$stack1" value="field(stack)" />
+        <assign-variable name="$ethertype2" value="field(bodyEthertype)" />
+      </vlans>
+      <arp>
+        <assign-variable name="$arptype1" value="field(type)" />
+        <assign-variable name="$eth3" value="field(fromMac)" />
+        <assign-variable name="$eth4" value="field(toMac)" />
+        <assign-variable name="$ip1" value="field(fromIp)" />
+        <assign-variable name="$ip2" value="field(toIp)" />
+      </arp>
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test for arp request (variable capture) NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="$eth1" to="$eth2" ethertype="$ethertype1"/>
+  <vlans stack="$stack1" bodyEthertype="$ethertype2" />
+  <arp type="$arptype1" fromMac="$eth3" toMac="$eth4" fromIp="$ip1" toIp="$ip2" />
+</packet>
+
+<receive port="loopback">
+  <firstof>
+    <match>
+      <eth from="02:02:02:02:02:06" to="FF:FF:FF:FF:FF:FF" ethertype="0x8100"/>
+      <vlans stack="800:120" bodyEthertype="0x0806" />
+      <arp type="req" fromMac="02:02:02:02:02:07" toMac="FF:FF:FF:FF:FF:FF" fromIp="192.168.10.7" toIp="192.168.10.9" />
+      <seq>
+        <text>Loopback test on arp request OK</text>
+      </seq>      
+    </match>
+    <match>
+      <eth />
+      <seq>
+        <text>Loopback test on arp request NOK</text>
+      </seq>
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="02:02:02:02:02:03" to="02:02:02:02:02:02" ethertype="0x8100"/>
+  <vlans stack="700:120" bodyEthertype="0x0806" />
+  <arp type="rep" fromMac="02:02:02:02:02:03" toMac="02:02:02:02:02:02" fromIp="192.168.10.8" toIp="192.168.10.6" />
+</packet>
+
+<receive port="loopback">
+  <firstof>
+    <match>
+      <eth>
+        <assign-variable name="$eth1" value="field(from)" />
+        <assign-variable name="$eth2" value="field(to)" />
+        <assign-variable name="$ethertype1" value="field(ethertype)" />
+      </eth>
+      <vlans>
+        <assign-variable name="$stack1" value="field(stack)" />
+        <assign-variable name="$ethertype2" value="field(bodyEthertype)" />
+      </vlans>
+      <arp>
+        <assign-variable name="$arptype1" value="field(type)" />
+        <assign-variable name="$eth3" value="field(fromMac)" />
+        <assign-variable name="$eth4" value="field(toMac)" />
+        <assign-variable name="$ip1" value="field(fromIp)" />
+        <assign-variable name="$ip2" value="field(toIp)" />
+      </arp>
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test for arp reply (variable capture) NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="$eth1" to="$eth2" ethertype="$ethertype1"/>
+  <vlans stack="$stack1" bodyEthertype="$ethertype2" />
+  <arp type="$arptype1" fromMac="$eth3" toMac="$eth4" fromIp="$ip1" toIp="$ip2" />
+</packet>
+
+<receive port="loopback">
+  <firstof>
+    <match>
+      <eth from="02:02:02:02:02:03" to="02:02:02:02:02:02" ethertype="0x8100"/>
+      <vlans stack="700:120" bodyEthertype="0x0806" />
+      <arp type="rep" fromMac="02:02:02:02:02:03" toMac="02:02:02:02:02:02" fromIp="192.168.10.8" toIp="192.168.10.6" />
+      <seq>
+        <text>Loopback test on arp reply OK</text>
+      </seq>      
+    </match>
+    <match>
+      <eth />
+      <seq>
+        <text>Loopback test on arp reply NOK</text>
+      </seq>
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="02:02:02:02:02:03" to="00:13:21:61:3D:F2" ethertype="0x8100"/>
+  <vlans stack="333:2" bodyEthertype="0x0800" />
+  <iphdr from="192.168.10.2" to="192.168.10.5" protocol="icmp" contentlength="18" packetid="1" ttl="128" options="" />
+  <icmp type="echoRequest" code="0x01" checksum="0x7078" identifier="12" sequencenr="123" />
+  <raw>12:34:56:78:09:AB:CD:EF:AB:CD:EF:12:34:56:78:09</raw>
+</packet>
+
+<receive port="loopback">
+  <firstof>
+    <match>
+      <eth>
+        <assign-variable name="$eth1" value="field(from)" />
+        <assign-variable name="$eth2" value="field(to)" />
+        <assign-variable name="$ethertype1" value="field(ethertype)" />
+      </eth>
+      <vlans>
+        <assign-variable name="$stack1" value="field(stack)" />
+        <assign-variable name="$ethertype2" value="field(bodyEthertype)" />
+      </vlans>
+      <iphdr>
+        <assign-variable name="$ip1" value="field(from)" />
+        <assign-variable name="$ip2" value="field(to)" />
+        <assign-variable name="$protocol1" value="field(protocol)" />
+        <assign-variable name="$packetid1" value="field(packetid)" />
+        <assign-variable name="$contentlength1" value="field(contentlength)" />
+        <assign-variable name="$options1" value="field(options)" />
+        <assign-variable name="$ttl1" value="field(ttl)" />
+      </iphdr>
+      <icmp>
+        <assign-variable name="$icmpType1" value="field(type)" />
+        <assign-variable name="$icmpCode1" value="field(code)" />
+        <assign-variable name="$checksum1" value="field(checksum)" />
+        <assign-variable name="$identifier1" value="field(identifier)" />
+        <assign-variable name="$sequencenr1" value="field(sequencenr)" />
+      </icmp>
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test for icmp (variable capture) NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="$eth1" to="$eth2" ethertype="$ethertype1"/>
+  <vlans stack="$stack1" bodyEthertype="$ethertype2" />
+  <iphdr from="$ip1" to="$ip2" protocol="$protocol1" contentlength="$contentlength1" packetid="$packetid1" ttl="$ttl1" options="$options1" />
+  <icmp type="$icmpType1" code="$icmpCode1" checksum="$checksum1" identifier="$identifier1" sequencenr="$sequencenr1" />
+  <raw>12:34:56:78:09:AB:CD:EF:AB:CD:EF:12:34:56:78:09</raw>
+</packet>
+
+<receive port="loopback">
+  <firstof>
+    <match>
+      <eth from="02:02:02:02:02:03" to="00:13:21:61:3D:F2" ethertype="0x8100"/>
+      <vlans stack="333:2" bodyEthertype="0x0800" />
+      <iphdr from="192.168.10.2" to="192.168.10.5" protocol="icmp" contentlength="18" packetid="1" ttl="128" options="" />
+      <icmp type="echoRequest" code="0x01" checksum="0x7078" identifier="12" sequencenr="123" />
+      <raw>12:34:56:78:09:AB:CD:EF:AB:CD:EF:12:34:56:78:09</raw>
+      <seq>
+        <text>Loopback test on icmp OK</text>
+      </seq>      
+    </match>
+    <match>
+      <eth />
+      <seq>
+        <text>Loopback test on icmp NOK</text>
+      </seq>
+    </match>
+  </firstof>
+</receive>
+
+</seq>
+</scene>
+
+<play scene="main" />
+</pierf>

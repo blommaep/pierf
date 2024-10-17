@@ -1,0 +1,80 @@
+<pierf>
+<include file="ports.pieri" />
+
+<scene id="main">
+<seq>
+
+<text>This config will generate a file "filesample2.cap" that contains various packets. When executing the config file "tst_print.pierf" afterwards, the result should be that the packets in the filesample2.cap are printed in xml again. A diff between this config and that output shows that the tool is doing a proper job on generation and analysis.
+</text>
+
+<packet port="filesample">
+  <eth from="CD:EF:AB:CD:EF:FF" to="12:34:56:78:09:AB" ethertype="0x0000"/>
+  <raw>12:34:56:78:09:AB:CD:EF:AB:CD:EF:12:34:56:78:09</raw>
+</packet>
+
+<packet port="filesample">
+  <eth from="02:02:02:02:02:03" to="01:00:5E:00:00:01" ethertype="0x8100"/>
+  <vlans stack="402" bodyEthertype="0x0800" />
+  <iphdr from="192.168.10.1" to="224.0.0.1" protocol="igmp" packetid="1" contentlength="8" options="94:04:00:00" />
+  <igmp version="2" type="query" responsetime="100" to="0.0.0.0" />
+</packet>
+
+
+<packet port="filesample">
+  <eth from="02:02:02:02:02:03" to="01:00:5E:00:00:01" ethertype="0x8100"/>
+  <vlans stack="701" bodyEthertype="0x0800" />
+  <iphdr from="192.168.10.1" to="224.0.0.1" protocol="igmp" contentlength="20" packetid="1" ttl="1" options="94:04:00:00" />  
+  <igmp version="3" type="query" to="0.0.0.0" responsetime="0x64" sflag="0x00" qrv="0x02" qqic="0x7D">
+    <source address="192.168.10.100" />
+    <source address="192.168.10.101" />
+  </igmp>
+</packet>
+
+<!-- igmp v3 report -->
+<packet port="filesample">
+  <eth from="02:02:02:02:02:03" to="01:00:5E:00:00:01" ethertype="0x8100"/>
+  <vlans stack="701" bodyEthertype="0x0800" />
+  <iphdr from="192.168.10.1" to="224.0.0.1" protocol="igmp" contentlength="24" packetid="1" ttl="1" options="94:04:00:00" />
+  
+  <igmp version="3" type="report">
+  <group type="include" to="225.1.1.1">
+  <source address="192.168.10.100" />
+  <source address="192.168.10.101" />
+</group>
+</igmp>
+</packet>
+
+<packet port="filesample">
+  <eth from="02:02:02:02:02:02" to="02:02:02:02:02:03" ethertype="0x8100"/>
+  <vlans stack="243/4" bodyEthertype="0x0800" />
+  <iphdr from="192.168.103.3" to="192.168.103.4" protocol="udp" contentlength="16" packetid="1" ttl="128" options="" />
+  <udp sourceport="1234" destport="1235" length="16" checksum="0x08AB"  />
+  <raw>01:23:45:67:89:AB:CD:EF</raw>
+</packet>
+
+<!-- Arp request and reply -->
+<packet port="filesample">
+  <eth from="02:02:02:02:02:02" to="FF:FF:FF:FF:FF:FF" ethertype="0x8100"/>
+  <vlans stack="700:120" bodyEthertype="0x0806" />
+  <arp type="req" fromMac="02:02:02:02:02:02" toMac="FF:FF:FF:FF:FF:FF" fromIp="192.168.10.6" toIp="192.168.10.8" />
+</packet>
+
+<packet port="filesample">
+  <eth from="02:02:02:02:02:03" to="02:02:02:02:02:02" ethertype="0x8100"/>
+  <vlans stack="700:120" bodyEthertype="0x0806" />
+  <arp type="rep" fromMac="02:02:02:02:02:03" toMac="02:02:02:02:02:02" fromIp="192.168.10.8" toIp="192.168.10.6" />
+</packet>
+
+<packet port="filesample">
+  <eth from="02:02:02:02:02:03" to="00:13:21:61:3D:F2" ethertype="0x8100"/>
+  <vlans stack="333:2" bodyEthertype="0x0800" />
+  <iphdr from="192.168.10.2" to="192.168.10.5" protocol="icmp" contentlength="18" packetid="1" ttl="128" options="" />
+  <icmp type="echoRequest" code="0x00" checksum="0x7078" identifier="0" sequencenr="0" />
+  <raw>12:34:56:78:09:AB:CD:EF:AB:CD:EF:12:34:56:78:09</raw>
+</packet>
+
+</seq>
+</scene>
+
+<play scene="main" />
+</pierf>

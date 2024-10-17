@@ -1,0 +1,21 @@
+<pierf>
+<port id="filesample" infile="igmp.cap" outfile="filesample.cap" realtime="yes" />
+
+<scene id="igmp">
+<seq repeat="5">
+
+<!-- general query -->
+<packet port="filesample">
+<eth from="02:02:02:02:02:03"/>
+<vlans stack="402" />
+<iphdr from="192.168.10.1" packetid="1"/>
+<igmp version="2" type="query" to="0.0.0.0"/>
+</packet>
+
+<sleep millisec="200" />
+
+</seq>
+</scene>
+
+<play scene="igmp" />
+</pierf>

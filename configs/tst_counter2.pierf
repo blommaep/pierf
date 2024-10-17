@@ -1,0 +1,21 @@
+<pierf>
+<port id="filesample" infile="filesample.cap" outfile="filesample2.cap" realtime="yes" />
+
+<var id="counter1" type="counter" />
+<scene id="counterTest">
+<seq>
+<!-- To have a clean rate, wait for the first packet and then reset the counter -->
+<receive port="filesample" />
+<counter ref="counter1" action="reset" />
+</seq>
+<seq repeat="49">
+
+<receive port="filesample">
+<counter ref="counter1" action="increment" />
+</receive>
+<counter ref="counter1" action="report" />
+</seq>
+</scene>
+
+<play scene="counterTest" />
+</pierf>

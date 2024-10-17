@@ -1,0 +1,273 @@
+// Copyright (c) 2006, Pieter Blommaert
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+// Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+// Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+// The names of the author and contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+#include "Raw.hpp"
+
+#include <sstream>
+
+Raw::Raw()
+  {
+  mSize.setDefault((ushort)0);
+  mData.setStrict(false);
+  mDataFieldEntered = false;
+  }
+
+void Raw::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception)
+  {
+  int i=0;
+  char* autoStr = NULL;
+  const char* dataStr = NULL;
+
+  while (attr[i] != NULL)
+    {
+    if (!strcmp(attr[i],"auto"))
+      {
+      i++;
+      autoStr = (char*) attr[i++];
+      }
+    else if (!strcmp(attr[i],"size"))
+      {
+      i++;
+      setSize(attr[i++]);
+      }
+    else if (!strcmp(attr[i],"filler"))
+      {
+      i++;
+      setFiller(attr[i++]);
+      }
+    else if (!strcmp(attr[i],"data")) // Optional: can be defined as a data tag for too for variable input
+      {
+      i++;
+      dataStr = attr[i++];
+      }
+    else
+      {
+      throw Exception("Unexepected attribute: " + string(attr[i]) + " in <raw> tag.");
+      }
+    }
+
+  setOrEnheritAuto(autoStr,parent);
+  if (dataStr != NULL)
+    {
+    mData.setManual(dataStr);
+    mDataFieldEntered = true;
+    }
+  }
+
+void Raw::addString(const char* inString) throw (Exception)
+  {
+  if (mDataFieldEntered)
+    {
+    throw Exception("Raw cannot contain a body when it has a data tag");
+    }
+  mData.addString(inString);
+  if (mData.size() > 0) // the string to add contained something useful
+    {
+    mData.wasManuallySet();
+    }
+  }
+
+void Raw::addString(const string& inString) throw (Exception)
+  {
+  if (mDataFieldEntered)
+    {
+    throw Exception("Raw cannot contain a body when it has a data tag");
+    }
+  mData.addString(inString);
+  if (mData.size() > 0) // the string to add contained something useful
+    {
+    mData.wasManuallySet();
+    }
+  }
+
+void Raw::setSize(ulong size)
+  {
+  mSize.setManual(intToString(size).c_str());
+  }
+
+void Raw::setSize(const char* size)
+  {
+  mSize.setManual(size);
+  }
+
+void Raw::setFiller(const char* filler)
+  {
+  mFiller.resetString();
+  mFiller.setManual(filler);
+  }
+
+string Raw::getString()
+  {
+  stringstream retval;
+  retval << "<raw";
+  if (mSize.isManual())
+    {
+    retval << " size=\"" << mSize.getString() << "\"";
+    }
+  if (mFiller.isManual())
+    {
+    retval << " filler=\"" << mFiller.getString() << "\"";
+    }
+  retval << ">" << mData.getString() << "</raw>";
+  return retval.str();
+  }
+
+bool Raw::getString(string& stringval, const char* fieldName)
+  {
+  if (!strcmp(fieldName, "size"))
+    {
+    return mSize.getString(stringval);
+    }
+  else if (!strcmp(fieldName, "filler"))
+    {
+    return mFiller.getString(stringval);
+    }
+  else if (!strcmp(fieldName, "data")) // Special: data isn't really a field but rather tag content for raw...
+    {
+    return mData.getString(stringval);
+    }
+  return false;
+  }
+
+ulong Raw::getSize()
+  {
+  if (mSize.isManual())
+    {
+    return (ulong) mSize.getValue();
+    }
+  return mData.size();
+  }
+
+ulong Raw::getTailSize()
+  {
+  return 0;
+  }
+
+bool Raw::copyVar() throw (Exception)
+  {
+  bool copy = false;
+  bool res;
+  res = mData.copyVar();
+  copy = copy || res;
+  res = mFiller.copyVar();
+  copy = copy || res;
+  res = mSize.copyVar();
+  copy = copy || res;
+  return copy;
+  }
+
+uchar* Raw::copyTo(uchar* toPtr)
+  {
+  ulong curSize = mData.size();
+  ulong targetSize = (ulong) mSize.getValue();
+  if (curSize < targetSize || !mSize.isManual())
+    {
+    // start by copying the defined content
+    toPtr = mData.copyTo(toPtr);
+
+    // Now the filler
+    ulong fillerSize = mFiller.size();
+    if (fillerSize > 0) // use a specific filler
+      {
+      vector<uchar>::iterator fillerStart, fillerEnd;
+      fillerStart = mFiller.begin();
+      fillerEnd = mFiller.end();
+      while (targetSize > curSize + fillerSize)
+        {
+        toPtr = mFiller.copyTo(toPtr);
+        curSize += fillerSize;
+        }
+      while (targetSize > curSize) // fill byte by byte now, as we don't need the full filler anymore
+        {
+        *toPtr = *fillerStart;
+        toPtr++;
+        fillerStart++;
+        curSize ++;
+        }
+      }
+    else // just expand using the default filler (0)
+      {
+      while (targetSize > curSize)
+        {
+        *toPtr++ = 0x0;
+        curSize++;
+        }
+      }
+    }
+  else // just print te Data part untill mSize length
+    {
+    toPtr = mData.copyTo(toPtr,(ulong) mSize.getValue());
+    }
+
+  return toPtr;
+  }
+
+uchar* Raw::copyTail(uchar* toPtr)
+  {
+  return toPtr;
+  }
+
+bool Raw::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
+  {
+  mData.addBytes(fromPtr,remainingSize);
+  mData.wasCaptured();
+  fromPtr += remainingSize;
+  remainingSize = 0;
+  return true;
+  }
+
+bool Raw::analyze_Tail(uchar*& fromPtr, ulong& remainingSize)
+  {
+  return true;
+  }
+
+Element* Raw::analyze_GetNextElem()
+  {
+  return NULL;
+  }
+
+bool Raw::checkComplete()
+  {
+  return true; 
+  }
+
+bool Raw::tryComplete(ElemStack& stack)
+  {
+  if (checkComplete())
+    {
+    return true;
+    }
+  
+
+  return true; // always complete
+  }
+
+string Raw::whatsMissing()
+  {
+  return "";
+  }
+
+bool Raw::match(Element* other)
+  {
+  if (typeid(*other) != typeid(Raw))
+    {
+    return false;
+    }
+  Raw* otherRaw = (Raw*) other;
+
+  if (!mData.match(otherRaw->mData))
+    {
+    return false;
+    }
+
+  return true;  
+  }
+

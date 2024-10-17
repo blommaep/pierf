@@ -1,0 +1,20 @@
+<pierf>
+<port id="broadcom" device="\Device\NPF_{06484B56-54BD-4B23-82A5-FAF3088EBD76}" />
+
+<scene id="udp">
+<seq repeat="100000">
+
+<packet port="broadcom">
+<eth from="02:02:02:02:02:02" to="02:02:02:02:02:03"/>
+<vlans stack="243/4" />
+<iphdr from="192.168.1.11" to="192.168.10.1" ttl="128" packetid="1" dscp="1"/>
+<udp sourceport="1234" destport="1235"/>
+<raw size="1200" filler="01:23:45:67:89:AB:CD:EF" />
+</packet>
+
+
+</seq>
+</scene>
+
+<play scene="udp" />
+</pierf>

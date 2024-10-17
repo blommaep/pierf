@@ -1,0 +1,25 @@
+<pierf>
+<port id="filesample" infile="igmp.cap" outfile="filesample.cap" realtime="yes" />
+
+<var id="counter1" type="counter" />
+<scene id="counterTest">
+<seq>
+<counter ref="counter1" action="reset" />
+</seq>
+<seq repeat="50">
+
+<!-- general query -->
+<packet port="filesample">
+<eth to="12:34:56:78:9:ab" from="CD EF AB cd ef ff" ethertype="0x0000"/>
+<raw>012345678901234567890123456789012345678901234567890123456789
+</raw>
+</packet>
+
+<counter ref="counter1" action="increment" />
+<counter ref="counter1" action="report" />
+<sleep millisec="100" />
+</seq>
+</scene>
+
+<play scene="counterTest" />
+</pierf>

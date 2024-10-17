@@ -1,0 +1,29 @@
+<pierf>
+<include file="ports.pieri" />
+
+<scene id="arp">
+<seq>
+<!-- Arp request on one port -->
+<packet port="broadcom">
+<eth />
+<vlans stack="700:120" />
+<arp type="req" fromMac="02:02:02:02:02:02" fromIp="192.168.10.6" toIp="192.168.10.8" />
+</packet>
+
+<!-- Arp reply on the other port -->
+<packet port="realtec">
+<eth from="02:02:02:02:02:03" to="02:02:02:02:02:02" />
+<vlans stack="700:120"></vlans>
+<arp type="rep" fromMac="02:02:02:02:02:03" fromIp="192.168.10.8" toMac="02:02:02:02:02:02" toIp="192.168.10.6" />
+</packet>
+
+<!-- Just a sample of raw packets-->
+<packet port="realtec" auto="manual">
+<eth from="02:02:02:02:02:03" to="02:02:02:02:02:02" />
+<vlans stack="700:120"></vlans>
+<raw>01:23:45:67:89:AB:CD:EF</raw>
+</packet>
+</seq>
+</scene>
+<play scene="arp" />
+</pierf>

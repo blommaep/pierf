@@ -1,0 +1,21 @@
+<pierf>
+<port id="broadcom" device="\Device\NPF_{F8C7658E-8536-4DA1-BC85-F2EC10B37656}" />
+<log port="broadcom" file="logsample.cap" />
+
+<scene id="igmp">
+<seq repeat="5">
+
+<!-- general query -->
+<packet port="broadcom">
+<eth from="02:02:02:02:02:03"/>
+<vlans stack="402" />
+<iphdr from="192.168.10.1" packetid="1"/>
+<igmp version="2" type="query" to="0.0.0.0"/>
+</packet>
+<sleep millisec="2000" />
+
+</seq>
+</scene>
+
+<play scene="igmp" />
+</pierf>

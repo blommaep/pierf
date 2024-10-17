@@ -1,0 +1,44 @@
+<pierf>
+<port id="filesample2" infile="filesample.cap" outfile="filesample2.cap" realtime="yes" />
+<port id="filesample4" infile="filesample.cap" outfile="filesample4.cap" realtime="yes" />
+
+<var id="totalRx" type="counter" />
+<var id="matchRx" type="counter" />
+
+
+<scene id="test">
+
+<seq>
+<counter ref="totalRx" action="reset" />
+<counter ref="matchRx" action="reset" />
+
+<seq repeat="2">
+
+<receive port="filesample2" nomatch="loop">
+<mirror port="filesample4" />
+<counter ref="totalRx" action="increment" />
+<firstof>
+  <match>
+    <eth from="02:02:02:02:02:03" />
+    <seq>
+      <print />
+      <counter ref="matchRx" action="increment" />
+      <packet port="filesample2">
+        <eth from="CD:EF:AB:CD:EF:FF" to="12:34:56:78:09:AB" ethertype="0x0000"/>
+        <raw>12:34:56:78:09:AB:CD:EF:AB:CD:EF:12:34:56:78:09</raw>
+      </packet>
+    </seq>
+  </match>
+</firstof>
+</receive>
+
+</seq>
+
+<counter ref="totalRx" action="report" />
+<counter ref="matchRx" action="report" />
+</seq>
+
+</scene>
+
+<play scene="test" />
+</pierf>
