@@ -70,17 +70,17 @@ void CounterStep::setAction(char* action)
     }
   }
 
-void CounterStep::setValue(const char* value) throw (Exception)
+void CounterStep::setValue(const char* value) noexcept(false)
   {
   mValue = textToLong(value);
   }
 
-void CounterStep::setBytesValue(const char* bytesValue) throw (Exception)
+void CounterStep::setBytesValue(const char* bytesValue) noexcept(false)
   {
   mBytesValue = textToLong(bytesValue);
   }
 
-void CounterStep::setVar(const char* varName) throw (Exception)
+void CounterStep::setVar(const char* varName) noexcept(false)
   {
   Var* var = VarContainer::getVar(varName);
   if (var == NULL)

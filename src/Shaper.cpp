@@ -37,7 +37,7 @@ Shaper::~Shaper()
   {
   }
 
-void Shaper::setRate(const char* rateStr) throw (Exception)
+void Shaper::setRate(const char* rateStr) noexcept(false)
   {
   char* ratePos = (char*) rateStr;
   int decimals = 0;

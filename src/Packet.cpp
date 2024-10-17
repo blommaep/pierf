@@ -64,7 +64,7 @@ bool Packet::getAnalysisReady()
   return mAnalysisReady;
   }
 
-void Packet::setRawPacket(uchar* rawPacket, ulong32 rawSize) throw (Exception)
+void Packet::setRawPacket(uchar* rawPacket, ulong32 rawSize) noexcept(false)
   {
   if (mBinaryReady)
     {
@@ -76,7 +76,7 @@ void Packet::setRawPacket(uchar* rawPacket, ulong32 rawSize) throw (Exception)
   mBinaryReady = true;
   }
 
-void Packet::analyse() throw (Exception)
+void Packet::analyse() noexcept(false)
   {
   if (mAnalysisReady)
     {
@@ -89,7 +89,7 @@ void Packet::analyse() throw (Exception)
     throw Exception("Trying to do analysis while no binary packet was available. Code bug?");
     }
 
-  if (!mRawSize > 0)
+  if (!(mRawSize > 0))
     {
     throw Exception("Trying to analyse a packet of size 0???");
     }
@@ -214,7 +214,7 @@ bool Packet::compare(Packet* otherPacket, bool matchByString) // assumed to be e
     throw Exception("Trying to do analysis while no binary packet was available. Code bug?");
     }
 
-  if (!mRawSize > 0)
+  if (!(mRawSize > 0))
     {
     throw Exception("Trying to analyse a packet of size 0???");
     }
@@ -379,7 +379,7 @@ bool Packet::tryComplete(bool final)
   return complete;
   }
 
-void Packet::sendTo(Port& outport) throw (Exception)
+void Packet::sendTo(Port& outport) noexcept(false)
   {
   bool complete;
 
@@ -387,7 +387,7 @@ void Packet::sendTo(Port& outport) throw (Exception)
     {
     complete = tryComplete(true);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     stringstream msg;
     msg << "While trying to send packet: " << endl
@@ -420,12 +420,12 @@ void Packet::sendTo(Port& outport) throw (Exception)
     }
   }
 
-void Packet::sendTo(Port* outport) throw (Exception)
+void Packet::sendTo(Port* outport) noexcept(false)
   {
   sendTo(*outport);
   }
 
-void Packet::send() throw (Exception)
+void Packet::send() noexcept(false)
   {
   if (mOutPort != NULL)
     {
@@ -438,7 +438,7 @@ void Packet::send() throw (Exception)
     }
   }
 
-void Packet::sendNoShaper() throw (Exception)
+void Packet::sendNoShaper() noexcept(false)
   {
   Shaper* shaper = mShaper;
   mShaper = NULL;
@@ -454,7 +454,7 @@ void Packet::sendNoShaper() throw (Exception)
   mShaper = shaper;
   }
 
-void Packet::play() throw (Exception)
+void Packet::play() noexcept(false)
   {
   send();
   }

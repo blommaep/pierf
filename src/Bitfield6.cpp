@@ -16,7 +16,7 @@
 #include <fstream>
 #include <sstream>
 
-void Bitfield6::setVal(ushort val) throw (Exception)
+void Bitfield6::setVal(ushort val) noexcept(false)
   {
   if (val > 0x3F)
     {
@@ -25,7 +25,7 @@ void Bitfield6::setVal(ushort val) throw (Exception)
   mData = val;
   }
 
-void Bitfield6::setOffset(uchar offset) throw (Exception)
+void Bitfield6::setOffset(uchar offset) noexcept(false)
   {
   if (offset > 2)
     {

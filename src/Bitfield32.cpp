@@ -21,49 +21,49 @@ Bitfield32::Bitfield32()
   : mDisplayType(eHex)
   {}
 
-void Bitfield32::stringToVal(const char* inString) throw (Exception)
+void Bitfield32::stringToVal(const char* inString) noexcept(false)
   {
   ulong32 temp = textToLong(inString);
   setVal((ulong32) temp);
   }
   
-void Bitfield32::setVal(ulong32 val) throw (Exception)
+void Bitfield32::setVal(ulong32 val) noexcept(false)
   {
   mData = val;
   // no exception/checks. This is merely here for easing enherited classes to overload the setVal
   }
 
-void Bitfield32::setDefault(const char* inString) throw (Exception)
+void Bitfield32::setDefault(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasDefaulted();
   }
 
-void Bitfield32::setManualFromValue(const char* inString) throw (Exception)
+void Bitfield32::setManualFromValue(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasManuallySet();
   }
 
-void Bitfield32::setAuto(const char* inString) throw (Exception)
+void Bitfield32::setAuto(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasAutoSet();
   }
 
-void Bitfield32::setDefault(const ulong32 inValue) throw (Exception)
+void Bitfield32::setDefault(const ulong32 inValue) noexcept(false)
   {
   setVal(inValue);
   wasDefaulted();
   }
 
-void Bitfield32::setManualFromValue(const ulong32 inValue) throw (Exception)
+void Bitfield32::setManualFromValue(const ulong32 inValue) noexcept(false)
   {
   setVal(inValue);
   wasManuallySet();
   }
    
-void Bitfield32::setAuto(const ulong32 inValue) throw (Exception)
+void Bitfield32::setAuto(const ulong32 inValue) noexcept(false)
   {
   setVal(inValue);
   wasAutoSet();

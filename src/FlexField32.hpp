@@ -38,22 +38,22 @@ class FlexField32: public Field
       };
     ValueStates mValueStates;
     Flex32 mData;
-    void stringToVal(const char* inString) throw (Exception);
-    uchar stringToChar(const char* val) throw (Exception);
-    ushort stringToShort(const char* val) throw (Exception);
+    void stringToVal(const char* inString) noexcept(false);
+    uchar stringToChar(const char* val) noexcept(false);
+    ushort stringToShort(const char* val) noexcept(false);
   public:
     FlexField32();
     enum How {eHowUndef, eHowDefault, eHowManual, eHowAuto, eHowCaptured};
-    void setDefault(const char* inString) throw (Exception);
-    void setManualFromValue(const char* inString) throw (Exception);
-    void setAuto(const char* inString) throw (Exception);
+    void setDefault(const char* inString) noexcept(false);
+    void setManualFromValue(const char* inString) noexcept(false);
+    void setAuto(const char* inString) noexcept(false);
     void setName(const char* inString);
     void setLong(const char* fieldname, ulong32 val, How how);
-    void setLong(const char* fieldname, const char* val, How how) throw (Exception);
-    void setShort(const char* fieldname, int pos, ushort val, How how) throw (Exception);
-    void setShort(const char* fieldname, int pos, const char* val, How how) throw (Exception);
-    void setChar(const char* fieldname, int pos, uchar val, How how) throw (Exception);
-    void setChar(const char* fieldname, int pos, const char* val, How how) throw (Exception);
+    void setLong(const char* fieldname, const char* val, How how) noexcept(false);
+    void setShort(const char* fieldname, int pos, ushort val, How how) noexcept(false);
+    void setShort(const char* fieldname, int pos, const char* val, How how) noexcept(false);
+    void setChar(const char* fieldname, int pos, uchar val, How how) noexcept(false);
+    void setChar(const char* fieldname, int pos, const char* val, How how) noexcept(false);
     uchar getChar(int pos);
     ushort getShort(int pos);
     ulong32 getLong();
@@ -65,7 +65,7 @@ class FlexField32: public Field
     uchar* copyTo(uchar* toPtr);
     bool analyze(uchar*& fromPtr, ulong32& remainingSize);     
     bool match(FlexField32& other);
-    bool copyVar() throw (Exception);    
+    bool copyVar() noexcept(false);    
   protected:
     ValueState how2ValueState(How how);
   };

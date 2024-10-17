@@ -34,15 +34,15 @@ class IgmpGroupRec: public Element // in fact sub-element
     string getTypeString();
   public:
     IgmpGroupRec();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
-    void setType(const char* type) throw (Exception);
-    void setMcastAddress(const char* mcastAddr, bool storeAsString) throw (Exception);
-    void addSource(char* srcAddr, bool storeAsString) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false);
+    void setType(const char* type) noexcept(false);
+    void setMcastAddress(const char* mcastAddr, bool storeAsString) noexcept(false);
+    void addSource(char* srcAddr, bool storeAsString) noexcept(false);
     string getString();
     bool getString(string& stringval, const char* fieldName);
     ulong32 getSize();
     ulong32 getTailSize();
-    bool copyVar() throw (Exception);
+    bool copyVar() noexcept(false);
     uchar* copyTo(unsigned char* toPtr);
     uchar* copyTail(uchar* toPtr);
     bool analyze_Head(uchar*& fromPtr, ulong32& remainingSize);

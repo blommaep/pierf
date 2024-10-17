@@ -28,7 +28,7 @@ SignatureElem::SignatureElem()
   }
 
 
-void SignatureElem::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
+void SignatureElem::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false)
   {
   //char* autoStr=NULL;
   int i=0;
@@ -55,7 +55,7 @@ void SignatureElem::parseAttrib(const char** attr, AutoObject* parent, bool chec
   }
 
 
-bool SignatureElem::copyVar() throw (Exception)
+bool SignatureElem::copyVar() noexcept(false)
   {
   return false;
   }

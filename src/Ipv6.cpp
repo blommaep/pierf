@@ -35,7 +35,7 @@ Ipv6::Ipv6()
   mPayloadLength.displayDecimal();
   }
 
-void Ipv6::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
+void Ipv6::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false)
   {
   char* autoStr=NULL;
   int i=0;
@@ -274,7 +274,7 @@ ulong32 Ipv6::getTailSize()
   return 0;
   }
 
-bool Ipv6::copyVar() throw (Exception)
+bool Ipv6::copyVar() noexcept(false)
   {
   bool copy = false;
   bool res;

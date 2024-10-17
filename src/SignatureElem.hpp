@@ -28,11 +28,11 @@ class SignatureElem: public Element
     bool checkComplete();
   public:
     SignatureElem();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false);
     string getString();
     bool getString(string& stringval, const char* fieldName);
     ulong32 getSize();
-    bool copyVar() throw (Exception);
+    bool copyVar() noexcept(false);
     bool hasVar();
     uchar* copyTo(uchar* toPtr);
     uchar* copyTail(uchar* toPtr);

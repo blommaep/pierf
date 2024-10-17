@@ -25,16 +25,16 @@ class Bitfield16: public Field
     ushort mData;
     enum DisplayType {eHex, eDec, eChar}; //Hex, Decimal or ascii char display
     DisplayType mDisplayType;
-    void stringToVal(const char* inString) throw (Exception);
-    void setVal(ushort val) throw (Exception);
+    void stringToVal(const char* inString) noexcept(false);
+    void setVal(ushort val) noexcept(false);
   public:
     Bitfield16();
-    void setDefault(const char* inString) throw (Exception);
-    void setManualFromValue(const char* inString) throw (Exception);
-    void setAuto(const char* inString) throw (Exception);
-    void setDefault(const ushort inValue) throw (Exception);
-    void setManualFromValue(const ushort inValue) throw (Exception);
-    void setAuto(const ushort inValue) throw (Exception);
+    void setDefault(const char* inString) noexcept(false);
+    void setManualFromValue(const char* inString) noexcept(false);
+    void setAuto(const char* inString) noexcept(false);
+    void setDefault(const ushort inValue) noexcept(false);
+    void setManualFromValue(const ushort inValue) noexcept(false);
+    void setAuto(const ushort inValue) noexcept(false);
     void displayDecimal();
     void displayChar();
     string getStringFromBinary() const;

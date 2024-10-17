@@ -51,7 +51,7 @@ class Counter: public Var
     ulong32 getBitrate(); // bits per second. 
     double getTotalTime();
     string getBitrateString(); // return bitrate as a string
-    void setStringValue(const char* inString) throw (Exception);
+    void setStringValue(const char* inString) noexcept(false);
     string getStringValue();
     string getString() const;
   };

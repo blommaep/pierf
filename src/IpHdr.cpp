@@ -35,7 +35,7 @@ IpHdr::IpHdr()
   mPacketId.displayDecimal();
   }
 
-void IpHdr::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
+void IpHdr::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false)
   {
   char* autoStr=NULL;
   int i=0;
@@ -151,17 +151,17 @@ void IpHdr::parseAttrib(const char** attr, AutoObject* parent, bool checkMandato
 
   }
 
-void IpHdr::setFrom(const char* fromIp) throw (Exception)
+void IpHdr::setFrom(const char* fromIp) noexcept(false)
   {
   mFromIp.setManual(fromIp, false);
   }
 
-void IpHdr::setTo(const char* toIp) throw (Exception)
+void IpHdr::setTo(const char* toIp) noexcept(false)
   {
   mToIp.setManual(toIp, false);
   }
 
-void IpHdr::setDscp(const char* dscpStr) throw (Exception)
+void IpHdr::setDscp(const char* dscpStr) noexcept(false)
   {
   mDscp.setManual(dscpStr, false);  
   }
@@ -171,25 +171,25 @@ void IpHdr::setContentLength(ushort contentLength)
   mContentLength.setManualFromValue(contentLength);
   }
 
-void IpHdr::setContentLength(const char* contentLengthStr, bool storeAsString) throw (Exception)
+void IpHdr::setContentLength(const char* contentLengthStr, bool storeAsString) noexcept(false)
   {
   try
     {
     mContentLength.setManual(contentLengthStr, storeAsString);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Content length value invalid: " + string(e.what()));
     }
   }
 
-void IpHdr::setTtl(const char* ttl, bool storeAsString) throw (Exception)
+void IpHdr::setTtl(const char* ttl, bool storeAsString) noexcept(false)
   {
   try
     {
     mTtl.setManual(ttl, storeAsString);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Invalid TTL: "+ string(e.what()));
     }
@@ -200,7 +200,7 @@ void IpHdr::setProtocol(uchar protocol)
   mProtocol.setManualFromValue(protocol);
   }
 
-void IpHdr::setProtocol(const char* protocolStr) throw (Exception)
+void IpHdr::setProtocol(const char* protocolStr) noexcept(false)
   {
   mProtocol.setManual(protocolStr, false);
   }
@@ -210,43 +210,43 @@ void IpHdr::setPacketId(ushort packetId)
   mPacketId.setManualFromValue(packetId);
   }
 
-void IpHdr::setPacketId(const char* packetId, bool storeAsString) throw (Exception)
+void IpHdr::setPacketId(const char* packetId, bool storeAsString) noexcept(false)
   {
   try
     {
     mPacketId.setManual(packetId, storeAsString);
     }
-  catch(Exception e)
+  catch (Exception& e)
     {
     throw Exception("Invalid fragmentid: " + string(e.what()));
     }
   }
 
-void IpHdr::setFlags(const char* flags, bool storeAsString) throw (Exception)
+void IpHdr::setFlags(const char* flags, bool storeAsString) noexcept(false)
   {
   try
     {
     mFlags.setManual(flags, storeAsString);
     }
-  catch(Exception e)
+  catch (Exception& e)
     {
     throw Exception("Invalid flags value: " + string(e.what()));
     }
   }
 
-void IpHdr::setFragmentOffset(ushort fragmentOffset) throw (Exception)
+void IpHdr::setFragmentOffset(ushort fragmentOffset) noexcept(false)
   {
   try
     {
     mFragmentOffset.setManualFromValue(fragmentOffset);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("IP Header: invalid fragment offset: " + string(e.what()));
     }
   }
 
-void IpHdr::setFragmentOffset(const char* fragmentOffset, bool storeAsString) throw (Exception)
+void IpHdr::setFragmentOffset(const char* fragmentOffset, bool storeAsString) noexcept(false)
   {
   if (storeAsString)
     {
@@ -259,7 +259,7 @@ void IpHdr::setFragmentOffset(const char* fragmentOffset, bool storeAsString) th
       {
       temp = atos((char*) fragmentOffset);
       }
-    catch(Exception e)
+    catch (Exception& e)
       {
       throw Exception("Invalid fragmentoffset: " + string(e.what()));
       }
@@ -267,7 +267,7 @@ void IpHdr::setFragmentOffset(const char* fragmentOffset, bool storeAsString) th
     }
   }
 
-void IpHdr::setOptions(const char* optionStr, bool storeAsString) throw (Exception)
+void IpHdr::setOptions(const char* optionStr, bool storeAsString) noexcept(false)
   {
   mOptions.resetString();
   mOptions.setManual(optionStr, storeAsString);
@@ -277,13 +277,13 @@ void IpHdr::setOptions(const char* optionStr, bool storeAsString) throw (Excepti
     }
   }
 
-void IpHdr::setChecksumVal(const char* checksum, bool storeAsString) throw (Exception)
+void IpHdr::setChecksumVal(const char* checksum, bool storeAsString) noexcept(false)
   {
   try
     {
     mChecksum.setManual(checksum, storeAsString);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Invalid checksum value: " + string(e.what()));
     }
@@ -458,7 +458,7 @@ ulong32 IpHdr::getTailSize()
   return 0;
   }
 
-bool IpHdr::copyVar() throw (Exception)
+bool IpHdr::copyVar() noexcept(false)
   {
   bool copy = false;
   bool res;

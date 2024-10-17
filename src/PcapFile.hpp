@@ -28,10 +28,10 @@ class PcapFile
   private:
     ofstream mBinFH;
   public:
-    void openForWriting(const char* name) throw (Exception); // Opens the file for writing and creates a header record
-    void openForWriting(string& name) throw (Exception);
-    void addPacket(struct pcap_pkthdr *h, u_char *pkt_data) throw (Exception);
-    void addPacket(u_char *pkt_data, ulong32 size) throw (Exception); // Adds packet with current timestamp
+    void openForWriting(const char* name) noexcept(false); // Opens the file for writing and creates a header record
+    void openForWriting(string& name) noexcept(false);
+    void addPacket(struct pcap_pkthdr *h, u_char *pkt_data) noexcept(false);
+    void addPacket(u_char *pkt_data, ulong32 size) noexcept(false); // Adds packet with current timestamp
     void close();
   };
 

@@ -22,7 +22,7 @@ Bitfield20::Bitfield20()
   {
   }
 
-void Bitfield20::setVal(ulong32 val) throw (Exception)
+void Bitfield20::setVal(ulong32 val) noexcept(false)
   {
   if (val > 0x000FFFFF)
     {
@@ -31,7 +31,7 @@ void Bitfield20::setVal(ulong32 val) throw (Exception)
   mData = val;
   }
 
-void Bitfield20::setOffset(uchar offset) throw (Exception)
+void Bitfield20::setOffset(uchar offset) noexcept(false)
   {
   if (offset > 7)
     {

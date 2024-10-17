@@ -20,7 +20,7 @@
 
 //// OVERLOADED CLASSES FOR DEDICATED FIELD INTERPRETATIONS ////
 
-void ArpType::setManualFromValue(const char* inString) throw (Exception)
+void ArpType::setManualFromValue(const char* inString) noexcept(false)
   {
   if (!strncmp(inString,"0x",2))
     {
@@ -40,7 +40,7 @@ void ArpType::setManualFromValue(const char* inString) throw (Exception)
     }
   }
 
-void ArpType::setAuto(const char* inString) throw (Exception)
+void ArpType::setAuto(const char* inString) noexcept(false)
   {
   if (!strncmp(inString,"0x",2))
     {
@@ -60,7 +60,7 @@ void ArpType::setAuto(const char* inString) throw (Exception)
     }
   }
 
-void ArpType::setDefault(const char* inString) throw (Exception)
+void ArpType::setDefault(const char* inString) noexcept(false)
   {
   if (!strncmp(inString,"0x",2))
     {
@@ -117,7 +117,7 @@ Arp::Arp()
   {
   }
 
-void Arp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
+void Arp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false)
   {
   char* autoStr=NULL;
   int i=0;
@@ -190,7 +190,7 @@ void Arp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory
     }
   }
 
-void Arp::setType(const char* type, bool storeAsString) throw (Exception)
+void Arp::setType(const char* type, bool storeAsString) noexcept(false)
   {
   mArpType.setManual(type, storeAsString);
 
@@ -203,22 +203,22 @@ void Arp::setType(const char* type, bool storeAsString) throw (Exception)
     }
   }
 
-void Arp::setSourceMac(const char* sourceMac) throw (Exception)
+void Arp::setSourceMac(const char* sourceMac) noexcept(false)
   {
   mSourceMac.setManual(sourceMac, false);
   }
 
-void Arp::setDestMac(const char* destMac) throw (Exception)
+void Arp::setDestMac(const char* destMac) noexcept(false)
   {
   mDestMac.setManual(destMac, false);
   }
 
-void Arp::setSourceIp(const char* sourceIp) throw (Exception)
+void Arp::setSourceIp(const char* sourceIp) noexcept(false)
   {
   mSourceIp.setManual(sourceIp, false);
   }
 
-void Arp::setDestIp(const char* destIp) throw (Exception)
+void Arp::setDestIp(const char* destIp) noexcept(false)
   {
   mDestIp.setManual(destIp, false);
   }
@@ -312,7 +312,7 @@ ulong32 Arp::getTailSize()
   return 0;
   }
 
-bool Arp::copyVar() throw (Exception)
+bool Arp::copyVar() noexcept(false)
   {
   bool copy=false;
   bool res;

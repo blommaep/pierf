@@ -92,7 +92,7 @@ ParseConfig::~ParseConfig()
   Thread::sleep(1500); // Dumb sleep just to make sure that all port threads get their time to close. Need to look for more smart mechanism when introducing TaskQueue mechanism to replace the current wait/signal shit
   }
 
-void ParseConfig::parserException(const string& msg) throw (Exception)
+void ParseConfig::parserException(const string& msg) noexcept(false)
   {
   throw Exception("Line " + getParserLine() + ": " + msg);
   }
@@ -232,7 +232,7 @@ string ParseConfig::getString() const
   }
 
 
-void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception) 
+void ParseConfig::start_hndl(const char* el, const char **attr) noexcept(false) 
   {
   /*
   cout << "Start tag: " << el;
@@ -401,7 +401,8 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
           {
           if (!strcmp(typeStr,"loopback"))
             {
-            mCurPort = new Port(Port::eLoopback, portName, "", outFileName);
+            char empty[] = "";
+            mCurPort = new Port(Port::eLoopback, portName, empty, outFileName);
             }
           else
             {
@@ -1909,7 +1910,7 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
   }  /* End of start_hndl */
 
 
-void ParseConfig::end_hndl(const char *el) throw (Exception)
+void ParseConfig::end_hndl(const char *el) noexcept(false)
   {
   //cout << "End tag: " << el << endl;
   State state = curState();
@@ -2008,7 +2009,7 @@ void ParseConfig::end_hndl(const char *el) throw (Exception)
   mStateStack.pop_back();
   }  /* End of end_hndl */
 
-void ParseConfig::char_hndl(const char *txt, int txtlen) throw (Exception)
+void ParseConfig::char_hndl(const char *txt, int txtlen) noexcept(false)
   {
   string chars = string(txt,txtlen);
 
@@ -2067,7 +2068,7 @@ string ParseConfig::getParserLine()
   return line.str();
   }
 
-void ParseConfig::parse(string& configFile) throw (Exception)
+void ParseConfig::parse(string& configFile) noexcept(false)
   {
   mCurContext = new PierFileContext;
   mPierfContextStack.push_back(mCurContext);
@@ -2099,7 +2100,7 @@ void ParseConfig::parse(string& configFile) throw (Exception)
           {
           result = XML_Parse(mCurContext->mParser, pierfcLine.c_str(), len, 0);
           }
-        catch (Exception e)
+        catch (Exception& e)
           {
           stringstream exceptstr;
           exceptstr << "while parsing " << mCurContext->mName << ":" << XML_GetCurrentLineNumber(mCurContext->mParser) << " :" << endl;
@@ -2155,7 +2156,7 @@ void ParseConfig::parse(string& configFile) throw (Exception)
 
   }
 
-void ParseConfig::parse(const char* configFile) throw (Exception)
+void ParseConfig::parse(const char* configFile) noexcept(false)
   {
   string cFile = configFile;
   parse(cFile);

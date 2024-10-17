@@ -50,20 +50,20 @@ class Packet: public PlayStep
     void setAnalysisReady(bool ready);
     bool getBinaryReady();
     bool getAnalysisReady();
-    void setRawPacket(uchar* rawPacket, ulong32 rawSize) throw (Exception);
-    void analyse() throw (Exception);
+    void setRawPacket(uchar* rawPacket, ulong32 rawSize) noexcept(false);
+    void analyse() noexcept(false);
     bool match(Packet* otherPacket); // backward compatible, always binary match
     // Element and send tasks
     bool compare(Packet* otherPacket, bool matchByString); // no mixed mode currently, may need to merge these again later...?
     void push_back(Element* elem);
     bool tryComplete(bool final);
     void setPort(Port* outport);
-    void sendTo(Port& outport) throw (Exception);
-    void sendTo(Port* outport) throw (Exception);
+    void sendTo(Port& outport) noexcept(false);
+    void sendTo(Port* outport) noexcept(false);
     ulong32 getRawSize();
-    void send() throw (Exception);
-    void sendNoShaper() throw (Exception);
-    void play() throw (Exception);
+    void send() noexcept(false);
+    void sendNoShaper() noexcept(false);
+    void play() noexcept(false);
     void setCounter(Counter* counter);
     vector<Element*>::iterator begin();
     vector<Element*>::iterator end();

@@ -26,7 +26,7 @@ StringVar::~StringVar()
   {
   }
 
-void StringVar::setStringValue(const char* inString) throw (Exception)
+void StringVar::setStringValue(const char* inString) noexcept(false)
   {
   mValue = inString;
   }

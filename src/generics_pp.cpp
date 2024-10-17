@@ -53,7 +53,7 @@ std::string intToString(int i)
   return(retval.str()); //returns the string form of the stringstream object
   }
 
-uchar charToNible(char inChar) throw (Exception)
+uchar charToNible(char inChar) noexcept(false)
   {
   uchar nible = ((uchar) inChar)-'0';
   if (nible > 9) // subtract the distance between the number characters and the letters
@@ -83,7 +83,7 @@ uchar charToNible(char inChar) throw (Exception)
   return nible;
   }
 
-ulong32 textToLong(const char* inString) throw (Exception)
+ulong32 textToLong(const char* inString) noexcept(false)
   {
   if (!strcmp(inString,"0") || !strcmp(inString,"0x0"))
     {
@@ -113,7 +113,7 @@ ulong32 textToLong(const char* inString) throw (Exception)
   return 0; // pro forma
   }
 
-ushort atos(char* instr) throw (Exception)
+ushort atos(char* instr) noexcept(false)
   {
   int temp = atoi(instr);
   if (temp < 0 || temp > 0xFFFF)
@@ -123,7 +123,7 @@ ushort atos(char* instr) throw (Exception)
   return (ushort) temp;
   }
 
-ushort atob(char* instr) throw (Exception)
+ushort atob(char* instr) noexcept(false)
   {
   int temp = atoi(instr);
   if (temp < 0 || temp > 0xFF)

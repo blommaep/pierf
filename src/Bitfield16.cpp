@@ -21,7 +21,7 @@ Bitfield16::Bitfield16()
   : mDisplayType(eHex)
   {}
 
-void Bitfield16::stringToVal(const char* inString) throw (Exception)
+void Bitfield16::stringToVal(const char* inString) noexcept(false)
   {
   ulong32 temp = textToLong(inString);
   if (temp < 0 || temp > 0xFFFF)
@@ -31,43 +31,43 @@ void Bitfield16::stringToVal(const char* inString) throw (Exception)
   setVal((ushort) temp);
   }
   
-void Bitfield16::setVal(ushort val) throw (Exception)
+void Bitfield16::setVal(ushort val) noexcept(false)
   {
   mData = val;
   // no exception/checks. This is merely here for easing enherited classes to overload the setVal
   }
 
-void Bitfield16::setDefault(const char* inString) throw (Exception)
+void Bitfield16::setDefault(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasDefaulted();
   }
 
-void Bitfield16::setManualFromValue(const char* inString) throw (Exception)
+void Bitfield16::setManualFromValue(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasManuallySet();
   }
 
-void Bitfield16::setAuto(const char* inString) throw (Exception)
+void Bitfield16::setAuto(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasAutoSet();
   }
 
-void Bitfield16::setDefault(const ushort inValue) throw (Exception)
+void Bitfield16::setDefault(const ushort inValue) noexcept(false)
   {
   setVal(inValue);
   wasDefaulted();
   }
 
-void Bitfield16::setManualFromValue(const ushort inValue) throw (Exception)
+void Bitfield16::setManualFromValue(const ushort inValue) noexcept(false)
   {
   setVal(inValue);
   wasManuallySet();
   }
    
-void Bitfield16::setAuto(const ushort inValue) throw (Exception)
+void Bitfield16::setAuto(const ushort inValue) noexcept(false)
   {
   setVal(inValue);
   wasAutoSet();

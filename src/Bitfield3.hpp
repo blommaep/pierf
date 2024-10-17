@@ -23,10 +23,10 @@ class Bitfield3: public Bitfield8
   {
   private:
     uchar mOffset;
-    void setVal(ushort val) throw (Exception);
+    void setVal(ushort val) noexcept(false);
   public:
     Bitfield3();
-    void setOffset(uchar offset) throw (Exception);
+    void setOffset(uchar offset) noexcept(false);
     uchar* copyTo(uchar* toPtr);
     bool analyze(uchar*& fromPtr, ulong32& remainingSize); 
   };

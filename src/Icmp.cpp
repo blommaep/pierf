@@ -19,7 +19,7 @@
 
 //// OVERLOADED CLASSES FOR DEDICATED FIELD INTERPRETATIONS ////
 
-uchar IcmpType::stringToVal(const char* strType) throw (Exception)
+uchar IcmpType::stringToVal(const char* strType) noexcept(false)
   {
   uchar val;
   if (!strcmp(strType,"echoReply"))
@@ -111,17 +111,17 @@ uchar IcmpType::stringToVal(const char* strType) throw (Exception)
   return val;  
   }
 
-void IcmpType::setManualFromValue(const char* inString) throw (Exception)
+void IcmpType::setManualFromValue(const char* inString) noexcept(false)
   {
   Bitfield8::setManualFromValue(stringToVal(inString));
   }
 
-void IcmpType::setAuto(const char* inString) throw (Exception)
+void IcmpType::setAuto(const char* inString) noexcept(false)
   {
   Bitfield8::setAuto(stringToVal(inString));
   }
 
-void IcmpType::setDefault(const char* inString) throw (Exception)
+void IcmpType::setDefault(const char* inString) noexcept(false)
   {
   Bitfield8::setDefault(stringToVal(inString));
   }
@@ -215,7 +215,7 @@ Icmp::Icmp()
   {
   }
 
-void Icmp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
+void Icmp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false)
   {
   char* autoStr=NULL;
   int i=0;
@@ -310,13 +310,13 @@ void Icmp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandator
     }
   }
 
-void Icmp::setType(const char* strType, bool storeAsString) throw (Exception)
+void Icmp::setType(const char* strType, bool storeAsString) noexcept(false)
   {
   try
     {
     mType.setManual(strType, storeAsString);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Type value invalid: " + string(e.what()));
     }
@@ -374,31 +374,31 @@ void Icmp::setType(const char* strType, bool storeAsString) throw (Exception)
     }
   }
 
-void Icmp::setCode(const char* strCode, bool storeAsString) throw (Exception)
+void Icmp::setCode(const char* strCode, bool storeAsString) noexcept(false)
   {
   try
     {
     mCode.setManual(strCode, storeAsString);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Code value invalid: " + string(e.what()));
     }
   }
 
-void Icmp::setChecksum(const char* strChecksum, bool storeAsString) throw (Exception)
+void Icmp::setChecksum(const char* strChecksum, bool storeAsString) noexcept(false)
   {
   try
     {
     mChecksum.setManual(strChecksum, storeAsString);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Checksum value invalid: " + string(e.what()));
     }
   }
 
-void Icmp::setId(const char* strId, bool storeAsString) throw (Exception)
+void Icmp::setId(const char* strId, bool storeAsString) noexcept(false)
   {
   mSpecificDataArePrintable = true;
   mSpecificDataString += " identifier=\"";
@@ -432,14 +432,14 @@ void Icmp::setId(const char* strId, bool storeAsString) throw (Exception)
       {
       mSpecificData.setShort("identifier", 0, strId, FlexField32::eHowManual);
       }
-    catch (Exception e)
+    catch (Exception& e)
       {
       throw Exception("Id value invalid: " + string(e.what()));
       }
     }
   }
 
-void Icmp::setSequenceNr(const char* strSeq) throw (Exception)
+void Icmp::setSequenceNr(const char* strSeq) noexcept(false)
   {
   mSpecificDataArePrintable = true;
   mSpecificDataString += " sequencenr=\"";
@@ -466,13 +466,13 @@ void Icmp::setSequenceNr(const char* strSeq) throw (Exception)
     {
     mSpecificData.setShort("sequencenr", 1, strSeq, FlexField32::eHowManual);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Sequencenr value invalid: " + string(e.what()));
     }
   }
 
-void Icmp::setOffset(const char* strOffset) throw (Exception)
+void Icmp::setOffset(const char* strOffset) noexcept(false)
   {
   mSpecificDataArePrintable = true;
   mSpecificDataString += " offset=\"";
@@ -490,13 +490,13 @@ void Icmp::setOffset(const char* strOffset) throw (Exception)
     {
     mSpecificData.setLong("offset", strOffset, FlexField32::eHowManual);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Offset value invalid: " + string(e.what()));
     }
   }
 
-void Icmp::setNexthopMtu(const char* strMtu) throw (Exception)
+void Icmp::setNexthopMtu(const char* strMtu) noexcept(false)
   {
   mSpecificDataArePrintable = true;
   mSpecificDataString += " nexthopMtu=\"";
@@ -514,13 +514,13 @@ void Icmp::setNexthopMtu(const char* strMtu) throw (Exception)
     {
     mSpecificData.setShort("nexthopMtu", 1, strMtu, FlexField32::eHowManual);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Next hop MTU value invalid: " + string(e.what()));
     }
   }
 
-void Icmp::setIpaddress(const char* strIp) throw (Exception)
+void Icmp::setIpaddress(const char* strIp) noexcept(false)
   {
   mSpecificDataArePrintable = true;
   mSpecificDataString += " ipaddress=\"";
@@ -538,13 +538,13 @@ void Icmp::setIpaddress(const char* strIp) throw (Exception)
     {
     mSpecificData.setLong("ipaddress", strIp, FlexField32::eHowManual);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("IP Address value invalid: " + string(e.what()));
     }
   }
 
-void Icmp::setAdvertisementCount(const char* strCount) throw (Exception)
+void Icmp::setAdvertisementCount(const char* strCount) noexcept(false)
   {
   mSpecificDataArePrintable = true;
   mSpecificDataString += " advertisementCount=\"";
@@ -562,13 +562,13 @@ void Icmp::setAdvertisementCount(const char* strCount) throw (Exception)
     {
     mSpecificData.setChar("advertisementCount", 0, strCount, FlexField32::eHowManual);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Advertisement count value invalid: " + string(e.what()));
     }
   }
 
-void Icmp::setAddressEntrySize(const char* strSize) throw (Exception)
+void Icmp::setAddressEntrySize(const char* strSize) noexcept(false)
   {
   mSpecificDataArePrintable = true;
   mSpecificDataString += " addressEntrySize=\"";
@@ -586,13 +586,13 @@ void Icmp::setAddressEntrySize(const char* strSize) throw (Exception)
     {
     mSpecificData.setChar("addressEntrySize", 1, strSize, FlexField32::eHowManual);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Address Entry Size value invalid: " + string(e.what()));
     }
   }
 
-void Icmp::setLifetime(const char* strLifetime) throw (Exception)
+void Icmp::setLifetime(const char* strLifetime) noexcept(false)
   {
   mSpecificDataArePrintable = true;
   mSpecificDataString += " lifetime=\"";
@@ -609,13 +609,13 @@ void Icmp::setLifetime(const char* strLifetime) throw (Exception)
     {
     mSpecificData.setShort("lifetime", 1, strLifetime, FlexField32::eHowManual);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Lifetime value invalid: " + string(e.what()));
     }
   }
 
-void Icmp::setPointer(const char* strPointer) throw (Exception)
+void Icmp::setPointer(const char* strPointer) noexcept(false)
   {
   mSpecificDataArePrintable = true;
   mSpecificDataString += " pointer=\"";
@@ -633,7 +633,7 @@ void Icmp::setPointer(const char* strPointer) throw (Exception)
     {
     mSpecificData.setChar("pointer", 0, strPointer, FlexField32::eHowManual);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("ICMP Pointer value invalid: " + string(e.what()));
     }
@@ -723,7 +723,7 @@ ulong32 Icmp::getTailSize()
   return 0;
   }
 
-bool Icmp::copyVar() throw (Exception)
+bool Icmp::copyVar() noexcept(false)
   {
   bool copy = false;
   bool res;

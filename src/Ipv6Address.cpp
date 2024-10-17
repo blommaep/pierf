@@ -20,7 +20,7 @@
 #include <string.h>
 //#include <asm/bytorder.h>
 
-void Ipv6Address::stringToVal(const char* inString) throw (Exception)
+void Ipv6Address::stringToVal(const char* inString) noexcept(false)
   {
   unsigned int i=0,j=0,k=0;
   unsigned int nrColons = 0;
@@ -143,19 +143,19 @@ Ipv6Address::Ipv6Address()
     }
   }
 
-void Ipv6Address::setDefault(const char* inString) throw (Exception)
+void Ipv6Address::setDefault(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasManuallySet();
   }
 
-void Ipv6Address::setManualFromValue(const char* inString) throw (Exception)
+void Ipv6Address::setManualFromValue(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasManuallySet();
   }
 
-void Ipv6Address::setAuto(const char* inString) throw (Exception)
+void Ipv6Address::setAuto(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasManuallySet();

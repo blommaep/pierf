@@ -28,11 +28,11 @@ using namespace std;
 class IcmpType: public Bitfield8
   {
   private:
-    uchar stringToVal(const char* strType) throw (Exception);
+    uchar stringToVal(const char* strType) noexcept(false);
   public:
-    void setManualFromValue(const char* inString) throw (Exception);
-    void setAuto(const char* inString) throw (Exception);
-    void setDefault(const char* inString) throw (Exception);
+    void setManualFromValue(const char* inString) noexcept(false);
+    void setAuto(const char* inString) noexcept(false);
+    void setDefault(const char* inString) noexcept(false);
     void setDefault(const uchar inValue)
       {
       Bitfield8::setDefault(inValue);
@@ -72,24 +72,24 @@ class Icmp: public Element
     string getTypeString();
   public:
     Icmp();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
-    void setType(const char* strType, bool storeAsString) throw (Exception);
-    void setCode(const char* strCode, bool storeAsString) throw (Exception);
-    void setChecksum(const char* strChecksum, bool storeAsString) throw (Exception);
-    void setId(const char* strId, bool storeAsString) throw (Exception);
-    void setSequenceNr(const char* strSeq) throw (Exception);
-    void setOffset(const char* strOffset) throw (Exception);
-    void setNexthopMtu(const char* strMtu) throw (Exception);
-    void setIpaddress(const char* strIp) throw (Exception);
-    void setAdvertisementCount(const char* strCount) throw (Exception);
-    void setAddressEntrySize(const char* strSize) throw (Exception);
-    void setLifetime(const char* strLifetime) throw (Exception);
-    void setPointer(const char* strPointer) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false);
+    void setType(const char* strType, bool storeAsString) noexcept(false);
+    void setCode(const char* strCode, bool storeAsString) noexcept(false);
+    void setChecksum(const char* strChecksum, bool storeAsString) noexcept(false);
+    void setId(const char* strId, bool storeAsString) noexcept(false);
+    void setSequenceNr(const char* strSeq) noexcept(false);
+    void setOffset(const char* strOffset) noexcept(false);
+    void setNexthopMtu(const char* strMtu) noexcept(false);
+    void setIpaddress(const char* strIp) noexcept(false);
+    void setAdvertisementCount(const char* strCount) noexcept(false);
+    void setAddressEntrySize(const char* strSize) noexcept(false);
+    void setLifetime(const char* strLifetime) noexcept(false);
+    void setPointer(const char* strPointer) noexcept(false);
     string getString();
     bool getString(string& stringval, const char* fieldName);
     ulong32 getSize();
     ulong32 getTailSize();
-    bool copyVar() throw (Exception);
+    bool copyVar() noexcept(false);
     uchar* copyTo(unsigned char* toPtr);
     uchar* copyTail(uchar* toPtr);
     bool analyze_Head(uchar*& fromPtr, ulong32& remainingSize);

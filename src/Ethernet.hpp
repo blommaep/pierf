@@ -29,18 +29,18 @@ class Ethernet: public Element
     bool checkComplete();
   public:
     Ethernet();
-    Ethernet(MacAddress& from, MacAddress& to) throw (Exception);
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
+    Ethernet(MacAddress& from, MacAddress& to) noexcept(false);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false);
     // set interfaces only kept for backward compatibility. parseAttrib is the only function relevant for xml parsing and will also assure string save
     void setFrom(MacAddress& from);
     void setTo(MacAddress& to);
     void setFrom(const char* from);
     void setTo(const char* to);
-    void setEthertype(const char* ethertype) throw (Exception);
+    void setEthertype(const char* ethertype) noexcept(false);
     string getString();
     bool getString(string& stringval, const char* fieldName);
     ulong32 getSize();
-    bool copyVar() throw (Exception);
+    bool copyVar() noexcept(false);
     bool hasVar();
     uchar* copyTo(uchar* toPtr);
     uchar* copyTail(uchar* toPtr);

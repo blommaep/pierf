@@ -35,7 +35,7 @@ class VarAssignStep: public PlayStep
   public:
     VarAssignStep();
     ~VarAssignStep();
-    void setVar(const char* varName) throw (Exception);
+    void setVar(const char* varName) noexcept(false);
     void setFormula(const char* formula);
     void setElement(Element* element); // optional: only for assings part of a packet layer
     void copyFormula(VarAssignStep* other);

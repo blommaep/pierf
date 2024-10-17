@@ -27,7 +27,7 @@ class MultiShaperStep: public PlayStep
   public:
     MultiShaperStep();
     ~MultiShaperStep();
-    void addPacket(Packet* packet) throw (Exception);
+    void addPacket(Packet* packet) noexcept(false);
     void play();
     string getString() const;
   };

@@ -29,13 +29,13 @@ FlexField32::FlexField32()
   mData.uLong = 0; //Reset the entire long to 0 as a start
   }
 
-void FlexField32::stringToVal(const char* inString) throw (Exception)
+void FlexField32::stringToVal(const char* inString) noexcept(false)
   {
   ulong32 temp = textToLong(inString);
   mData.uLong = temp; 
   }
 
-uchar FlexField32::stringToChar(const char* val) throw (Exception)
+uchar FlexField32::stringToChar(const char* val) noexcept(false)
   {
   ulong32 temp = textToLong(val);
   if (temp < 0 || temp > 0xFF)
@@ -45,7 +45,7 @@ uchar FlexField32::stringToChar(const char* val) throw (Exception)
   return temp;
   }
 
-ushort FlexField32::stringToShort(const char* val) throw (Exception)
+ushort FlexField32::stringToShort(const char* val) noexcept(false)
   {
   ulong32 temp = textToLong(val);
   if (temp < 0 || temp > 0xFFFF)
@@ -73,7 +73,7 @@ Field::ValueState FlexField32::how2ValueState(How how)
    return eUndef; // pro forma, will never get here
    }
 
-void FlexField32::setDefault(const char* inString) throw (Exception)
+void FlexField32::setDefault(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   for (int i=0;i<4;i++)
@@ -83,7 +83,7 @@ void FlexField32::setDefault(const char* inString) throw (Exception)
   wasDefaulted();
   }
 
-void FlexField32::setManualFromValue(const char* inString) throw (Exception)
+void FlexField32::setManualFromValue(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   for (int i=0;i<4;i++)
@@ -93,7 +93,7 @@ void FlexField32::setManualFromValue(const char* inString) throw (Exception)
   wasManuallySet();
   }
 
-void FlexField32::setAuto(const char* inString) throw (Exception)
+void FlexField32::setAuto(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   for (int i=0;i<4;i++)
@@ -123,13 +123,13 @@ void FlexField32::setLong(const char* fieldname, ulong32 val, How how)
   mValueState = valueState;
   }
 
-void FlexField32::setLong(const char* fieldname, const char* val, How how) throw (Exception)
+void FlexField32::setLong(const char* fieldname, const char* val, How how) noexcept(false)
   {
   ulong32 temp = textToLong(val);
   setLong(fieldname, temp, how);
   }
 
-void FlexField32::setShort(const char* fieldname, int pos, ushort val, How how) throw (Exception)
+void FlexField32::setShort(const char* fieldname, int pos, ushort val, How how) noexcept(false)
   {
   if (pos>1)
     {
@@ -143,7 +143,7 @@ void FlexField32::setShort(const char* fieldname, int pos, ushort val, How how) 
   mData.uShort[pos] = htons(val);
   }
 
-void FlexField32::setShort(const char* fieldname, int pos, const char* val, How how) throw (Exception)
+void FlexField32::setShort(const char* fieldname, int pos, const char* val, How how) noexcept(false)
   {
   if (val[0] == '$')
     {
@@ -163,7 +163,7 @@ void FlexField32::setShort(const char* fieldname, int pos, const char* val, How 
     }
   }
 
-void FlexField32::setChar(const char* fieldname, int pos, uchar val, How how) throw (Exception)
+void FlexField32::setChar(const char* fieldname, int pos, uchar val, How how) noexcept(false)
   {
   if (pos>3)
     {
@@ -174,7 +174,7 @@ void FlexField32::setChar(const char* fieldname, int pos, uchar val, How how) th
   mData.uChar[pos] = val;
   }
 
-void FlexField32::setChar(const char* fieldname, int pos, const char* val, How how) throw (Exception)
+void FlexField32::setChar(const char* fieldname, int pos, const char* val, How how) noexcept(false)
   {
   if (val[0] == '$')
     {
@@ -407,7 +407,7 @@ bool FlexField32::match(FlexField32& other)
   return true;
   }
 
-bool FlexField32::copyVar() throw (Exception)
+bool FlexField32::copyVar() noexcept(false)
   {
   bool hasVar = false;
   if (mValueState == eVar) // one single 4 bytes field

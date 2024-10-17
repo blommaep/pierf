@@ -29,7 +29,7 @@ class StringVar: public Var
     StringVar(string& name);
     ~StringVar();
 
-    void setStringValue(const char* inString) throw (Exception);
+    void setStringValue(const char* inString) noexcept(false);
     string getStringValue();
     string getString() const;
   };

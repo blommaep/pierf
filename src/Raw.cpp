@@ -24,7 +24,7 @@ Raw::Raw()
   mDataFieldEntered = false;
   }
 
-void Raw::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
+void Raw::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false)
   {
   int i=0;
   char* autoStr = NULL;
@@ -77,7 +77,7 @@ void Raw::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory
     }
   }
 
-void Raw::addString(const char* inString) throw (Exception)
+void Raw::addString(const char* inString) noexcept(false)
   {
   if (mDataFieldEntered)
     {
@@ -90,7 +90,7 @@ void Raw::addString(const char* inString) throw (Exception)
     }
   }
 
-void Raw::addString(const string& inString) throw (Exception)
+void Raw::addString(const string& inString) noexcept(false)
   {
   if (mDataFieldEntered)
     {
@@ -113,7 +113,7 @@ void Raw::setSize(const char* size)
   mSize.setManual(size, false);
   }
 
-void Raw::setType(const char* type) throw (Exception)
+void Raw::setType(const char* type) noexcept(false)
   {
   if (!strcmp(type,"hex"))
     {
@@ -206,7 +206,7 @@ ulong32 Raw::getTailSize()
   return 0;
   }
 
-bool Raw::copyVar() throw (Exception)
+bool Raw::copyVar() noexcept(false)
   {
   bool copy = false;
   bool res;

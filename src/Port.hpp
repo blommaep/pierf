@@ -68,25 +68,25 @@ class Port: public ZThread::Runnable
     
     string iptos(u_long in);
     void printAllDevices();
-    void initPort(PortType portType, char* easyName, char* sourceName, char* destName) throw (Exception);
+    void initPort(PortType portType, char* easyName, char* sourceName, char* destName) noexcept(false);
     struct pcap_pkthdr* mLoopbackHdr;
     uchar* mLoopbackPkt;
     enum LoopbackState {eLoopbackIdle, eHasPacket, ePacketReceived};
     LoopbackState mLoopbackState;
 
   public:
-    Port(char* easyName, char* sourceName) throw (Exception);
-    Port(PortType portType, char* easyName, char* sourceName, char* destName) throw (Exception);
+    Port(char* easyName, char* sourceName) noexcept(false);
+    Port(PortType portType, char* easyName, char* sourceName, char* destName) noexcept(false);
     ~Port();
     void run();
     void close(); //due to the threading, cannot just do it in the destructor
-    void startLog(char* fileName) throw (Exception);
+    void startLog(char* fileName) noexcept(false);
     string getId();
     void setSleepForReplay(bool sleep);
     void send(uchar* packet, int packetsize);
     void waitReceive(); // Wait loop waiting for the next packet to come in
     RxPacket receive(); // Always call waitReceive first. This gives you the received packet. Also includes waiting system: to avoid memory allocations, no (additional) buffering is done, but the receive thread will simply wait till everybody can handle the packet
-    void setSilent(const char* silent) throw (Exception); // true not to print to stdout
+    void setSilent(const char* silent) noexcept(false); // true not to print to stdout
     string getString() const;
     string getName() const;
   };

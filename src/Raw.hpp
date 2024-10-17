@@ -32,18 +32,18 @@ class Raw: public Element
     bool mDataFieldEntered;
   public:
     Raw();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
-    void addString(const char* inString) throw (Exception);
-    void addString(const string& inString) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false);
+    void addString(const char* inString) noexcept(false);
+    void addString(const string& inString) noexcept(false);
     void setSize(ulong32 size);
     void setSize(const char* size);
-    void setType(const char* type) throw (Exception);
+    void setType(const char* type) noexcept(false);
     void setFiller(const char* filler);
     string getString();
     bool getString(string& stringval, const char* fieldName);
     ulong32 getSize();
     ulong32 getTailSize();
-    bool copyVar() throw (Exception);
+    bool copyVar() noexcept(false);
     uchar* copyTo(uchar* toPtr);
     uchar* copyTail(uchar* toPtr);
     bool analyze_Head(uchar*& fromPtr, ulong32& remainingSize);

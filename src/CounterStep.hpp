@@ -36,9 +36,9 @@ class CounterStep: public PlayStep
     void setCounter(Counter* counter);
     void setAction(char* action);
     void setAction(CounterAction action);
-    void setValue(const char* value) throw (Exception); // May be used with reset/increment, default=0 resp. 1
-    void setBytesValue(const char* bytesValue) throw (Exception);
-    void setVar(const char* varName) throw (Exception); // Alternative to fixed value, use var
+    void setValue(const char* value) noexcept(false); // May be used with reset/increment, default=0 resp. 1
+    void setBytesValue(const char* bytesValue) noexcept(false);
+    void setVar(const char* varName) noexcept(false); // Alternative to fixed value, use var
     void play();
     string getString() const;
   };

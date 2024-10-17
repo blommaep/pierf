@@ -27,9 +27,9 @@ using namespace std;
 class ArpType: public Bitfield16
   {
   public:
-    void setManualFromValue(const char* inString) throw (Exception);
-    void setAuto(const char* inString) throw (Exception);
-    void setDefault(const char* inString) throw (Exception);
+    void setManualFromValue(const char* inString) noexcept(false);
+    void setAuto(const char* inString) noexcept(false);
+    void setDefault(const char* inString) noexcept(false);
     void setDefault(const uchar inValue)
       {
       Bitfield16::setDefault(inValue);
@@ -64,18 +64,18 @@ class Arp: public Element
     string getTypeString();
   public:
     Arp();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false);
     // set functions only kept for backward compatibility
-    void setType(const char* type, bool storeAsString) throw (Exception);
-    void setSourceMac(const char* sourceMac) throw (Exception);
-    void setDestMac(const char* destMac) throw (Exception);
-    void setSourceIp(const char* sourceIp) throw (Exception);
-    void setDestIp(const char* destIp) throw (Exception);
+    void setType(const char* type, bool storeAsString) noexcept(false);
+    void setSourceMac(const char* sourceMac) noexcept(false);
+    void setDestMac(const char* destMac) noexcept(false);
+    void setSourceIp(const char* sourceIp) noexcept(false);
+    void setDestIp(const char* destIp) noexcept(false);
     string getString();
     bool getString(string& stringval, const char* fieldName);
     ulong32 getSize();
     ulong32 getTailSize();
-    bool copyVar() throw (Exception);
+    bool copyVar() noexcept(false);
     uchar* copyTo(unsigned char* toPtr);
     uchar* copyTail(uchar* toPtr);
     bool analyze_Head(uchar*& fromPtr, ulong32& remainingSize);

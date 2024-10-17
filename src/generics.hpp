@@ -22,10 +22,10 @@ extern "C"
 
 void setChecksum(uchar* ckLoc, uchar* start, uchar* stop);
 std::string intToString(int i);
-uchar charToNible(char inChar) throw (Exception);
-ulong32 textToLong(const char* inString) throw (Exception);
-ushort atos(char* instr) throw (Exception);
-ushort atob(char* instr) throw (Exception);
+uchar charToNible(char inChar) noexcept(false);
+ulong32 textToLong(const char* inString) noexcept(false);
+ushort atos(char* instr) noexcept(false);
+ushort atob(char* instr) noexcept(false);
 std::string longToHexString(ulong32 i);
 
 #endif

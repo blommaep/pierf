@@ -25,14 +25,14 @@ class MacAddress: public Field
   {
   private:
     uchar mAddress[6];
-    void stringToVal(const char* inString) throw (Exception);
+    void stringToVal(const char* inString) noexcept(false);
   public:
     MacAddress();
-    void setDefault(const char* inString) throw (Exception);
-    void setManualFromValue(const char* inString) throw (Exception);
-    void setAuto(const char* inString) throw (Exception);
+    void setDefault(const char* inString) noexcept(false);
+    void setManualFromValue(const char* inString) noexcept(false);
+    void setAuto(const char* inString) noexcept(false);
     void autoCopy(const MacAddress& copyFrom);
-    void setAddressFromMcastIp(ulong32 mcastIp) throw (Exception);
+    void setAddressFromMcastIp(ulong32 mcastIp) noexcept(false);
     bool analyze(uchar*& fromPtr, ulong32& remainingSize); //uchar*&: call by reference of uchar*
     string getStringFromBinary() const;
     bool getStringFromBinary(string& stringval) const;

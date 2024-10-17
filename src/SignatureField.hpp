@@ -30,7 +30,7 @@ class SignatureField: public Bitfield32
     uchar* copyTo(uchar* toPtr);
     bool analyze(uchar*& fromPtr, ulong32& remainingSize);
     bool match(SignatureField& other);
-    bool copyVar() throw (Exception);
+    bool copyVar() noexcept(false);
     bool isVar() const;
     bool RxSignatureFound()
       {

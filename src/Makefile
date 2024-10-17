@@ -31,7 +31,7 @@ PCRE_LIB := ${PCRE_ROOT}/.libs/libpcre.a
 #PCRE_LIBCPP := ${PCRE_ROOT}/.libs/libpcrecpp.a
 PCRE_INCLUDE := ${PCRE_ROOT}
 
-CFLAGS = -I${PCAP_INCLUDE} -I${EXPAT_ROOT}/lib -I${ZTHREAD_ROOT}/include -I${PCRE_INCLUDE} -Wall -fexceptions -fpermissive -DHAVE_EXPAT_CONFIG_H 
+CFLAGS = -I${PCAP_INCLUDE} -I${EXPAT_ROOT}/lib -I${ZTHREAD_ROOT}/include -I${PCRE_INCLUDE} -Wall -fexceptions -DHAVE_EXPAT_CONFIG_H 
 ifeq ($(OSTYPE),CYGWIN_NT)
 CFLAGS += -mno-cygwin
 endif
@@ -41,7 +41,8 @@ LIBS= ${EXPAT_ROOT}/.libs/libexpat.a ${ZTHREAD_LIB} ${PCRE_LIB}
 ifeq ($(OSTYPE),CYGWIN_NT)
 LIBS += ${PCAP_PATH}/libwpcap.a 
 else
-LIBS += ${PCAP_PATH}/libpcap.a ${PCAP_PATH}/libpfring.a
+LIBS += -lpcap
+#LIBS += ${PCAP_PATH}/libpcap.a # ${PCAP_PATH}/libpfring.a
 endif
 #CCC=g++
 

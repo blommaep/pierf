@@ -16,7 +16,7 @@
 
 //// OVERLOADED CLASSES FOR DEDICATED FIELD INTERPRETATIONS ////
 
-void IpProtocol::setManualFromValue(const char* inString) throw (Exception)
+void IpProtocol::setManualFromValue(const char* inString) noexcept(false)
   {
   if (!strcmp(inString,"icmp"))
     {
@@ -44,7 +44,7 @@ void IpProtocol::setManualFromValue(const char* inString) throw (Exception)
     }
   }
 
-void IpProtocol::setAuto(const char* inString) throw (Exception)
+void IpProtocol::setAuto(const char* inString) noexcept(false)
   {
   if (!strcmp(inString,"icmp"))
     {
@@ -72,7 +72,7 @@ void IpProtocol::setAuto(const char* inString) throw (Exception)
     }
   }
 
-void IpProtocol::setDefault(const char* inString) throw (Exception)
+void IpProtocol::setDefault(const char* inString) noexcept(false)
   {
   if (!strcmp(inString,"icmp"))
     {

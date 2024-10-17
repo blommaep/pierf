@@ -19,14 +19,14 @@
 #include "ByteString.hpp"
 
 
-void MacAddress::stringToVal(const char* inString) throw (Exception)
+void MacAddress::stringToVal(const char* inString) noexcept(false)
   {
   ByteString convert;
   try
     {
     convert.addString(inString);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     stringstream msg;
     msg << "Invalid mac address: " << inString << " :" << endl << "  " << e.what() << endl;
@@ -52,19 +52,19 @@ MacAddress::MacAddress()
     }
   }
 
-void MacAddress::setDefault(const char* inString) throw (Exception)
+void MacAddress::setDefault(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasDefaulted();
   }
 
-void MacAddress::setManualFromValue(const char* inString) throw (Exception)
+void MacAddress::setManualFromValue(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasManuallySet();
   }
 
-void MacAddress::setAuto(const char* inString) throw (Exception)
+void MacAddress::setAuto(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasAutoSet();
@@ -83,7 +83,7 @@ void MacAddress::autoCopy(const MacAddress& copyFrom)
     }
   }
 
-void MacAddress::setAddressFromMcastIp(ulong32 mcastIp) throw (Exception)
+void MacAddress::setAddressFromMcastIp(ulong32 mcastIp) noexcept(false)
   {
   // by ethernet spec, igmp/ip/ethernet will get assigned a multicast mac address
   // in the range 01:00:5E:00:00:00 till 01:00:5E:7F:FF:FF.

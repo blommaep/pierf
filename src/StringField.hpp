@@ -23,12 +23,12 @@ using namespace std;
 class StringField: public Field, public ByteString
   {
   protected:
-    void stringToVal(const char* inString) throw (Exception);
+    void stringToVal(const char* inString) noexcept(false);
   public:
     virtual ~StringField();
-    void setDefault(const char* inString) throw (Exception);
-    void setManualFromValue(const char* inString) throw (Exception);
-    void setAuto(const char* inString) throw (Exception);
+    void setDefault(const char* inString) noexcept(false);
+    void setManualFromValue(const char* inString) noexcept(false);
+    void setAuto(const char* inString) noexcept(false);
     string getString() const; // return string, no checks
     string getStringFromBinary() const;
     bool getString(string& stringval) const;

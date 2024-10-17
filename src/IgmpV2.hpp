@@ -27,9 +27,9 @@ using namespace std;
 class IgmpV2Type: public Bitfield8
   {
   public:
-    void setManualFromValue(const char* inString) throw (Exception);
-    void setAuto(const char* inString) throw (Exception);
-    void setDefault(const char* inString) throw (Exception);
+    void setManualFromValue(const char* inString) noexcept(false);
+    void setAuto(const char* inString) noexcept(false);
+    void setDefault(const char* inString) noexcept(false);
     void setDefault(const uchar inValue)
       {
       Bitfield8::setDefault(inValue);
@@ -43,7 +43,7 @@ class IgmpV2Type: public Bitfield8
       Bitfield8::setAuto(inValue);
       }
     string getStringFromBinary() const;
-    bool getStringFromBinary(string& stringval);
+    bool getStringFromBinary(string& stringval) const;
   };
 
 /////////////////// IGMP V2 ITSELF ///////////////////////
@@ -59,16 +59,16 @@ class IgmpV2: public Element
     string getTypeString();
   public:
     IgmpV2();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
-    void setMsgType(const char* msgTypeStr, bool storeAsString) throw (Exception);
-    void setMcastIp(const char* mcastIpStr) throw (Exception);
-    void setChecksumValue(const char* checksum) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false);
+    void setMsgType(const char* msgTypeStr, bool storeAsString) noexcept(false);
+    void setMcastIp(const char* mcastIpStr) noexcept(false);
+    void setChecksumValue(const char* checksum) noexcept(false);
     void setResponseTime(const char* responseTime);
     string getString();
     bool getString(string& stringval, const char* fieldName);
     ulong32 getSize();
     ulong32 getTailSize();
-    bool copyVar() throw (Exception);
+    bool copyVar() noexcept(false);
     uchar* copyTo(unsigned char* toPtr);
     uchar* copyTail(uchar* toPtr);
     bool analyze_Head(uchar*& fromPtr, ulong32& remainingSize);

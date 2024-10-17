@@ -21,7 +21,7 @@ Igmp::Igmp()
   mVersion.setDefault((uchar) 2);
   }
 
-void Igmp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
+void Igmp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false)
   {
   int i=0;
   char* strVersion=NULL;
@@ -78,7 +78,7 @@ ulong32 Igmp::getTailSize()
   return 0;
   }
 
-bool Igmp::copyVar() throw (Exception)
+bool Igmp::copyVar() noexcept(false)
   {
   return false;
   }

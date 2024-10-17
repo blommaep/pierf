@@ -19,7 +19,7 @@
 
 //// OVERLOADED CLASSES FOR DEDICATED FIELD INTERPRETATIONS ////
 
-uchar TcpFlags::stringToValue(const char* inString) throw (Exception)
+uchar TcpFlags::stringToValue(const char* inString) noexcept(false)
   {
   uchar tempFlags = 0;
   char* currentPos = (char*) inString;
@@ -79,7 +79,7 @@ uchar TcpFlags::stringToValue(const char* inString) throw (Exception)
   return tempFlags;
   }
 
-void TcpFlags::setManualFromValue(const char* inString) throw (Exception)
+void TcpFlags::setManualFromValue(const char* inString) noexcept(false)
   {
   if (!strncmp(inString, "0x", 2)) // Hex number => interpete as is
     {
@@ -92,7 +92,7 @@ void TcpFlags::setManualFromValue(const char* inString) throw (Exception)
     }
   }
 
-void TcpFlags::setAuto(const char* inString) throw (Exception)
+void TcpFlags::setAuto(const char* inString) noexcept(false)
   {
   if (!strncmp(inString, "0x", 2)) // Hex number => interpete as is
     {
@@ -105,7 +105,7 @@ void TcpFlags::setAuto(const char* inString) throw (Exception)
     }
   }
 
-void TcpFlags::setDefault(const char* inString) throw (Exception)
+void TcpFlags::setDefault(const char* inString) noexcept(false)
   {
   if (!strncmp(inString, "0x", 2)) // Hex number => interpete as is
     {
@@ -225,7 +225,7 @@ Tcp::Tcp()
   mOptions.setDefault("");
   }
 
-void Tcp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
+void Tcp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false)
   {
   char* autoStr=NULL;
   int i=0;
@@ -248,7 +248,7 @@ void Tcp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory
         {
         mSeqNr.setManual(attr[i++], storeAsString);
         }
-      catch (Exception e)
+      catch (Exception& e)
         {
         throw Exception ("Invalid Sequence number: "+ string(e.what()));
         }
@@ -260,7 +260,7 @@ void Tcp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory
         {
         mAckNr.setManual(attr[i++], storeAsString);
         }
-      catch (Exception e)
+      catch (Exception& e)
         {
         throw Exception ("Invalid Acknowledgement number: "+ string(e.what()));
         }
@@ -282,7 +282,7 @@ void Tcp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory
         {
         mWindowSize.setManual(attr[i++], storeAsString);
         }
-      catch (Exception e)
+      catch (Exception& e)
         {
         throw Exception ("Invalid window size: "+ string(e.what()));
         }
@@ -294,7 +294,7 @@ void Tcp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory
         {
         mUrgentPointer.setManual(attr[i++], storeAsString);
         }
-      catch (Exception e)
+      catch (Exception& e)
         {
         throw Exception ("Invalid window size: "+ string(e.what()));
         }
@@ -306,7 +306,7 @@ void Tcp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory
         {
         setOptions(attr[i++], storeAsString);
         }
-      catch (Exception e)
+      catch (Exception& e)
         {
         throw Exception ("Invalid options field: "+ string(e.what()));
         }
@@ -359,56 +359,56 @@ void Tcp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory
   
   }
 
-void Tcp::setSourcePort(const char* sourcePort, bool storeAsString) throw (Exception)
+void Tcp::setSourcePort(const char* sourcePort, bool storeAsString) noexcept(false)
   {
   try
     {
     mSourcePort.setManual(sourcePort, storeAsString);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Source port invalid: " + string(e.what()));
     }
   }
 
-void Tcp::setDestPort(const char* destPort, bool storeAsString) throw (Exception)
+void Tcp::setDestPort(const char* destPort, bool storeAsString) noexcept(false)
   {
   try
     {
     mDestPort.setManual(destPort, storeAsString);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Destination port invalid: " + string(e.what()));
     }
   }
 
-void Tcp::setLength(const char* length, bool storeAsString) throw (Exception)
+void Tcp::setLength(const char* length, bool storeAsString) noexcept(false)
   {
   try
     {
     mHeaderLength.setManual(length, storeAsString);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("UDP length invalid: " + string(e.what()));
     }
   }
 
 
-void Tcp::setChecksum(const char* checkSum, bool storeAsString) throw (Exception)
+void Tcp::setChecksum(const char* checkSum, bool storeAsString) noexcept(false)
   {
   try
     {
     mChecksum.setManual(checkSum, storeAsString);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Checksum invalid: " + string(e.what()));
     }
   }
 
-void Tcp::setOptions(const char* optionStr, bool storeAsString) throw (Exception)
+void Tcp::setOptions(const char* optionStr, bool storeAsString) noexcept(false)
   {
   mOptions.resetString();
   mOptions.setManual(optionStr, storeAsString);
@@ -531,7 +531,7 @@ ulong32 Tcp::getTailSize()
   return 0;
   }
 
-bool Tcp::copyVar() throw (Exception)
+bool Tcp::copyVar() noexcept(false)
   {
   bool copy = false;
   bool res;

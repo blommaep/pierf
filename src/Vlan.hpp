@@ -25,7 +25,7 @@ using namespace std;
 class Vlan: public Element
   {
   private:
-    void stringToVal(const char* inString, int insertBefore) throw (Exception); // -1 to insert at the end
+    void stringToVal(const char* inString, int insertBefore) noexcept(false); // -1 to insert at the end
     vector<ushort> mVlans;
     StringField mVlanString;
     Bitfield16 mBodyEthertype;
@@ -34,20 +34,20 @@ class Vlan: public Element
     string getStackString();
   public:
     Vlan();
-    Vlan(char* inString) throw (Exception);
-    Vlan(string& inString) throw (Exception);    
+    Vlan(char* inString) noexcept(false);
+    Vlan(string& inString) noexcept(false);    
     ~Vlan();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
-    void setStack(const char* stack, bool storeAsString) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false);
+    void setStack(const char* stack, bool storeAsString) noexcept(false);
     // setEthertype functions only kept for backward compatibility
-    void setBodyEthertype(const char* ethertype) throw (Exception);
-    void setVlanEthertype(const char* ethertype) throw (Exception);
+    void setBodyEthertype(const char* ethertype) noexcept(false);
+    void setVlanEthertype(const char* ethertype) noexcept(false);
     ushort getEthertype(); // Gives the ethertype of the tag, so what must be used by the lower layer (normally ethernet itself)
     string getString();
     bool getString(string& stringval, const char* fieldName);
     ulong32 getSize();
     ulong32 getTailSize();
-    bool copyVar() throw (Exception);
+    bool copyVar() noexcept(false);
     uchar* copyTo(uchar* toPtr);
     uchar* copyTail(uchar* toPtr);
     bool analyze_Head(uchar*& fromPtr, ulong32& remainingSize);

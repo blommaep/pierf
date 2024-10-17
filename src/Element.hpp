@@ -32,8 +32,8 @@ class Element: public AutoObject
   public:
     Element();
     virtual ~Element();      
-    virtual void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception) = 0;
-    virtual bool copyVar() throw (Exception) = 0; // Copy head (in network order)
+    virtual void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false) = 0;
+    virtual bool copyVar() noexcept(false) = 0; // Copy head (in network order)
     virtual uchar* copyTo(uchar* toPtr) = 0; // Copy head (in network order)
     virtual uchar* copyTail(uchar* toPtr) = 0; // Copy tail, if there is any
     virtual bool analyze_Head(uchar*& fromPtr, ulong32& remainingSize) = 0; // Analyze incoming packet, header part

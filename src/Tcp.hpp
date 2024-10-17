@@ -29,11 +29,11 @@ using namespace std;
 class TcpFlags: public Bitfield8
   {
   private:
-    uchar stringToValue(const char* inString) throw (Exception);
+    uchar stringToValue(const char* inString) noexcept(false);
   public:
-    void setManualFromValue(const char* inString) throw (Exception);
-    void setAuto(const char* inString) throw (Exception);
-    void setDefault(const char* inString) throw (Exception);
+    void setManualFromValue(const char* inString) noexcept(false);
+    void setAuto(const char* inString) noexcept(false);
+    void setDefault(const char* inString) noexcept(false);
     void setDefault(const uchar inValue)
       {
       Bitfield8::setDefault(inValue);
@@ -69,17 +69,17 @@ class Tcp: public Element
     uchar* mContentStart; // used for checksum calculation
   public:
     Tcp();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
-    void setSourcePort(const char* sourcePort, bool storeAsString) throw (Exception);
-    void setDestPort(const char* destPort, bool storeAsString) throw (Exception);
-    void setLength(const char* length, bool storeAsString) throw (Exception);
-    void setChecksum(const char* checkSum, bool storeAsString) throw (Exception);
-    void setOptions(const char* optionStr, bool storeAsString) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false);
+    void setSourcePort(const char* sourcePort, bool storeAsString) noexcept(false);
+    void setDestPort(const char* destPort, bool storeAsString) noexcept(false);
+    void setLength(const char* length, bool storeAsString) noexcept(false);
+    void setChecksum(const char* checkSum, bool storeAsString) noexcept(false);
+    void setOptions(const char* optionStr, bool storeAsString) noexcept(false);
     string getString();
     bool getString(string& stringval, const char* fieldName);
     ulong32 getSize();
     ulong32 getTailSize();
-    bool copyVar() throw (Exception);
+    bool copyVar() noexcept(false);
     uchar* copyTo(unsigned char* toPtr);
     uchar* copyTail(uchar* toPtr);
     bool analyze_Head(uchar*& fromPtr, ulong32& remainingSize);

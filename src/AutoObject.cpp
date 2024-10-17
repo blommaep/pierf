@@ -21,7 +21,7 @@ AutoObject::~AutoObject()
   {
   }
 
-void AutoObject::setAuto(char* instr) throw (Exception)
+void AutoObject::setAuto(char* instr) noexcept(false)
   {
   if (!strcmp(instr,"auto"))
     {
@@ -52,7 +52,7 @@ void AutoObject::enheritAuto(AutoObject* mother)
     }
   }
 
-void AutoObject::setOrEnheritAuto(char* instr, AutoObject* mother) throw (Exception)
+void AutoObject::setOrEnheritAuto(char* instr, AutoObject* mother) noexcept(false)
   {
   if (instr != NULL)
     {

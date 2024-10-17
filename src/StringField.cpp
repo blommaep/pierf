@@ -20,21 +20,21 @@ StringField::~StringField()
   {
   }
   
-void StringField::setDefault(const char* inString) throw (Exception)
+void StringField::setDefault(const char* inString) noexcept(false)
   {
   resetString();
   addString(inString);
   wasDefaulted();
   }
 
-void StringField::setManualFromValue(const char* inString) throw (Exception)
+void StringField::setManualFromValue(const char* inString) noexcept(false)
   {
   resetString();
   addString(inString);
   wasManuallySet();
   }
 
-void StringField::setAuto(const char* inString) throw (Exception)
+void StringField::setAuto(const char* inString) noexcept(false)
   {
   resetString();
   addString(inString);

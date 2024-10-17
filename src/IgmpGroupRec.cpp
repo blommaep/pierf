@@ -20,12 +20,12 @@ IgmpGroupRec::IgmpGroupRec()
   {
   }
 
-void IgmpGroupRec::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
+void IgmpGroupRec::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false)
   {
   //tbd : currently dummy. This parsing is still done in the ParseConfig.cpp
   }
 
-void IgmpGroupRec::setType(const char* type) throw (Exception)
+void IgmpGroupRec::setType(const char* type) noexcept(false)
   {
   if (type[0] == '$')
     {
@@ -67,12 +67,12 @@ void IgmpGroupRec::setType(const char* type) throw (Exception)
     }
   }
 
-void IgmpGroupRec::setMcastAddress(const char* mcastAddr, bool storeAsString) throw (Exception)
+void IgmpGroupRec::setMcastAddress(const char* mcastAddr, bool storeAsString) noexcept(false)
   {
   mMcastIp.setManual(mcastAddr, storeAsString);
   }
 
-void IgmpGroupRec::addSource(char* srcAddr, bool storeAsString) throw (Exception)
+void IgmpGroupRec::addSource(char* srcAddr, bool storeAsString) noexcept(false)
   {
   IpAddress ip;
   ip.setManual(srcAddr, storeAsString);
@@ -186,7 +186,7 @@ ulong32 IgmpGroupRec::getTailSize()
   return 0;
   }
 
-bool IgmpGroupRec::copyVar() throw (Exception)
+bool IgmpGroupRec::copyVar() noexcept(false)
   {
   bool copy = false;
   copy = copy || mType.copyVar();

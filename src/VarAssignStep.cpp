@@ -27,7 +27,7 @@ VarAssignStep::~VarAssignStep()
   {
   }
 
-void VarAssignStep::setVar(const char* varName) throw (Exception)
+void VarAssignStep::setVar(const char* varName) noexcept(false)
   {
   Var* var = VarContainer::getVar(varName);
   if (var == NULL)

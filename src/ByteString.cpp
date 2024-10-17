@@ -16,7 +16,7 @@
 #include <fstream>
 #include <sstream>
 
-void ByteString::stringToVal(const char* inString) throw (Exception)
+void ByteString::stringToVal(const char* inString) noexcept(false)
   {
   char* curPtr = (char*) inString;
   uchar temp=0;
@@ -154,19 +154,19 @@ ByteString::ByteString()
   {
   }
 
-ByteString::ByteString(const char* inString) throw (Exception)
+ByteString::ByteString(const char* inString) noexcept(false)
   :mParseStrict(true), mInputChar(false)
   {
   stringToVal(inString);
   }
 
-ByteString::ByteString(const string& inString) throw (Exception)
+ByteString::ByteString(const string& inString) noexcept(false)
   :mParseStrict(true), mInputChar(false)
   {
   stringToVal(inString.c_str());
   }
 
-void ByteString::addString(const char* inString) throw (Exception)
+void ByteString::addString(const char* inString) noexcept(false)
   {
   if (mInputChar)
     {
@@ -183,7 +183,7 @@ void ByteString::addString(const char* inString) throw (Exception)
     }
   }
 
-void ByteString::addString(const string& inString) throw (Exception)
+void ByteString::addString(const string& inString) noexcept(false)
   {
   addString(inString.c_str());
   }

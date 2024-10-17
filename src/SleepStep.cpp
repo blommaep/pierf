@@ -25,7 +25,7 @@ SleepStep::~SleepStep()
   {
   }
 
-void SleepStep::setSleep(char* sleep) throw (Exception)
+void SleepStep::setSleep(char* sleep) noexcept(false)
   {
   mSleep = textToLong(sleep);
   }

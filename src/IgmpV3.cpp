@@ -29,7 +29,7 @@ IgmpV3::~IgmpV3()
     }
   }
 
-void IgmpV3::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
+void IgmpV3::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false)
   { 
   char* autoStr=NULL;
   int i=0;
@@ -108,7 +108,7 @@ void IgmpV3::parseAttrib(const char** attr, AutoObject* parent, bool checkMandat
     }
   }
 
-void IgmpV3::setType(const char* type, bool storeAsString) throw (Exception)
+void IgmpV3::setType(const char* type, bool storeAsString) noexcept(false)
   {
   if (storeAsString)
     {
@@ -146,17 +146,17 @@ void IgmpV3::setType(const char* type, bool storeAsString) throw (Exception)
     }
   }
 
-void IgmpV3::setResponseTime(const char* responseTime) throw (Exception)
+void IgmpV3::setResponseTime(const char* responseTime) noexcept(false)
   {
   mResponseTime.setManual(responseTime, false);
   }
 
-void IgmpV3::setChecksum(const char* checksum) throw (Exception)
+void IgmpV3::setChecksum(const char* checksum) noexcept(false)
   {
   mChecksum.setManual(checksum, false);
   }
 
-void IgmpV3::setSFlag(const char* sflag, bool storeAsString) throw (Exception)
+void IgmpV3::setSFlag(const char* sflag, bool storeAsString) noexcept(false)
   {
   if (mType.getValue() == 0x11)
     {
@@ -168,7 +168,7 @@ void IgmpV3::setSFlag(const char* sflag, bool storeAsString) throw (Exception)
     }
   }
 
-void IgmpV3::setQrv(const char* qrv, bool storeAsString) throw (Exception)
+void IgmpV3::setQrv(const char* qrv, bool storeAsString) noexcept(false)
   {
   if (mType.getValue() == 0x11)
     {
@@ -180,7 +180,7 @@ void IgmpV3::setQrv(const char* qrv, bool storeAsString) throw (Exception)
     }
   }
 
-void IgmpV3::setQqic(const char* qqic, bool storeAsString) throw (Exception)
+void IgmpV3::setQqic(const char* qqic, bool storeAsString) noexcept(false)
   {
   if (mType.getValue() == 0x11)
     {
@@ -192,7 +192,7 @@ void IgmpV3::setQqic(const char* qqic, bool storeAsString) throw (Exception)
     }
   }
 
-void IgmpV3::setMcastIp(const char* mcastIp, bool storeAsString) throw (Exception)
+void IgmpV3::setMcastIp(const char* mcastIp, bool storeAsString) noexcept(false)
   {
   if (mType.getValue() == 0x11)
     {
@@ -204,7 +204,7 @@ void IgmpV3::setMcastIp(const char* mcastIp, bool storeAsString) throw (Exceptio
     }
   }
 
-void IgmpV3::addSource(const char* srcIp, bool storeAsString) throw (Exception)
+void IgmpV3::addSource(const char* srcIp, bool storeAsString) noexcept(false)
   {
   if (mType.getValue() != 0x11)
     {
@@ -215,7 +215,7 @@ void IgmpV3::addSource(const char* srcIp, bool storeAsString) throw (Exception)
   mSourceList.push_back(ip);
   }
 
-IgmpGroupRec* IgmpV3::addGroupRecord(const char* type, const char* mcastIp, bool storeAsString) throw (Exception)
+IgmpGroupRec* IgmpV3::addGroupRecord(const char* type, const char* mcastIp, bool storeAsString) noexcept(false)
   {
   if (mType.getValue() != 0x22)
     {
@@ -407,7 +407,7 @@ ulong32 IgmpV3::getTailSize()
   return 0;
   }
 
-bool IgmpV3::copyVar() throw (Exception)
+bool IgmpV3::copyVar() noexcept(false)
   {
   bool copy = false;
   bool res;

@@ -16,7 +16,7 @@
 #include <fstream>
 #include <sys/time.h>
 
-void PcapFile::openForWriting(const char* name) throw (Exception)
+void PcapFile::openForWriting(const char* name) noexcept(false)
   {
   mBinFH.open(name,ios::out | ios::binary);
   if (!mBinFH.is_open())
@@ -34,12 +34,12 @@ void PcapFile::openForWriting(const char* name) throw (Exception)
   mBinFH.write((const char*)&header,sizeof(header));
   }
 
-void PcapFile::openForWriting(string& name) throw (Exception)
+void PcapFile::openForWriting(string& name) noexcept(false)
   {
   openForWriting(name.c_str());
   }
 
-void PcapFile::addPacket(struct pcap_pkthdr *header, u_char *pkt_data) throw (Exception)
+void PcapFile::addPacket(struct pcap_pkthdr *header, u_char *pkt_data) noexcept(false)
   {
   if (!mBinFH.is_open())
     {
@@ -50,7 +50,7 @@ void PcapFile::addPacket(struct pcap_pkthdr *header, u_char *pkt_data) throw (Ex
   mBinFH.write((const char*)pkt_data,header->caplen);
   }
 
-void PcapFile::addPacket(u_char *pkt_data, ulong32 size) throw (Exception)
+void PcapFile::addPacket(u_char *pkt_data, ulong32 size) noexcept(false)
   {
   if (!mBinFH.is_open())
     {

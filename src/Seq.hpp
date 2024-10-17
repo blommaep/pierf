@@ -33,12 +33,12 @@ class Seq: public PlayStep
     ~Seq();
     void push_back(Packet& packet);
     void push_back(PlayStep* playstep);
-    void setRepeat(char* repeat) throw (Exception);
+    void setRepeat(char* repeat) noexcept(false);
     void play();
     void setName(char* name);
     bool isRef();
     string getName();
-    int size();
+    int size() const;
     string getString() const;
     string getSeqElementsString() const;
   };

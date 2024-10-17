@@ -22,7 +22,7 @@
 #include "VarContainer.hpp"
 #include <typeinfo>
 
-void Vlan::stringToVal(const char* inString, int insertBefore) throw (Exception)
+void Vlan::stringToVal(const char* inString, int insertBefore) noexcept(false)
   {
   unsigned int i,j;
 
@@ -83,7 +83,7 @@ void Vlan::stringToVal(const char* inString, int insertBefore) throw (Exception)
         readWhat = eReady;
         }
       }
-    else if ((inString[i] == ':') || (inString[i] == 0) && (readWhat == ePriority))
+    else if (((inString[i] == ':') || (inString[i] == 0)) && (readWhat == ePriority))
       {
       val[j] = 0; // Make 0 terminated string
       ushort priority = atoi(val);
@@ -144,14 +144,14 @@ Vlan::Vlan()
   mVlanString.setInputChar(true);
   }
 
-Vlan::Vlan(char* inString) throw (Exception)
+Vlan::Vlan(char* inString) noexcept(false)
   {
   mVlanEthertype.setAuto(0x8100);
   stringToVal(inString,-1);
   mVlanString.setInputChar(true);
   }
 
-Vlan::Vlan(string& inString) throw (Exception)
+Vlan::Vlan(string& inString) noexcept(false)
   {
   mVlanEthertype.setAuto(0x8100);
   stringToVal(inString.c_str(),-1);
@@ -162,7 +162,7 @@ Vlan::~Vlan()
   {
   }
 
-void Vlan::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
+void Vlan::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false)
   {
   char* autoStr=NULL;
   int i=0;
@@ -284,7 +284,7 @@ bool Vlan::getString(string& stringval, const char* fieldName)
   return false;
   }
 
-void Vlan::setStack(const char* stack, bool storeAsString) throw (Exception)
+void Vlan::setStack(const char* stack, bool storeAsString) noexcept(false)
   {
   mVlanString.setManual(stack, storeAsString);
   if (!mVlanString.isVar() && !mVlanString.isString())
@@ -294,12 +294,12 @@ void Vlan::setStack(const char* stack, bool storeAsString) throw (Exception)
     }
   }
 
-void Vlan::setBodyEthertype(const char* ethertype) throw (Exception)
+void Vlan::setBodyEthertype(const char* ethertype) noexcept(false)
   {
   mBodyEthertype.setManual(ethertype, false);
   }
 
-void Vlan::setVlanEthertype(const char* ethertype) throw (Exception)
+void Vlan::setVlanEthertype(const char* ethertype) noexcept(false)
   {
   mVlanEthertype.setManual(ethertype, false);
   }
@@ -326,7 +326,7 @@ ulong32 Vlan::getTailSize()
   return 0;
   }
 
-bool Vlan::copyVar() throw (Exception)
+bool Vlan::copyVar() noexcept(false)
   {
   bool copy = false;
   bool res;

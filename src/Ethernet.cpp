@@ -28,11 +28,11 @@ Ethernet::Ethernet()
   {
   }
 
-Ethernet::Ethernet(MacAddress& from, MacAddress& to) throw (Exception)
+Ethernet::Ethernet(MacAddress& from, MacAddress& to) noexcept(false)
   : mFrom(from), mTo(to) {} ;
 
 
-void Ethernet::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
+void Ethernet::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false)
   {
   char* autoStr=NULL;
   int i=0;
@@ -105,12 +105,12 @@ void Ethernet::setTo(const char* to)
   mTo.setManual(to, false);
   }
 
-void Ethernet::setEthertype(const char* ethertype) throw (Exception)
+void Ethernet::setEthertype(const char* ethertype) noexcept(false)
   {
   mEthertype.setManual(ethertype, false);
   }
 
-bool Ethernet::copyVar() throw (Exception)
+bool Ethernet::copyVar() noexcept(false)
   {
   bool copy = false;
   bool res;

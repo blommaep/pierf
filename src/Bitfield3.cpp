@@ -21,7 +21,7 @@ Bitfield3::Bitfield3()
   {
   }
 
-void Bitfield3::setVal(ushort val) throw (Exception)
+void Bitfield3::setVal(ushort val) noexcept(false)
   {
   if (val > 0x0007)
     {
@@ -30,7 +30,7 @@ void Bitfield3::setVal(ushort val) throw (Exception)
   mData = val;
   }
 
-void Bitfield3::setOffset(uchar offset) throw (Exception)
+void Bitfield3::setOffset(uchar offset) noexcept(false)
   {
   if (offset > 5)
     {

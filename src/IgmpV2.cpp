@@ -19,7 +19,7 @@
 
 //// OVERLOADED CLASSES FOR DEDICATED FIELD INTERPRETATIONS ////
 
-void IgmpV2Type::setManualFromValue(const char* inString) throw (Exception)
+void IgmpV2Type::setManualFromValue(const char* inString) noexcept(false)
   {
   if (!strcmp(inString,"join") || !strcmp(inString,"report"))
     {
@@ -46,7 +46,7 @@ void IgmpV2Type::setManualFromValue(const char* inString) throw (Exception)
     }
   }
 
-void IgmpV2Type::setAuto(const char* inString) throw (Exception)
+void IgmpV2Type::setAuto(const char* inString) noexcept(false)
   {
   if (!strcmp(inString,"join") || !strcmp(inString,"report"))
     {
@@ -73,7 +73,7 @@ void IgmpV2Type::setAuto(const char* inString) throw (Exception)
     }
   }
 
-void IgmpV2Type::setDefault(const char* inString) throw (Exception)
+void IgmpV2Type::setDefault(const char* inString) noexcept(false)
   {
   if (!strcmp(inString,"join") || !strcmp(inString,"report"))
     {
@@ -123,7 +123,7 @@ string IgmpV2Type::getStringFromBinary() const
   return retval.str();
   }
 
-bool IgmpV2Type::getStringFromBinary(string& stringval)
+bool IgmpV2Type::getStringFromBinary(string& stringval) const
   {
   if (hasValue())
     {
@@ -141,7 +141,7 @@ IgmpV2::IgmpV2()
   mResponseTime.displayDecimal();
   }
 
-void IgmpV2::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
+void IgmpV2::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false)
   {
   char* autoStr=NULL;
   int i=0;
@@ -204,7 +204,7 @@ void IgmpV2::parseAttrib(const char** attr, AutoObject* parent, bool checkMandat
 
   }
 
-void IgmpV2::setMsgType(const char* msgTypeStr, bool storeAsString) throw (Exception)
+void IgmpV2::setMsgType(const char* msgTypeStr, bool storeAsString) noexcept(false)
   {
   mMsgType.setManual(msgTypeStr, storeAsString);
   if (mMsgType.getValue() == 0x11)
@@ -213,12 +213,12 @@ void IgmpV2::setMsgType(const char* msgTypeStr, bool storeAsString) throw (Excep
     }
   }
 
-void IgmpV2::setMcastIp(const char* mcastIpStr) throw (Exception)
+void IgmpV2::setMcastIp(const char* mcastIpStr) noexcept(false)
   {
   mMcastIp.setManual(mcastIpStr, false);
   }
 
-void IgmpV2::setChecksumValue(const char* checksum) throw (Exception)
+void IgmpV2::setChecksumValue(const char* checksum) noexcept(false)
   {
   mChecksum.setManual(checksum, false);
   }
@@ -318,7 +318,7 @@ ulong32 IgmpV2::getTailSize()
   return 0;
   }
 
-bool IgmpV2::copyVar() throw (Exception)
+bool IgmpV2::copyVar() noexcept(false)
   {
   bool copy = false;
   bool res;

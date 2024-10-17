@@ -44,19 +44,19 @@ using namespace ZThread;
 //Declaration
 void packet_handler(u_char *param, const struct pcap_pkthdr *header, const u_char *pkt_data);
 
-Port::Port(char* easyName, char* sourceName) throw (Exception)
+Port::Port(char* easyName, char* sourceName) noexcept(false)
   : mTraceThreadCondition(mTraceThreadMutex)
   {
   initPort(eDevice, easyName, sourceName, NULL);
   }
 
-Port::Port(PortType portType, char* easyName, char* sourceName, char* destName) throw (Exception)
+Port::Port(PortType portType, char* easyName, char* sourceName, char* destName) noexcept(false)
   : mTraceThreadCondition(mTraceThreadMutex)
   {
   initPort(portType, easyName, sourceName, destName);
   }
 
-void Port::initPort(PortType portType, char* easyName, char* sourceName, char* destName) throw (Exception)
+void Port::initPort(PortType portType, char* easyName, char* sourceName, char* destName) noexcept(false)
   {
   // generic member initialisation
   mEasyName=easyName;
@@ -124,7 +124,16 @@ void Port::initPort(PortType portType, char* easyName, char* sourceName, char* d
     status=(pcap_activate(fp));
     if(status!=0)
       {
-      throw Exception ("\nUnable to configure the device timeout (using pcap)\n"); // tbd: detailed error handling
+      if (status == PCAP_ERROR_NO_SUCH_DEVICE)
+        {
+        cout << "The specified device: " << mSourceName << " cannot be opened by pcap. The following devices exist: " << endl;
+        printAllDevices();
+        cout << endl;
+        throw Exception ("\nUnable to open the device (using pcap)\n"); // tbd: error handling
+        return;        
+        }
+      pcap_perror(fp, "");
+      throw Exception ("\nUnable to activate the cpap capture\n"); // tbd: detailed error handling
       }
 
 //    if ((mSourceFp = pcap_open_live(sourceName,		// name of the device
@@ -346,7 +355,7 @@ void Port::close()
     }
   }
 
-void Port::startLog(char* fileName) throw (Exception)
+void Port::startLog(char* fileName) noexcept(false)
   {
   mTraceFilename = fileName;
   mLogState = eOpen;
@@ -572,7 +581,7 @@ RxPacket Port::receive()
   return mCurrentPacket; //The Mutex is freed by the Guard upon exiting this function
   }
 
-void Port::setSilent(const char* silent) throw (Exception)
+void Port::setSilent(const char* silent) noexcept(false)
   {
   if (!strcmp(silent,"true"))
     {

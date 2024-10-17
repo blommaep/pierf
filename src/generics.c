@@ -1,6 +1,7 @@
 #include "generics.h"
 #include "assert.h"
 
+/*
 ushort htons(ushort val) 
   {
 #if __BYTE_ORDER==__LITTLE_ENDIAN
@@ -14,6 +15,7 @@ ushort ntohs(ushort val)
   {
   return htons(val);
   }
+*/
 
 ulong32 htonl32(ulong32 val) 
   {

@@ -84,7 +84,7 @@ class ParseConfig
   
   State curState();
   string getParserLine();
-  void parserException(const string& msg) throw (Exception);
+  void parserException(const string& msg) noexcept(false);
   Packet* handlePacketTag(const char** attr, PlayStep* root);
   
   // need to add:
@@ -94,13 +94,13 @@ class ParseConfig
   public:
   ParseConfig();
   ~ParseConfig();
-  void parse(std::string& configFile) throw (Exception);
-  void parse(const char* configFile) throw (Exception);
+  void parse(std::string& configFile) noexcept(false);
+  void parse(const char* configFile) noexcept(false);
 
   // only to be called by expat 
-  void start_hndl(const char *el, const char **attr) throw (Exception);
-  void end_hndl(const char *el) throw (Exception);
-  void char_hndl(const char *txt, int txtlen) throw (Exception);
+  void start_hndl(const char *el, const char **attr) noexcept(false);
+  void end_hndl(const char *el) noexcept(false);
+  void char_hndl(const char *txt, int txtlen) noexcept(false);
   string stateToString(State state);
   string getString() const;
   };

@@ -1,9 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
+  
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Pierf main documentation page</title>
 
-<meta http-equiv="content-type" content="text/html; charset=UTF-8"><title>Pierf main documentation page</title>
-
-<style type="text/css">
+  
+  
+  <style type="text/css">
 table[border] { border: solid;
 border-width: 2;
 border-collapse: collapse;
@@ -27,10 +30,14 @@ border-width: 2;
 padding: 0.4em;
 vertical-align: top;
 }
-</style></head><body>
+  </style>
+</head><body>
 <h1>pierf main documentation</h1>
+
 <h2>Intro</h2>
-pierf is an advanced packet simulation tool. In basics, it can easily
+
+pierf is an advanced packet/protocol simulation tool. In basics, it can
+easily
 be used to generate packets: it builds packets and puts them
 directly on the network driver, bypassing the operating system.
 Therefore, it is not limited to the features of the OS. Pierf can do
@@ -41,67 +48,75 @@ as a test tool for ethernet/ip devices. For ideas of possible future
 features, have a look at the enclosed&nbsp;<a href="Readme.txt">Readme.txt</a>
 file. It uses the free libraries (win)pcap for packet injection and
 expat for xml parsing.<br>
+
 <ul>
-<li>Author: Pieter Blommaert</li>
-<li>License to the binary, this documentation, the samples and
+
+  <li>Author: Pieter Blommaert</li>
+  <li>License to the binary, this documentation, the samples and
 any other files part of the pierf software: see <a href="#License">appendix
 C</a> or the license.txt file.</li>
-<li>Pierf is available online on <a href="http://sourceforge.net/projects/pierf/">sourceforge</a>.</li>
+  <li>Pierf is available online on <a href="http://sourceforge.net/projects/pierf/">sourceforge</a>.</li>
 </ul>
+
 <h2>Typical samples</h2>
+
 A short
 overview of the capabilities. <span style="font-style: italic;">The
 referred samples are full working sample files that can be found under
 the configs directory. Furthermore, the file configs/tst_loopback.pierf
 contains a test set that covers all types of packet layers, both
 transmit and capture, be it in a rather irrelevant sequence.</span><br>
+
 <ul>
-<li>Basic protocols: ethernet, ip (ipv4 and ipv6), udp, tcp,
+
+  <li>Basic protocols: ethernet, ip (ipv4 and ipv6), udp, tcp,
 arp, icmp, igmp v2 and v3 and
 raw bytes (hex or text string)</li>
-<li>IGMP v3 packet generation. Cf.&nbsp;newIgmp.pierf sample</li>
-<li>Combining sleep tag and repeat
+  <li>IGMP v3 packet generation. Cf.&nbsp;newIgmp.pierf sample</li>
+  <li>Combining sleep tag and repeat
 attribute, the tool can send packets periodically. E.g. igmp.pierf
 implements an igmp querier.</li>
-<li>Repetitive (capture) and filter packets.&nbsp;</li>
-<li>Use of multiple ethernet ports</li>
-<li>Writing to a file (pcap/ethereal capture format) rather
+  <li>Repetitive (capture) and filter packets.&nbsp;</li>
+  <li>Use of multiple ethernet ports</li>
+  <li>Writing to a file (pcap/ethereal capture format) rather
 then to a real port. Can e.g. be used for test purpose (Cf.
 tst_file.pierf) or to convert a raw dump to a capture file (Cf.
 tst_raw.pierf).</li>
-<li>Replay of a capture file: combining the mirror feature (to
+  <li>Replay of a capture file: combining the mirror feature (to
 mirror a captured packet from one port to another) with the possibility
 to read from a capture file, one can replay a capture file in realtime.
 Cf. tst_mirror.pierf.&nbsp;</li>
-<li>Log the packets on a port while running. Gives you a log of
+  <li>Log the packets on a port while running. Gives you a log of
 everything you sent, as also any reply and anything else that was
 captured during that time. Cf. tst_log.pierf. (As such, it can also act
 as a simple capture tool, if all you'd do while logging is a sleep.)</li>
-<li>Count and summarize number of packets, packet rate, number
+  <li>Count and summarize number of packets, packet rate, number
 of bytes and bitrate. Cf. tst_counter.pierf and tst_counter2.pierf (the
 second is supposed to be executed after the first to get a full sample.)</li>
-<li>Use of config include files, e.g. easy for predefining
+  <li>Use of config include files, e.g. easy for predefining
 commonly used ports or scenarios. Cf. a.o. tst_raw.pierf</li>
-<li>Analyze and print the received packet in xml format. The
+  <li>Analyze and print the received packet in xml format. The
 print format follows the pierf syntax and hence the print output can be
 used as input to the tool. Cf. a.o. tst_print_prerare.pierf and
 tst_print.pierf, that illustrate this feature when run in sequence.</li>
-<li>Build conditional actions, depending on the structure and
+  <li>Build conditional actions, depending on the structure and
 field values of received packets. E.g. send igmp report when igmp query
 is received, increment a counter for each udp packet received, mirror
 all packets for destination mac address x, etc. Cf. a.o.
 tst_match.pief, which can be run after executing tst_print_prepare.pierf</li>
-<li>Send out packets at a predefined rate. Cf.
+  <li>Send out packets at a predefined rate. Cf.
 tst_shaper.pierf. Also multiple streams in (quasi-)parallel possible.
 Cf. tst_multishaper.pierf</li>
-<li>Use variables to dynamically assign values to a field. E.g.
+  <li>Use variables to dynamically assign values to a field. E.g.
 for port scanning, mac flooding, etc. Also useful for field values that
 keep coming back or for a flexible tuning of configs. Cf.
 configs/tst_var.pierf</li>
-<li>Assign variables to fields of received (captured) packets.
+  <li>Assign variables to fields of received (captured) packets.
 Cf. configs/icmp.pierf</li>
 </ul>
+
 <h3>Very brief summary of packet layers</h3>
+
 All tags and all
 packet layers are listed in Appendix A with a full explanation. This
 chapter gives a quick overview for quickpick. To learn how to create a
@@ -113,8 +128,11 @@ They are marked in italic underline.&nbsp;Refer to <a href="#Appendix_A._Overvie
 and <a href="#Appendix_B._Overview_of_supported_auto">Appendix
 B</a> for details on the default value or automatically
 calculated value..<br>
+
 <br>
-<div style="margin-left: 40px;"><code>&lt;<a href="#eth">eth</a> from="..." to="..." <span style="font-style: italic; text-decoration: underline;">ethertype</span>="..."/&gt;<br>
+
+<div style="margin-left: 40px;"><code>&lt;<a href="#eth">eth</a>
+from="..." to="..." <span style="font-style: italic; text-decoration: underline;">ethertype</span>="..."/&gt;<br>
 </code><code>&lt;<a href="#vlans">vlans</a>
 stack="..." <span style="font-style: italic;">vlanEthertype</span>="..."
 <span style="font-style: italic; text-decoration: underline;">bodyEthertype</span>="..."&nbsp;
@@ -176,53 +194,62 @@ checksum="..." /&gt;<br>
 &lt;<a href="#signature">signature</a>
 name="..." /&gt;<code><br>
 </code></div>
+
 <h2>User interface</h2>
+
 <h3>Intro</h3>
+
 <ul>
-<li>Currently, there's only a <span style="font-style: italic;">command line interface</span>,
+
+  <li>Currently, there's only a <span style="font-style: italic;">command
+line interface</span>,
 taking
 one argument: the name of &nbsp;an xml file (typical extension:
 pierf).</li>
-<ul>
-<li>E.g.: <code>pierf igmp.pierf</code></li>
-</ul>
-<li>Running the tool without options gives a very short help
+  <ul>
+    <li>E.g.: <code>pierf igmp.pierf</code></li>
+  </ul>
+  <li>Running the tool without options gives a very short help
 and tool version. The version consists of three parts (x.y.z):</li>
-<ul>
-<li>First part (x) gives an indication of the feature level</li>
-<li>Second part (y) is the source version. This may be a
+  <ul>
+    <li>First part (x) gives an indication of the feature level</li>
+    <li>Second part (y) is the source version. This may be a
 pretty high number.</li>
-<li>Third part (z) is the debug subversion. It must always be
+    <li>Third part (z) is the debug subversion. It must always be
 0 for released (distributed) versions.</li>
-<li>The source of all released versions is kept under version
+    <li>The source of all released versions is kept under version
 control (subversion). Therefore, when reporting problems, please
 mention the version.</li>
-</ul>
-<li>For the actual options, an xml config file format was
+  </ul>
+  <li>For the actual options, an xml config file format was
 chosen for
 many reasons:</li>
-<ul>
-<li>You can prepare complex (sequences of) packets and store
+  <ul>
+    <li>You can prepare complex (sequences of) packets and store
 them. The store format is intrinsic to the tool.</li>
-<li>Each element in the tool has the ability to print its own
+    <li>Each element in the tool has the ability to print its own
 content in xml, as such allowing the reverse.</li>
-<li>The xml allows to build any packet (sequence) without the
+    <li>The xml allows to build any packet (sequence) without the
 need of any programming/scripting skills.</li>
-<li>It splits the user interface from the functional part.
+    <li>It splits the user interface from the functional part.
 E.g. it would be easy to use an existing xml editor or create a
 dedicated GUI that creates the xml files for you. It may also be useful
 as an interface format for server/client applications.</li>
-</ul>
-<li>The tool is constructed on all levels to be limited only by
+  </ul>
+  <li>The tool is constructed on all levels to be limited only by
 hardware (ethernet driver, memory,...)</li>
 </ul>
+
 <h3>Sending a basic packet&nbsp;</h3>
+
 Lets start with a small
 example to illustrate, sending one arp. (More sample pierf files may be
 found bundled
 with the binary, in the configs, cf. above.)<code></code>
 <ul>
+
 </ul>
+
 <div style="margin-left: 80px;"><code>&lt;pierf&gt;<br>
 &nbsp; &lt;<a href="#port">port</a>
 id="eth0"
@@ -256,66 +283,69 @@ fromIp="192.168.10.1" toIp="192.168.10.2" /&gt;</code><br>
 <code></code><code>&nbsp; &nbsp;
 &lt;/packet&gt;<br>
 <br>
-&nbsp; &nbsp; &lt;<span style="font-style: italic;"><a href="#sleep">sleep</a> milliseconds="100"</span>
+&nbsp; &nbsp; &lt;<span style="font-style: italic;"><a href="#sleep">sleep</a>
+milliseconds="100"</span>
 /&gt;<br>
 </code><code>&nbsp; &lt;/seq&gt;</code><br>
 <code>&nbsp; &lt;/scene&gt;<br>
 <br>
 </code><code> &lt;play scene="arp" /&gt;</code><br>
 <code> &lt;/pierf&gt;</code></div>
+
 <ul>
-<li>Clarification of the above example:<code></code></li>
-<ul>
-<li>The file starts and stops
+
+  <li>Clarification of the above example:<code></code></li>
+  <ul>
+    <li>The file starts and stops
 resp.
 with a &lt;pierf&gt; and &lt;/pierf&gt; tag, confirming
 that it is a pierf&nbsp;file.</li>
-<ul>
-</ul>
-<li>The ports (ethernet cards) on your PC must be identified
+    <ul>
+    </ul>
+    <li>The ports (ethernet cards) on your PC must be identified
 by their device id. To find out the device id of your ports, just fill
 someting dummy and run the tool. It will print an error but also
 provide a list of devices. Using Ethereal, you'll also find the device
 id there, when starting a capture. For further use, you can give these
 ports a friendly name. The &lt;port&gt; tag is used for that.</li>
-<li>You can define multiple "scenario's", identified by
+    <li>You can define multiple "scenario's", identified by
 &lt;scene&gt; tags. &nbsp;A scene has an id, that can be
 referenced later to run it. As such, the definition of a scene does not
 cause anything to be sent. It only loads the scenario and packet
 definitions into memory. Everything between the start tag
 &lt;scene&gt; and the end tag &lt;/scene&gt; is part of
 the scene.</li>
-<li>A scene currently can only exist of a sequence of
+    <li>A scene currently can only exist of a sequence of
 packets. A sequence starts with a &lt;seq&gt; tag and ends with
 a &lt;/seq&gt; tag. If you want to sent a packet (or sequence
 of packets) repetitively, add <span style="font-style: italic;">repeat="..."</span>
 as an attripbute to the sequence tag.</li>
-<li>A sequence is built up by packets. Each packet needs a
+    <li>A sequence is built up by packets. Each packet needs a
 port attribute to know on which port to send the packet. This is the
 &lt;packet&gt;/&lt;/packet&gt; tag.&nbsp;</li>
-<li>A packet consists of a series of layers. In this example,
+    <li>A packet consists of a series of layers. In this example,
 an arp request in a stacked vlan (<span style="font-style: italic;">outer
 700, inner 120</span>), over ethernet.
 Currently, the layers in a packet have no correlation, so, e.g. in this
 case, you must explicitly specify the source mac address both in the
 ethernet and in the arp layer.</li>
-<li>A
+    <li>A
 sequence can contain more then packets. E.g. a delay (&lt;sleep
 milliseconds="..."&gt;) was added here. In this case, two arp
 requests
 will be sent with 100 milliseconds delay between them.</li>
-<li>Finally, there's one tag left: the &lt;play&gt;
+    <li>Finally, there's one tag left: the &lt;play&gt;
 tag. This is the only one that effectively does something. It sends all
 the packets defined in the &lt;scene&gt; tag.</li>
-</ul>
-<li>The tool allows you to specify any field of any packet
+  </ul>
+  <li>The tool allows you to specify any field of any packet
 layer. However, often higher layers imply values of lower layer field.
 E.g. when sending an arp reply, the source and destination mac address
 in the arp are the same as the ones in the ethernet layer. <a href="#Appendix_B._Overview_of_supported_auto">Appendix B</a>
 lists all automatic completions done.&nbsp;</li>
-<ul>
-<li>Sample:<br>
-<code>&lt;scene auto="manual"&gt;<br>
+  <ul>
+    <li>Sample:<br>
+      <code>&lt;scene auto="manual"&gt;<br>
 &nbsp; &lt;seq&gt;...&lt;/seq&gt;<br>
 &nbsp; &lt;seq auto="auto"&gt;<br>
 &nbsp; &nbsp; &lt;packet port="broadcom"&gt;<br>
@@ -326,26 +356,26 @@ toIp="192.168.10.8"&gt;<br>
 &nbsp; &nbsp; &lt;/packet&gt;<br>
 &nbsp; &lt;/seq&gt;<br>
 &lt;/scene&gt;<br>
-</code><br>
+      </code><br>
 In this simple example, the &lt;eth&gt; tag will take its
 source mac address from the arp request. As it is an arp request, it
 will set the destination mac address to the broadcast mac address
 (FF:FF:FF:FF:FF:FF).<br>
-</li>
-<li>Important to know is that the tool will only auto
+    </li>
+    <li>Important to know is that the tool will only auto
 complete fields of lower layers based on the upper layers. Each layer
 will first locate itself in the stack and then complete. If you'd have
 e.g. ip over ethernet over ppp over ethernet again, the lowest layer
 ethernet fields may be set from the ppp and then upper layers. The
 higher layer ethernet fields may only be set by the ip layer and
 possible higher layers. (Fictive example)</li>
-<li>Another consequence of this is also that parse errors for
+    <li>Another consequence of this is also that parse errors for
 missing parameters are delayed, until all packet layers have been
 read.&nbsp;</li>
-<li>If you set a parameter manual, it will never be
+    <li>If you set a parameter manual, it will never be
 overwritten, even if the specified value is not in line with what's
 expected based on the upper layers.</li>
-<li>This auto mechanism can be disabled or enabled at any
+    <li>This auto mechanism can be disabled or enabled at any
 level, e.g. <code>&lt;scene auto="manual"&gt;</code>
 will disable it for the entire scene, including all packets in it.
 While <code>&lt;seq auto="auto"&gt;</code> will
@@ -355,16 +385,16 @@ provided, is "auto". The default at any lower level is to enherit from
 the upper level. E.g. the first
 &lt;seq&gt;...&lt;/seq&gt; in the example, will also be
 "manual", because the scene tag has been set "manual".</li>
-<li>Even in "manual" mode, there are a very few arguments
+    <li>Even in "manual" mode, there are a very few arguments
 which are optional. E.g. in the case of an arp request, you don't need
 to specify the target mac address as it is not supposed to be known for
 a regular arp request. These arguments and their assumed default value
 are clearly mentioned to be optional in appendix A.</li>
-<li>For most integer value fields, the tool will accept both
+    <li>For most integer value fields, the tool will accept both
 decimal input and hex input. Hex input values must start with "0x".
 E.g. "0x0800".</li>
-</ul>
-<li>Some fields also have a default value. This means that if
+  </ul>
+  <li>Some fields also have a default value. This means that if
 not specified and not implied by higher layers, the field will still
 get a regular applicable value. Defaults are mentioned in the table in
 appendix A. <br>
@@ -375,24 +405,32 @@ own layer. For this reason, as well as for general efficiency, the
 checksum field is only calculated after building the raw packet. (While
 all other fields need to be known before even starting to construct it.)</li>
 </ul>
+
 <h3>Advanced sequences</h3>
+
 A sequence may be repeated several times,
 implementing a kind of loop. E.g.: Following example will cause the
 same packet to be sent 1000 times in row without 10 milliseconds delay
 between each packet:<br>
+
 <br>
+
 <div style="margin-left: 40px;"><code>&lt;seq <span style="font-weight: bold;">repeat="1000"</span>&gt;<br>
 &nbsp; &lt;packet ...&gt; ... &lt;/packet&gt;<br>
 &nbsp; &lt;sleep milliseconds="10" /&gt;<br>
 &lt;/seq&gt;<br>
 </code></div>
+
 <br>
+
 Sequences
 may also be given an id. The sequence will be executed (added to the
 scene or sequence), but a reference will also be stored for later
 reuse. The sequence can later be included again at any place, except in
 the root of a &lt;match&gt; tag. E.g.<br>
+
 <br>
+
 <div style="margin-left: 40px;"><code>&lt;scene
 id="scene1"&gt;<br>
 &nbsp; &lt;<a href="#seq">seq</a> <span style="font-weight: bold;">id="mySequence"</span>&gt;<br>
@@ -408,7 +446,9 @@ id="scene1"&gt;<br>
 &lt;/scene&gt;<br>
 <br>
 &lt;play scene="scene1" /&gt;</code></div>
+
 <br>
+
 The
 above will cause the scequence "mySequence" to be executed once
 (sending the packet inside). Then the rest of the sequence (the ...)
@@ -418,7 +458,9 @@ will again be executed a 100 times. A sequence must always be defined
 id="...") in the same scene as where it is referred. But the scene that
 contains the sequence definition must be defined before the scene that
 contains the reference.<br>
+
 <h3>Parse errors and run time errors</h3>
+
 When
 an syntax error is found, pierf will print an error and quit. The error
 will start with &lt;file name&gt;:&lt;line number&gt;
@@ -426,21 +468,31 @@ and a clear error
 string. (Feel free to send me a mail should you encounter unclear
 errors messages). E.g.: The config file below has a typo (idx should be
 id):<br>
+
 <br>
+
 <div style="margin-left: 40px;"><code>&lt;pierf&gt;<br>
 &nbsp; &lt;port <span style="font-weight: bold;">idx</span>="eth0"
 device="eth0" /&gt;<br>
 &lt;/pierf&gt;</code></div>
+
 <br>
+
 Giving the following error:<br>
+
 <br>
+
 <div style="margin-left: 40px;">Error: while parsing <span style="font-weight: bold;">syntax.pierf:2</span> :<br>
 &nbsp; Line 2: Unexpected attribute: idx in &lt;port&gt;
 tag.</div>
+
 <br>
+
 For any such errors, it may be helpful to check <a href="#Appendix_A._Overview_of_supported_tags">Appendix A</a>
 for correct syntax of all tags and attributes.<br>
+
 <br>
+
 However,
 due to the dynamic possibilities of pierf (e.g. variable assignment and
 use in packet creation), errors may also occur at run time. In any such
@@ -450,26 +502,36 @@ pierf will do the best possible to help you locate the error, but it
 may be helpful to combine it with e.g. a wireshark capture, print
 statements,... to debug your scenario.
 <h3>The different port types</h3>
+
 <h4>A physical port</h4>
+
 The
 most obvious port type is a plain physical (PC) port. Any port
 definition containing only id and device attributes is automatically
 considered to refer to a physical port.E.g.:<br>
+
 <br>
-<div style="margin-left: 40px;"><code>&lt;<a href="#port">port</a> id="eth0" device="eth0" /&gt;</code></div>
+
+<div style="margin-left: 40px;"><code>&lt;<a href="#port">port</a>
+id="eth0" device="eth0" /&gt;</code></div>
+
 <br>
+
 On
 linux, any device (as e.g. listed by ifconfig -a) can be used and names
 are quite readable. On linux you must be root to be allowed to access
 the device directly. In any other case, pierf will not be able to
 access the devices and will quit with an error,&nbsp; <br>
+
 On windows,
 devices get a long physical device name. Because it is not obvious to
 determine the device name, if a wrong device name is encountered, pierf
 will dump all found devices, their name and their characteristics
 before quitting with an error. This helps you to determine the device
 name easily. E.g. sample output of such case:<br>
+
 <br>
+
 <div style="margin-left: 40px;"><code>$ pierf
 configs/igmp.pierf <br>
 The specified device:
@@ -496,16 +558,22 @@ Error: while parsing <span style="font-weight: bold;">configs/igmp.pierf:2</span
 &nbsp; <br>
 <span style="font-style: italic;">Unable to open the device</span>
 (using pcap)</code></div>
+
 <br>
+
 It are the long names, as e.g. "<code>\Device\NPF_{DF276F08-5633-4FCE-B36C-BD4E6DA289EA}"
 that need to be used as device name in Windows.</code><br>
+
 <h4>Using capture files as input or output&nbsp;</h4>
+
 The
 most basic capture file port is a port with one capture file (pcap
 (=Wireshark) format) as input and one capture file (same pcap format)
 as output. This feature allows the playback of capture files. E.g.: the
 below example will replay myCapture.cap.<br>
+
 <br>
+
 <div style="margin-left: 40px;"><code>&lt;pierf&gt;<br>
 &lt;<a href="#port">port</a> id="replayfile" <span style="font-weight: bold;">infile</span>="myCapture.cap"
 outfile="dummy.cap" <span style="font-weight: bold;">realtime="yes"</span>
@@ -521,30 +589,38 @@ type="files" /&gt;<br>
 &lt;/scene&gt;<br>
 <br>
 &lt;play scene="replay" /&gt;</code></div>
+
 <br>
+
 <ul>
-<li>The
+
+  <li>The
 realtime option makes pierf try to respect the timing (delta time
 between packets) in the capture file. Default, realtime="no" and
 packets processes as fast as possible</li>
-<li>The &lt;receive&gt; tag will in this case read a
+  <li>The &lt;receive&gt; tag will in this case read a
 packet from the file rather then capture a packet from a physical device</li>
-<li>The
+  <li>The
 &lt;mirror&gt; tag will send out the "received" packet
 unmodified to
 the destination port, in this example the physical port "eth0".</li>
 </ul>
+
 In combination with the <a href="#Packet_matching">packet
 matching</a>, it is also possible to send only a filtered subset
 of the packets in the capture file.<br>
+
 <br>
+
 When
 sending a packet to a "files" port, the packet is stored (in Wireshark
 format). This can be used to perform e.g. a selective logging or
 capture. A port can also be a combination of file and physical device,
 e.g. packets could be "received" from the physical device, but "sent"
 (stored into) the file.<br>
+
 <h4>Loopback ports</h4>
+
 A loopback port may
 mostly be useful for test purpose. A packet sent on a loopback port
 will be stored in the "outfile" and will be added to the receive queue
@@ -613,13 +689,17 @@ NOK&lt;/text&gt;<br>
 &lt;/scene&gt;<br>
 <br>
 &lt;play scene="test" /&gt;</div>
+
 <h3><a name="Packet_matching"></a>Packet
 matching</h3>
+
 One of the powerful abilities of the pierf tool is to build conditions
 on the received packets. This allows to implement conditional replies,
 counters,... A sample how to construct such a condition in the pierf
 xml language:<br>
+
 <br>
+
 <div style="margin-left: 40px;"><code>...</code><br>
 <code>&lt;<a href="#receive">receive</a>
 port="myport" nomatch="loop"&gt;</code><br>
@@ -661,20 +741,22 @@ starting with 02:02:02 received&lt;/text&gt;<br>
 <code>&lt;/receive&gt;</code><br>
 <code>...</code><br>
 </div>
+
 <ul>
-<li>The receive tag simply has the tool waiting for the first
+
+  <li>The receive tag simply has the tool waiting for the first
 packet sniffed on the port (device or file). Be careful: since this is
 a raw packet capture on the device and not a receive via some kind of
 OS service, the packets you send are also "received" when the port is a
 device. Take this into account, e.g. by defining proper matches that
 skip the sent packet. Note the "nomatch" condition. When set to loop,
 receive will loop forever until at least one match has been satisfied.</li>
-<li>The firstof tag simply combines a set of matches. The first
+  <li>The firstof tag simply combines a set of matches. The first
 match tag that actually gives a match will be executed, the remaining
 match tags will be skipped. A receive tag may contain more then one
 firstof tags, in this way also allowing independent match conditions,
 that may both be executed when matched.</li>
-<li>The match tag is followed by two parts. The match starts
+  <li>The match tag is followed by two parts. The match starts
 with a partial packet definition. A match is always evaluated from
 lower to higher layer. So, if e.g. you want to match a udp packet, you
 must also specify the ethernet and ip layer (and whatever other
@@ -686,7 +768,7 @@ not contain another, nested receive tag. (This because the packet
 capturing is blocked until the receive is fully handled, only then to
 capture the next packet, so that, if streams are not coming too
 fast,&nbsp;no packet is missed.)</li>
-<li>Note when match tag the has the attribute bystring (any
+  <li>Note when match tag the has the attribute bystring (any
 value can be assigned to this attribute), all matching is done based on
 string matching rather then binary matching. This allows the use of
 regular expressions (e.g. wildcards). For the captured packet, the
@@ -696,16 +778,22 @@ printed by the &lt;print&gt; tag. For the pattern matching pcre
 the supported regular expressions are 99% of perl's regular
 expressions. For more information, refer to pcre or perl online manuals.</li>
 </ul>
+
 <h4><a name="Different_match_methods"></a>Different
 match methods</h4>
+
 There
 are two methods to match: by analyze and compare method.The default is
 analyse. The method can be specified as an attribute to the match tag,
 e.g.:<br>
+
 <br>
+
 <div style="margin-left: 40px;"><code></code><code>&lt;<a href="Pierf.html#match">match</a> <span style="font-weight: bold;">method="compare"</span>&gt;</code><code></code><code><br>
 </code></div>
+
 <br>
+
 In the analyze method, a captured packet is first analysed, similar
 to what is done in tools like Wireshark. The first layer is always
 assumed to be ethernet. Based on the ethertype, the next layer is
@@ -716,7 +804,9 @@ specific protocol, they are put into a &lt;raw&gt; layer. After
 this
 analysis, different &lt;match&gt; conditions are evaluated. The
 advantage of this method is implicit protocol verification. E.g.:<br>
+
 <br>
+
 <div style="margin-left: 40px;"><code>...</code><br>
 <code>&lt;receive<span style="text-decoration: underline;"></span>&nbsp;port="myport"
 nomatch="loop"&gt;</code><br>
@@ -731,12 +821,16 @@ nomatch="loop"&gt;</code><br>
 <code>&lt;/receive&gt;</code><br>
 <code>...</code><br>
 </div>
+
 <br>
+
 The above match by analyze method will do an effective check
 that the received packet is an Icmp packet, since the ethertype and ip
 protocol are checked to do the analysis. The method also has some
 limitations where the compare method can be helpful.<br>
+
 <br>
+
 In the
 compare method, nothing is assumed about the protocol layers of the
 captured packet except that what you explicitly specify in the
@@ -751,7 +845,9 @@ packet are analysed as being &lt;ipHdr&gt;, etc. The ethertype
 or
 protocol or ... field are not checked, neither as any other field,
 unless you specify it explicitly. E.g.:<br>
+
 <br>
+
 <div style="margin-left: 40px;"><code>...</code><br>
 <code>&lt;receive port="myport" nomatch="loop"&gt;</code><br>
 <code>&nbsp; &lt;firstof&gt;</code><br>
@@ -766,7 +862,9 @@ ethertype="0x0800" /&gt;<br>
 <code>&lt;/receive&gt;</code><br>
 <code>...</code><br>
 </div>
+
 <br>
+
 The above match by compare results in a similar check as the
 match by analyze example above. If the ethertype would not have been
 specified explicitly, however, it would not have been checked at all.
@@ -776,7 +874,9 @@ cases however, that is not the case for the protocols supported by
 pierf. One other advantage is a new flexibility of analysis based on
 pure raw binary (or text) data. E.g. the below example performs again
 the same check:<br>
+
 <br>
+
 <div style="margin-left: 40px;"><code>...</code><br>
 <code>&lt;receive port="myport" nomatch="loop"&gt;</code><br>
 <code>&nbsp; &lt;firstof&gt;</code><br>
@@ -796,14 +896,20 @@ protocol="0x01" /&gt;<br>
 <code>&lt;/receive&gt;</code><br>
 <code>...</code><br>
 </div>
+
 <br>
+
 A more meaningful use may be e.g. in the analysis of text based
 protocols, as e.g. ftp.<br>
+
 <h4>Using the values of fields of received packets</h4>
+
 The value of fields of matched packets can also be copied into
 variables. (Please check the below chapter for details on variables.)
 Here's a simple example:<br>
+
 <br>
+
 <div style="margin-left: 40px;"><code>&lt;<a href="#var">var</a>
 id="$eth1" type="string" const="no" value="dummy" /&gt;<br>
 ...<br>
@@ -821,19 +927,23 @@ name="$eth1" value="field(from)" /&gt;<br>
 &nbsp; &nbsp; &lt;/firstof&gt;<br>
 &nbsp; &lt;/receive<br>
 &lt;/seq&gt;</code></div>
+
 <ul>
-<li>Variable $eth1 will be assigned to the source mac address
+
+  <li>Variable $eth1 will be assigned to the source mac address
 of the received ethernet packet.</li>
-<li>Note that variables must always have an initial value,
+  <li>Note that variables must always have an initial value,
 hence the "dummy" valie in the variable declaration.</li>
-<li>Note that it is also possible to assign to counters
+  <li>Note that it is also possible to assign to counters
 (integer variables). You must take care however to assign integer
 values only to counters, otherwise there will be a runtime error
 (crash).</li>
 </ul>
+
 Similarly, variables can be assigned to fields. Cf. the below chapter
 on variables for details.
 <h3>Shaping</h3>
+
 Shaping or definition of transmission rate is possible in a quite
 flexible way. Unfortunately, it is limited in accuracy to low rates,
 depending on the platform. Any transmitted packet defined can be linked
@@ -843,29 +953,34 @@ order to meet the configured rate of the shaper. The shaping can be
 configured in bitrates or framerates. When configuring bitrates, the
 shaper will take into account the actual packet size of each packet to
 be transmitted. <br>
+
 <br>
+
 Example 1: basic shaping<br>
+
 <ul>
-<li>Define a shaper in the header section:<br>
-<div style="margin-left: 40px;"><code>&lt;<a href="#shaper">shaper</a>
+
+  <li>Define a shaper in the header section:<br>
+    <div style="margin-left: 40px;"><code>&lt;<a href="#shaper">shaper</a>
 id="stream1" rate="20fps"&gt;</code></div>
-</li>
-<li>Assign the shaper to any packet that you expect to be
+  </li>
+  <li>Assign the shaper to any packet that you expect to be
 shaped:<br>
-<div style="margin-left: 40px;"><code>&lt;seq
+    <div style="margin-left: 40px;"><code>&lt;seq
 repeat="1000"&gt;</code><br>
-<code>&nbsp; &lt;packet port="testport"
+    <code>&nbsp; &lt;packet port="testport"
 shaper="stream1"&gt;</code><br>
-<code>&nbsp; &nbsp; ...</code><br>
-<code>&nbsp; &lt;/packet&gt;</code><br>
-<code>&nbsp; ...</code><br>
-<code>&nbsp; &lt;packet port="testport"
+    <code>&nbsp; &nbsp; ...</code><br>
+    <code>&nbsp; &lt;/packet&gt;</code><br>
+    <code>&nbsp; ...</code><br>
+    <code>&nbsp; &lt;packet port="testport"
 shaper="stream1"&gt;</code><br>
-<code>&nbsp; &nbsp; ...</code><br>
-<code>&nbsp; &lt;/packet&gt;</code><br>
-<code>&lt;/seq&gt;</code></div>
-</li>
+    <code>&nbsp; &nbsp; ...</code><br>
+    <code>&nbsp; &lt;/packet&gt;</code><br>
+    <code>&lt;/seq&gt;</code></div>
+  </li>
 </ul>
+
 Because the program does not leave the sequence and therefore will also
 not send any packets or execute any other subsequent tags in the
 sequence (&lt;seq&gt; tag), a special provisioning is necessary
@@ -877,51 +992,59 @@ different shaper. The &lt;multishaper&gt; will not send all
 packets in the tag, but only the one for which the lowest delay is
 needed before sending (as according to the shaper state of the shapers
 assigned to the packets)<br>
+
 <br>
+
 Example 2: multi shaping<br>
+
 <ul>
-<li>Define several shapers in the header section:<br>
-<div style="margin-left: 40px;"><code>&lt;shaper
+
+  <li>Define several shapers in the header section:<br>
+    <div style="margin-left: 40px;"><code>&lt;shaper
 id="stream1" rate="20fps"&gt;<br>
-</code><code>&lt;shaper id="stream2"
+    </code><code>&lt;shaper id="stream2"
 rate="10kbps"&gt;<br>
-</code><code>&lt;shaper id="stream3"
+    </code><code>&lt;shaper id="stream3"
 rate="2kBps"&gt;<br>
-</code></div>
-</li>
-<li>Instead of a single packet, create a multishaper tag:<br>
-<div style="margin-left: 40px;"><code>&lt;seq
+    </code></div>
+  </li>
+  <li>Instead of a single packet, create a multishaper tag:<br>
+    <div style="margin-left: 40px;"><code>&lt;seq
 repeat="1000"&gt;<br>
 &nbsp; &lt;<a href="#multishaper">multishaper</a>&gt;<br>
-</code><code>&nbsp; &nbsp; &lt;packet
+    </code><code>&nbsp; &nbsp; &lt;packet
 port="testport" shaper="stream1"&gt;<br>
-</code><code>&nbsp; &nbsp; &nbsp; ...<br>
-</code><code>&nbsp; &nbsp;
+    </code><code>&nbsp; &nbsp; &nbsp; ...<br>
+    </code><code>&nbsp; &nbsp;
 &lt;/packet&gt;<br>
-</code><code></code><code>
+    </code><code></code><code>
 &nbsp;&nbsp; &lt;packet port="testport"
 shaper="stream2"&gt;<br>
-</code><code>&nbsp; &nbsp; &nbsp; ...<br>
-</code><code>&nbsp; &nbsp;
+    </code><code>&nbsp; &nbsp; &nbsp; ...<br>
+    </code><code>&nbsp; &nbsp;
 &lt;/packet&gt;<br>
-</code><code></code><code>
+    </code><code></code><code>
 &nbsp;&nbsp; &lt;packet port="testport2"
 shaper="stream3"&gt;<br>
-</code><code>&nbsp; &nbsp; &nbsp; ...<br>
-</code><code>&nbsp; &nbsp;
+    </code><code>&nbsp; &nbsp; &nbsp; ...<br>
+    </code><code>&nbsp; &nbsp;
 &lt;/packet&gt;<br>
 &nbsp; &lt;/multishaper&gt;<br>
-</code><code>&lt;/seq&gt;</code></div>
-</li>
+    </code><code>&lt;/seq&gt;</code></div>
+  </li>
 </ul>
+
 <h3><a name="Variables_and_values"></a>Variables
 and values</h3>
+
 All values of fields and/or variables have a string representation as
 their main representation. Similarly, the main variable type is the
 "string" variable type. This was done on purpose to avoid the complex
 type definition and conversions that come with programming/protocol
 languages. Check e.g. the following config: <br>
+
 <br>
+
 <div style="margin-left: 40px;">&lt;<a href="#var">var</a>
 type="counter"
 id="$counter" /&gt;<br>
@@ -957,43 +1080,54 @@ destport="8765"/&gt;<br>
 &nbsp; &lt;/packet&gt;<br>
 &lt;/seq&gt;<br>
 ...</div>
+
 <ul>
-<li>The counter ($counter), as an integer value, has a decimal
+
+  <li>The counter ($counter), as an integer value, has a decimal
 representation by default, when assigned to variables. To make sure
 that it gets a hex representation, the hex() function is used. This is
 important because some fields (like mac address fields) expect hex
 representation as input.</li>
-<li>The concat allows to construct more complex "data types" as
+  <li>The concat allows to construct more complex "data types" as
 a mac address out of basic values, without needing the intelligence of
 data typing. A complete overview of supported manipulation functions
 can be found in <a href="#Appendix_C._Supported_functions_for">Appendix
 C</a>.</li>
 </ul>
+
 Variable names must not start with a dollar sign ($). But when used in
 a function (assign-variable) or when assigned to a field, they must
 start with a dollar
 sign, because that is the way they are distinguished from basic values:
 a string is a value and a value is a string.<br>
+
 <br>
+
 Variables can be assigned to any field of any protocol. There are only
 a very few exceptions:<br>
+
 <ul>
-<li>igmp version must be a constant. Because it igmp v2 and v3
+
+  <li>igmp version must be a constant. Because it igmp v2 and v3
 is actually a different protocol layer, the version must be fixed.</li>
-<li>icmp type must be compatible with the final icmp type in
+  <li>icmp type must be compatible with the final icmp type in
 order for all variable assignments to work properly. Compatible type
 means e.g. echoRequest/echoReply. In general: all icmp types that have
 exaclty the same fields and fieldnames are compatible.</li>
 </ul>
+
 <span style="font-style: italic;">Variables can also be
 used to assign or increment counters</span> (make
 calculations). E.g.:<br>
+
 <div style="margin-left: 40px;">&lt;counter
 ref="$counter1" action="reset" var="$sequencenr"/&gt;<br>
 &lt;counter ref="$counter1" action="increment" var="$size"/&gt;<br>
 &lt;counter ref="$counter1" action="report" /&gt;</div>
+
 <h3><a name="Working_with_binary_and_text_fields"></a>Working
 with binary and text fields</h3>
+
 Other
 then the supported protocol layers, raw data can be manipulated. This
 could be any binary or text data. (Text data may e.g. be useful for FTP
@@ -1005,7 +1139,9 @@ without any further processing. The default is "hex" or binary data. In
 this case, a string as "ab:cd" is interpreted as a 2 bytes hex value.
 When setting the type="text", input method is changed and "abcd" is
 interpreted as a 4 bytes ascii string. E.g.<br>
+
 <br>
+
 <div style="margin-left: 40px;"><code>&lt;packet
 port="eth0"&gt;<br>
 &nbsp; &lt;eth from="00:00:00:01:01:01" to="00:00:00:02:02:02"
@@ -1013,7 +1149,9 @@ ethertype="0x8000" /&gt;<br>
 &nbsp; &lt;<a href="#raw">raw</a> <span style="font-weight: bold;">type="text"</span>&gt;This
 is my text&lt;/raw&gt;<br>
 &lt;/packet&gt;</code></div>
+
 <br>
+
 A
 size can be assigned to raw data (expressed as a number of bytes). If
 the provided data is not long enough to fill that size, padding will be
@@ -1021,7 +1159,9 @@ added. Default is to repeat "0x00". However, any filler of any length
 may be defined. That filler will be repeated until the defined size is
 reached. E.g. the below example will fill 1000 bytes with the 16 bytes
 repetitive sequence "01:23:45:67:89:ab:cd:ef":<br>
+
 <br>
+
 <div style="margin-left: 40px;"><code>&lt;packet
 port="eth0"&gt;<br>
 &nbsp; &lt;eth from="00:00:00:01:01:01" to="00:00:00:02:02:02"
@@ -1030,104 +1170,250 @@ ethertype="0x8000" /&gt;<br>
 <span style="font-weight: bold;">filler="01:23:45:67:89:ab:cd:ef"</span>
 /&gt;<br>
 &lt;/packet&gt;</code></div>
+
 <br>
+
 Finally, the raw data can be put in the body of the &lt;raw&gt;
 tag or in the "data" attribute: <br>
+
 <br>
+
 <div style="margin-left: 40px;"><code>&lt;raw&gt;<br>
 00:01:02:03:04:05:06:07:08:09:0a:0b:0c:0d:0e:0f<br>
 0f:0e:0d:0c:0b:0a:09:08:07:06:05:04:03:02:01:00<br>
 &lt;/raw&gt;</code></div>
+
 <br>
+
 or<br>
+
 <br>
+
 <div style="margin-left: 40px;"><code>&lt;raw
 data="</code><code>00:01:02:03:04:05:06:07:08:09:0a:0b:0c:0d:0e:0f:</code><code>0f:0e:0d:0c:0b:0a:09:08:07:06:05:04:03:02:01:00"
 /&gt;</code><code></code><br>
 </div>
+
 <br>
+
 The first format (body data) allows e.g. easy copy/paste from other
 tools, captures,...<br>
+
 The use of the data attributed on the other hand allows the use of
 variables. E.g.<br>
+
 <br>
+
 <div style="margin-left: 40px;"><code>&lt;raw
 data="</code><code>$counter1</code><code>"
 /&gt;</code><code></code><br>
 </div>
+
 <br>
+
+<h2>Using pierf for QOS/thoughput tests</h2>
+
+When we are talking about 1Gbps throughput and above, some more care
+must go to performance. <br>
+Especially:<br>
+<ul>
+  <li>Install PF_RING and build pierf with PF_RING (linux). As PF_RING
+does require a PF_RING module in the kernel, it cannot come with pierf
+as default</li>
+  <li>Don't use variables. Use a signature field if you want to verify in sequence delivery.</li>
+  <li>Use only transmit. Don't use the receive function of pierf. Use
+the separate tool quickCount at the receiving side. This is a compact
+tool to verify in sequence, no drop delivery of streams. It will count
+drops and report them. Check documentation of this tool. Its source and
+binary are distributed with pierf.</li>
+  <li>Use large frame sizes for higher bitrates. For full line rate
+performance of e.g. 10Gbps with small packets, you will need a hardware
+solution (at the time of writing).<br>
+  </li>
+</ul>
+
+Pierf is combined with following sample config file (named udp_signature.pierf)<br>
+
+<br>
+
+<div style="margin-left: 40px;"><code>&lt;pierf&gt;</code><br>
+<code>&lt;<span style="font-weight: bold;">port id="<span style="color: rgb(153, 102, 51);">port1</span>" device="eth0"</span>
+silent="true" /&gt;</code><br>
+<code>&lt;<span style="font-weight: bold;">shaper id="<span style="color: rgb(51, 102, 255);">stream1</span>" rate="3000Mbps"</span>
+/&gt;</code><br>
+<code>&lt;<span style="font-weight: bold;">var type="counter" id="<span style="color: rgb(0, 153, 0);">countPkt</span>"</span> /&gt;</code><br>
+<code></code><br>
+<code>&lt;scene id="udp"&gt;</code><br>
+<code></code><br>
+<code>&lt;seq repeat="99"&gt;</code><br>
+<code><br>
+</code>
+<div style="margin-left: 40px;"><code>&lt;counter action="reset" ref="<span style="font-weight: bold; color: rgb(0, 153, 0);">countPkt</span>"
+/&gt;</code><br>
+<code></code><code>&lt;seq <span style="font-weight: bold;">repeat="1000000"</span>&gt;</code><br>
+<code></code><br>
+<div style="margin-left: 40px;"><code>&lt;packet port="</code><code style="font-weight: bold; color: rgb(153, 102, 51);">port1</code><code>"
+shaper="<span style="font-weight: bold;"><span style="color: rgb(51, 102, 255);">stream1</span></span>"
+counter="<span style="font-weight: bold; color: rgb(0, 153, 0);">countPkt</span>"&gt;</code><br>
+<div style="margin-left: 40px;"><code>&lt;eth from="02:02:02:02:02:<span style="font-weight: bold;">02</span>" to="00:02:C9:1F:C1:80"/&gt;</code><br>
+<code>&lt;iphdr from="192.168.1.11" to="192.168.10.1" ttl="128"
+packetid="1" dscp="1"/&gt;</code><br>
+<code>&lt;udp sourceport="1234" destport="1235"/&gt;</code><br>
+<code>&lt;<span style="font-weight: bold;">signature</span>
+name="stream1" /&gt;</code><br>
+<code>&lt;raw size="1200" filler="01:23:45:67:89:AB:CD:EF" /&gt;</code><br>
+</div>
+<code>&lt;/packet&gt;<br>
+<br>
+</code><code>&lt;packet port="</code><code>port1</code><code>" </code><code>shaper="<span style="font-weight: bold;"><span style="color: rgb(51, 102, 255);">stream1</span></span>"
+</code><code>counter="<span style="font-weight: bold; color: rgb(0, 153, 0);">countPkt</span>"&gt;</code><br>
+<div style="margin-left: 40px;"><code>&lt;eth from="02:02:02:02:02:<span style="font-weight: bold;">03</span>" to="00:02:C9:1F:C1:80"/&gt;</code><br>
+<code>&lt;iphdr from="192.168.1.11" to="192.168.10.1" ttl="128"
+packetid="1" dscp="1"/&gt;</code><br>
+<code>&lt;udp sourceport="1234" destport="1235"/&gt;</code><br>
+<code>&lt;signature name="stream2" /&gt;</code><br>
+<code>&lt;raw size="1200" filler="01:23:45:67:89:AB:CD:EF" /&gt;</code><br>
+</div>
+<code>&lt;/packet&gt;</code><code></code><code></code><br>
+</div>
+<code></code><code></code><br>
+<code>&lt;/seq&gt;</code><br>
+<code></code><br>
+<code>&lt;counter action="report" ref="<span style="font-weight: bold; color: rgb(0, 153, 0);">countPkt</span>"
+/&gt;</code><br>
+</div>
+<code>&lt;/seq&gt;</code><br>
+<code>&lt;/scene&gt;</code><br>
+<code></code><br>
+<code>&lt;play scene="udp" /&gt;</code><br>
+<code>&lt;/pierf&gt;</code><br>
+</div>
+
+<br>
+
+A brief summary of what this will do:<br>
+
+<ul>
+
+<li>Transmit on port (nic) eth0</li>
+<li>Apply a shaping of 3 Gbps in total. This shaping will involve
+active loop for accurate timing. Hence, the CPU core running this will
+go to 100% usage.</li>
+<li>Count packets and report actual transmit bitrate every 2 million
+packets (1 million loops).</li>
+<li>Keep doing that 99 times</li>
+<li>Two streams with equal rate are sent, but with different source
+mac address.</li>
+<li>The packets contain a "signature", that includes a 4 bytes
+counter, incremented at transmit of each packet. This allows the
+receive side to do dropped packet/out of sequence analysis.</li>
+<li>Note: with increasing bitrate, the transmit shaper is known to be
+a bit less accurate vs. what is configured. The bitrate reported by the
+tool (via the "counter action='report'"), however, is accurate
+(verified vs. hardware traffic generator)<br>
+</li>
+</ul>
+
+The config is executed by running pierf with the name of the config
+file as argument.<br>
+
+Sample:<br>
+
+<br>
+
+<code>[root@NPI-MOUNT1 pierf]# ./pierf test/udp.pierf<br>
+Counter: countPkt - Count: 2000000 - Rate: 332908 - Bytes: 705032704 -
+Bitrate: 3.32908 Gbps<br>
+Counter: countPkt - Count: 2000000 - Rate: 332910 - Bytes: 705032704 -
+Bitrate: 3.3291 Gbps<br>
+Counter: countPkt - Count: 2000000 - Rate: 332908 - Bytes: 705032704 -
+Bitrate: 3.32908 Gbps<br>
+Counter: countPkt - Count: 2000000 - Rate: 332888 - Bytes: 705032704 -
+Bitrate: 3.32888 Gbps<br>
+Counter: countPkt - Count: 2000000 - Rate: 332903 - Bytes: 705032704 -
+Bitrate: 3.32903 Gbps</code><br>
+
+<br>
+
 <h2><a name="Appendix_A._Overview_of_supported_tags"></a>Appendix
 A. Overview of supported tags</h2>
+
 <table border="1">
-<tbody>
-<tr>
-<th colspan="4">Control tags</th>
-</tr>
-<tr>
-<td colspan="1" rowspan="55"><br>
-<br>
-<br>
-<br>
-</td>
-<td colspan="2" rowspan="1">pierf</td>
-<td>Start and end of the file. Confirms that it is a pierf
+
+  <tbody>
+    <tr>
+      <th colspan="4">Control tags</th>
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="55"><br>
+      <br>
+      <br>
+      <br>
+      </td>
+      <td colspan="2" rowspan="1">pierf</td>
+      <td>Start and end of the file. Confirms that it is a pierf
 file</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="include"></a>include</td>
-<td>Include a file. Note: there is no protection for loops
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="include"></a>include</td>
+      <td>Include a file. Note: there is no protection for loops
 caused by nested includes, so take care.</td>
-</tr>
-<tr>
-<td><br>
-</td>
-<td>file</td>
-<td>Provide the filename to be included. Can be absolute or
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td>file</td>
+      <td>Provide the filename to be included. Can be absolute or
 relative. Relative path is vs. the location of the file that does the
 include.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="port"></a>port</td>
-<td>Give the ethernet devices on the PC to run an easy to
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="port"></a>port</td>
+      <td>Give the ethernet devices on the PC to run an easy to
 use name. Also separates the (unique) device name from the rest, so
 that executing on another PC only requires to change the port
 definition(s) to send them on the ethernet ports available on that PC.</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="8"><br>
-</td>
-<td>id</td>
-<td>The name by which to reference the port later</td>
-</tr>
-<tr>
-<td>device</td>
-<td>The device name. If you don't know the device names of
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="8"><br>
+      </td>
+      <td>id</td>
+      <td>The name by which to reference the port later</td>
+    </tr>
+    <tr>
+      <td>device</td>
+      <td>The device name. If you don't know the device names of
 your PC, choose a dummy value. When executing the tool, it will then
 print an error, but also give you a list of possible devices to choose
 from.</td>
-</tr>
-<tr>
-<td>infile</td>
-<td>Filename of the input file. Will read packets from that
+    </tr>
+    <tr>
+      <td>infile</td>
+      <td>Filename of the input file. Will read packets from that
 file rather then from the device. Can be combined with either a device
 or a file for "sending" packets. Cf. resp. outdevice or outfile
 attributes.</td>
-</tr>
-<tr><td>outdevice</td><td>The device name for files of type inFileOutDevice.</td></tr><tr>
-<td>outfile</td>
-<td>Filename of the output file. Will write packets to that
+    </tr>
+    <tr>
+      <td>outdevice</td>
+      <td>The device name for files of type inFileOutDevice.</td>
+    </tr>
+    <tr>
+      <td>outfile</td>
+      <td>Filename of the output file. Will write packets to that
 file rather then to send them on the device.</td>
-</tr>
-<tr>
-<td>type</td>
-<td>Types can be device, files, inFileOutDevice, loopback. Only in case of loopback, this type is
+    </tr>
+    <tr>
+      <td>type</td>
+      <td>Types can be device, files, inFileOutDevice, loopback. Only
+in case of loopback, this type is
 relevant. In any other case, it is automatically detected from the
 other arguments and is ignored. For a loopback interface you must
 specify only the outfile.</td>
-</tr>
-<tr>
-<td>realtime</td>
-<td>Only relvant in case infile is specified
+    </tr>
+    <tr>
+      <td>realtime</td>
+      <td>Only relvant in case infile is specified
 (input comes from a capture file). Only two values are allowed: yes and
 no. The default is "no". If "no", the packets in the capture file will
 be read (received) as fast as possible, ignoring the timestamps in the
@@ -1136,228 +1422,233 @@ timing in the capture file: after the handling of a packet, it will
 sleep for the delta time between this packet and the next before
 continuing. The accuracy depends on the PC and operating system
 accuracy of the sleep.</td>
-</tr>
-<tr>
-<td>silent</td>
-<td>Only
+    </tr>
+    <tr>
+      <td>silent</td>
+      <td>Only
 two values are allowed: "true" or "false". Default value is "false". If
 "false" pierf will print a line to the screen for each packet being
 sent. </td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="log"></a>log</td>
-<td>Log all packets received on a port. This logging starts
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="log"></a>log</td>
+      <td>Log all packets received on a port. This logging starts
 as soon as the tag is read and will end only with the end of execution.
 It makes sense to put it only just before the &lt;play&gt; tag,
 when most of the parsing is done.</td>
-</tr>
-<tr>
-<td><br>
-</td>
-<td>port</td>
-<td>The port to log. Due to restrictions of the current
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td>port</td>
+      <td>The port to log. Due to restrictions of the current
 pcap/ethereal file format, one file can only&nbsp;log packets from
 one port.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="var"></a>var</td>
-<td>Defines a (global) variable. Check the <a href="#Variables_and_values">chapter on variable handling</a>
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="var"></a>var</td>
+      <td>Defines a (global) variable. Check the <a href="#Variables_and_values">chapter on variable handling</a>
 for examples.</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="3"><br>
-</td>
-<td>id</td>
-<td>A variable needs a unique name, so that it can be
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="3"><br>
+      </td>
+      <td>id</td>
+      <td>A variable needs a unique name, so that it can be
 referenced later.</td>
-</tr>
-<tr>
-<td>type</td>
-<td>Currently,&nbsp;variables of type "counter" or
+    </tr>
+    <tr>
+      <td>type</td>
+      <td>Currently,&nbsp;variables of type "counter" or
 "string" are supported. See &lt;counter&gt; tag for details on
 what can be done with counters.</td>
-</tr>
-<tr>
-<td>const</td>
-<td>Takes values "yes" or "no". Default value is "yes" for
+    </tr>
+    <tr>
+      <td>const</td>
+      <td>Takes values "yes" or "no". Default value is "yes" for
 variables of type string. Counters are never const. Const string
 variables may not change value during execution. The effect of using
 non const string values is a small delay for re-evaluation before
 transmission of a packet that uses the variable.</td>
-</tr>
-<tr><td><br>
-</td><td>value</td><td>Only allowed for string variables (not
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td>value</td>
+      <td>Only allowed for string variables (not
 for counters). Give a starting value. Neccessary to provide for
 constant string variables. For non constant string variables, it may
 also be necessary for initial parsing to provide a syntactical correct
-initial value.</td></tr><tr>
-<td colspan="2" rowspan="1"><a name="counter"></a>counter</td>
-<td>Do something with a counter. What is done is defined by
+initial value.</td>
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="counter"></a>counter</td>
+      <td>Do something with a counter. What is done is defined by
 the option action="...". The tag can be part of a sequence
 (&lt;seq&gt; tag) or part of a receive step
 (&lt;receive&gt; tag). When part of a receive step, it also
 counts the number of bytes captured.</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="4"><br>
-<br>
-</td>
-<td>ref</td>
-<td>The name of the counter value to be acted on.</td>
-</tr>
-<tr>
-<td>action</td>
-<td>Supported actions are:<br>
-<ul>
-<li>reset: reset counters to zero and start of
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="4"><br>
+      <br>
+      </td>
+      <td>ref</td>
+      <td>The name of the counter value to be acted on.</td>
+    </tr>
+    <tr>
+      <td>action</td>
+      <td>Supported actions are:<br>
+      <ul>
+        <li>reset: reset counters to zero and start of
 measurement to current time.</li>
-<li>hold: stop the clock. Counter values are kept (and
+        <li>hold: stop the clock. Counter values are kept (and
 can be further incremented), but stop time is taken as current time.
 May be relevant for rate measurements. Only has an effect if the clock
 is running.</li>
-<li>cont: restart the clock. Only has an effect if the
+        <li>cont: restart the clock. Only has an effect if the
 clock is on hold. Counter values are kept and also the elapsed time
 that was registered until the hold.&nbsp;</li>
-<li>increment: increment the counter (typically
+        <li>increment: increment the counter (typically
 representing a number of packets) by one. Inside a receive step, also
 increment the number of bytes counter by the number of bytes received.</li>
-<li>report: reports four values: Count (the basic
+        <li>report: reports four values: Count (the basic
 counter, typically total number of &nbsp;packets), Rate (typically
 packets per second), Bytes (actual total number of bytes received),
 Bitrate (received bits per second).&nbsp;</li>
-</ul>
-</td>
-</tr>
-<tr>
-<td>value</td>
-<td>Only allowed for reset and increment. Mutually
+      </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>value</td>
+      <td>Only allowed for reset and increment. Mutually
 exclusive with "var" attribute. For reset, determines the value to
 which the counter is set. For increment, determines the size of the
 increment. Note that counters don't only have a basic count but also a
 byte count (mostly relevant when used in combination with
 &lt;receive&gt; tags. This byte count is never impacted by the
 value attribute.</td>
-</tr>
-<tr>
-<td>var</td>
-<td>Only allowed for reset and increment. Mutually
+    </tr>
+    <tr>
+      <td>var</td>
+      <td>Only allowed for reset and increment. Mutually
 exclusive with "value" attribute. Behaves as "value" attribute, except
 that the value is read at run time from a (non constant) variable. </td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="assign-variable"></a>assign-variable</td>
-<td>Allows to set the value of a string variable to a new
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="assign-variable"></a>assign-variable</td>
+      <td>Allows to set the value of a string variable to a new
 value.&nbsp;Check the <a href="Pierf.html#Variables_and_values">chapter
 on variable handling</a> for examples.</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="2"><br>
-</td>
-<td>name</td>
-<td>Name of the variable to be assigned</td>
-</tr>
-<tr>
-<td>value</td>
-<td>New value of the variable. Note that you must use </td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="shaper"></a>shaper</td>
-<td>Shaper can be assigned to packets and allows
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="2"><br>
+      </td>
+      <td>name</td>
+      <td>Name of the variable to be assigned</td>
+    </tr>
+    <tr>
+      <td>value</td>
+      <td>New value of the variable. Note that you must use </td>
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="shaper"></a>shaper</td>
+      <td>Shaper can be assigned to packets and allows
 transmission at a predefined rate</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="2"><br>
-</td>
-<td>id</td>
-<td>Unique id of the shaper, used to assign it to packets
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="2"><br>
+      </td>
+      <td>id</td>
+      <td>Unique id of the shaper, used to assign it to packets
 (for transmission)</td>
-</tr>
-<tr>
-<td>rate</td>
-<td>Decimal value. Decimal separator is dot (.). Allowed
+    </tr>
+    <tr>
+      <td>rate</td>
+      <td>Decimal value. Decimal separator is dot (.). Allowed
 rate types are bps (bits per second), Bps (Bytes per second) and fps
 (frames per second). The type must immediately follow the decimal
 value. The decimal value can be abbreviated by the typical k (kilo) or
 M (mega) that represent resp. *1024 and *1024*1024.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="scene"></a>scene</td>
-<td>A scenario, a runnable set of packets. Can only contain
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="scene"></a>scene</td>
+      <td>A scenario, a runnable set of packets. Can only contain
 &lt;seq&gt; tags currently.</td>
-</tr>
-<tr>
-<td><br>
-</td>
-<td>id</td>
-<td>Name of the scene, referenced later when running it.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="seq"></a>seq</td>
-<td>A sequence of steps, e.g. packets to be sent. Can
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td>id</td>
+      <td>Name of the scene, referenced later when running it.</td>
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="seq"></a>seq</td>
+      <td>A sequence of steps, e.g. packets to be sent. Can
 contain &lt;packet&gt;, &lt;sleep&gt;,
 &lt;counter&gt; or &lt;receive&gt; tags. Can also
 contain nested &lt;seq&gt; steps. If the &lt;seq&gt; is
 nested under a &lt;receive&gt; tag, it can also contain
 &lt;mirror&gt; or &lt;print&gt; tags. All the steps are
 executed in sequence (one after the other).</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="3"><br>
-</td>
-<td>id</td>
-<td>Unique
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="3"><br>
+      </td>
+      <td>id</td>
+      <td>Unique
 id that allows to refer to the sequence later on. Allows
 (pre)definition of a sequence for later reuse. The sequence will still
 be executed at the place where it is defined as well.<br>
-</td>
-</tr>
-<tr>
-<td>ref</td>
-<td>Reference to an id of a predefined sequence. Such
+      </td>
+    </tr>
+    <tr>
+      <td>ref</td>
+      <td>Reference to an id of a predefined sequence. Such
 referring sequence should be empty (it cannot contain other tags).</td>
-</tr>
-<tr>
-<td>repeat</td>
-<td>Number of times the sequence needs to be repeated.
+    </tr>
+    <tr>
+      <td>repeat</td>
+      <td>Number of times the sequence needs to be repeated.
 Optional parameter with default=1.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="packet"></a>packet</td>
-<td>A stack of layers that together build an (ethernet)
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="packet"></a>packet</td>
+      <td>A stack of layers that together build an (ethernet)
 packet.</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="2"><br>
-</td>
-<td>port</td>
-<td>The friendly name of the port over which to send the
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="2"><br>
+      </td>
+      <td>port</td>
+      <td>The friendly name of the port over which to send the
 packet.</td>
-</tr>
-<tr>
-<td>shaper</td>
-<td>Optional argument. When provided, must refer to a
+    </tr>
+    <tr>
+      <td>shaper</td>
+      <td>Optional argument. When provided, must refer to a
 predefined shaper that will be applied.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="sleep"></a>sleep</td>
-<td>Delay the execution of the next step in a sequence</td>
-</tr>
-<tr>
-<td><br>
-</td>
-<td>millisec</td>
-<td>The time (in milliseconds) to wait.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="multishaper"></a>multishaper</td>
-<td>Takes no arguments and may consist only of
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="sleep"></a>sleep</td>
+      <td>Delay the execution of the next step in a sequence</td>
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td>millisec</td>
+      <td>The time (in milliseconds) to wait.</td>
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="multishaper"></a>multishaper</td>
+      <td>Takes no arguments and may consist only of
 &lt;packet&gt; tags, each with a different shaper assigned.
 Will send only one of the packets in it's body, namely the one that is
 to be transmitted first according to the respective shapers.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="receive"></a>receive</td>
-<td>Wait until the next packet is received. Note that this
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="receive"></a>receive</td>
+      <td>Wait until the next packet is received. Note that this
 is a capture tool. It captures anything on the device, including the
 packets it sends out itself. The receive tag may contain
 &lt;mirror&gt;, &lt;print&gt;, &lt;counter&gt;
@@ -1371,43 +1662,43 @@ capture with the intention to do something with the captured packet),
 it is not advised to use them together. The logger will work, but the
 receiver may miss several packets between two &lt;receive&gt;
 tags.</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="2"><br>
-<br>
-</td>
-<td>port</td>
-<td>The friendly name of the port to listen at.</td>
-</tr>
-<tr>
-<td>nomatch</td>
-<td>Only relevant in case there is (one/more)
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="2"><br>
+      <br>
+      </td>
+      <td>port</td>
+      <td>The friendly name of the port to listen at.</td>
+    </tr>
+    <tr>
+      <td>nomatch</td>
+      <td>Only relevant in case there is (one/more)
 &lt;firstof&gt; tag under the receive. Default value is "next",
 which means that the &lt;receive&gt; will wait for the first
 packet, execute its nested sequence and quit. Alternative is "loop",
 which has as a result that &lt;receive&gt; will wait for new
 packets and execute the nested sequence until it found a match.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="firstof"></a>firstof</td>
-<td>Groups several &lt;match&gt; conditions. When a
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="firstof"></a>firstof</td>
+      <td>Groups several &lt;match&gt; conditions. When a
 match is found, the remaining &lt;match&gt; conditions are not
 tested nor executed any more.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="match"></a>match</td>
-<td>Belongs under a &lt;firstof&gt; tag. Must
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="match"></a>match</td>
+      <td>Belongs under a &lt;firstof&gt; tag. Must
 contain one (possibly incomplete) packet definition to match against,
 followed by exactly one &lt;seq&gt; tag that is executed when
 the received packet matches the condition. For the packet match
 condition part, it can contain any tag that can be part of a
 &lt;packet&gt; condition.</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="2"><br>
-</td>
-<td>bystring</td>
-<td>If the attribute is set (with any value),&nbsp;all
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="2"><br>
+      </td>
+      <td>bystring</td>
+      <td>If the attribute is set (with any value),&nbsp;all
 matching is done based on string matching rather then binary matching.
 This allows the use of regular expressions (e.g. wildcards). For the
 captured packet, the field values are converted to strings in a uniform
@@ -1416,35 +1707,35 @@ pattern matching pcre (perl combatible regular expressions) library is
 used. This means that the supported regular expressions are 99% of
 perl's regular expressions. For more information, refer to pcre or perl
 online manuals. </td>
-</tr>
-<tr>
-<td>method</td>
-<td>Optional attribute. Possible values are "analyze" and
+    </tr>
+    <tr>
+      <td>method</td>
+      <td>Optional attribute. Possible values are "analyze" and
 "compare". Default is "analyze". This
 attribute determines the details of matching. Under "analyze" method,
 the received packet is analysed first (broken down into protocol
 layers) and then matched. Under "compare" method, the recieved packet
 is blindly compared against the "match" layers. Check <a href="#Different_match_methods">the respective chapter</a>
 for examples and details.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="mirror"></a>mirror</td>
-<td>Send the received packet out again. Note that if you
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="mirror"></a>mirror</td>
+      <td>Send the received packet out again. Note that if you
 send it out on the same port as where it was received, it will be
 captured again by the next receive (if any). If you don't take this
 into account, you may create stupid loops.</td>
-</tr>
-<tr>
-<td><br>
-</td>
-<td>port</td>
-<td>The friendly name of the port over which to send the
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td>port</td>
+      <td>The friendly name of the port over which to send the
 mirror packet.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="print"></a>print</td>
-<td>Print the recieved packet in xml format.</td>
-</tr>
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="print"></a>print</td>
+      <td>Print the recieved packet in xml format.</td>
+    </tr>
     <tr>
       <td colspan="2" rowspan="1" style="vertical-align: top;"><a name="text"></a>text<br>
       </td>
@@ -1453,51 +1744,51 @@ between &lt;text&gt; and &lt;/text&gt; is printed to the screen. Has no
 function other then logging/progress indications.<br>
       </td>
     </tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="play"></a>play</td>
-<td>Effectively execute a given scene.</td>
-</tr>
-<tr>
-<td><br>
-</td>
-<td>scene</td>
-<td>The id of the scene to play.</td>
-</tr>
-<tr>
-<th colspan="4">Packet layers</th>
-</tr>
-<tr>
-<td colspan="1" rowspan="78"><br>
-</td>
-<td colspan="2" rowspan="1"><a name="eth"></a>eth</td>
-<td>Basic ethernet layer. The ethertype is added to by
+    <tr>
+      <td colspan="2" rowspan="1"><a name="play"></a>play</td>
+      <td>Effectively execute a given scene.</td>
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td>scene</td>
+      <td>The id of the scene to play.</td>
+    </tr>
+    <tr>
+      <th colspan="4">Packet layers</th>
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="78"><br>
+      </td>
+      <td colspan="2" rowspan="1"><a name="eth"></a>eth</td>
+      <td>Basic ethernet layer. The ethertype is added to by
 added by the next layer (currently).</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="3"><br>
-</td>
-<td>from</td>
-<td>Source mac address. Mac addresses must be specified as
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="3"><br>
+      </td>
+      <td>from</td>
+      <td>Source mac address. Mac addresses must be specified as
 a hex string of 6 bytes, e.g. 11:22:33:44:55:66.</td>
-</tr>
-<tr>
-<td>to</td>
-<td>Destination mac address</td>
-</tr>
-<tr>
-<td>ethertype</td>
-<td>The ethertype of the next layer.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="vlans"></a>vlans</td>
-<td>Inserts a vlan tag. The ethertype for vlan is currently
+    </tr>
+    <tr>
+      <td>to</td>
+      <td>Destination mac address</td>
+    </tr>
+    <tr>
+      <td>ethertype</td>
+      <td>The ethertype of the next layer.</td>
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="vlans"></a>vlans</td>
+      <td>Inserts a vlan tag. The ethertype for vlan is currently
 fixed on 8100.</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="3"><br>
-</td>
-<td>stack</td>
-<td>The stack of vlan tags. Syntax is "tag/priority".
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="3"><br>
+      </td>
+      <td>stack</td>
+      <td>The stack of vlan tags. Syntax is "tag/priority".
 Nested tags could also be made by adding several &lt;vlan&gt;
 xml tags, but for the ease of input, it is also allowed to specify them
 all in one tag, separated by colons (:). The first number is the outer
@@ -1505,50 +1796,50 @@ vlan, the last, the most inner. Any level of stacking is supported.
 E.g. stack="120/4:110/0" creates an outer vlan tag with id 120 and
 priority 4, and an inner vlan tag with id 110 and priority 0. (Pretty
 stupid example, just for illustration.)</td>
-</tr>
-<tr>
-<td>bodyEthertype</td>
-<td>The ethertype of the next layer.</td>
-</tr>
-<tr>
-<td>vlanEthertype</td>
-<td>The ethertype to be used for the vlan tags. Optional
+    </tr>
+    <tr>
+      <td>bodyEthertype</td>
+      <td>The ethertype of the next layer.</td>
+    </tr>
+    <tr>
+      <td>vlanEthertype</td>
+      <td>The ethertype to be used for the vlan tags. Optional
 parameter with default value 0x8100.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="arp"></a>arp</td>
-<td>Arp request. Supposedly the last tag in a packet
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="arp"></a>arp</td>
+      <td>Arp request. Supposedly the last tag in a packet
 (unless you'd want to add some padding). The tool as such doesn't care
 however what comes before or after.</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="5"><br>
-</td>
-<td>type</td>
-<td>Arp message type. Value must be req (arp request) or
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="5"><br>
+      </td>
+      <td>type</td>
+      <td>Arp message type. Value must be req (arp request) or
 rep (arp reply). </td>
-</tr>
-<tr>
-<td>fromMac</td>
-<td>Source mac address.</td>
-</tr>
-<tr>
-<td>toMac</td>
-<td>Destination mac address. (For a typical arp
+    </tr>
+    <tr>
+      <td>fromMac</td>
+      <td>Source mac address.</td>
+    </tr>
+    <tr>
+      <td>toMac</td>
+      <td>Destination mac address. (For a typical arp
 request,&nbsp;"FF:FF:FF:FF:FF:FF" is assumed unless specified
 otherwise.)</td>
-</tr>
-<tr>
-<td>fromIp</td>
-<td>Source Ip address.</td>
-</tr>
-<tr>
-<td>toIp</td>
-<td>Destination Ip address.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="raw"></a>raw</td>
-<td>A raw series of bytes or a text field. Difference is
+    </tr>
+    <tr>
+      <td>fromIp</td>
+      <td>Source Ip address.</td>
+    </tr>
+    <tr>
+      <td>toIp</td>
+      <td>Destination Ip address.</td>
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="raw"></a>raw</td>
+      <td>A raw series of bytes or a text field. Difference is
 determined by the type attribute. Default is hex. The content may be
 specified between opening and closing tag or in the data attribute.
 Accepts a hex string, fairly free-format. Bytes may be separated by a
@@ -1558,142 +1849,142 @@ ignored, as are newlines,... If a series of hex characters is not
 separated (e.g 120345 = 12:03:45), they are taken by two to represent
 one byte. Check the <a href="#Working_with_binary_and_text_fields">chapter
 on binary and text fields</a> for examples.</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="4"><br>
-</td>
-<td>type<br>
-</td>
-<td>Specify wheter it concerns a text of a hex field.
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="4"><br>
+      </td>
+      <td>type<br>
+      </td>
+      <td>Specify wheter it concerns a text of a hex field.
 Accepted values are the strings "text" or "hex".<br>
-</td>
-</tr>
-<tr>
-<td>size</td>
-<td>Optional parameter. When provided, will enforce this
+      </td>
+    </tr>
+    <tr>
+      <td>size</td>
+      <td>Optional parameter. When provided, will enforce this
 size, either by truncating the provided string of by filling it. If
 filler is specified, it used that filler, else it fills with 0 bytes.</td>
-</tr>
-<tr>
-<td>filler</td>
-<td>Optional parameter. A hex string to use as a filler.
+    </tr>
+    <tr>
+      <td>filler</td>
+      <td>Optional parameter. A hex string to use as a filler.
 Only used when size is specified.</td>
-</tr>
-<tr>
-<td>data</td>
-<td>Optional parameter. The raw data. If this tag is
+    </tr>
+    <tr>
+      <td>data</td>
+      <td>Optional parameter. The raw data. If this tag is
 specified, the body must be empty. The syntax for this data parameter
 is the same as for the body, except that it is limited in terms of
 newlines. The data parameter has mainly been introduced to allow
 variable manipulations to raw data. Also for matching by string (ref.
 bystring attribute of the &lt;match&gt; tag), the data
 parameter must be used, rather then using the body of the raw tag.<br>
-</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="iphdr"></a>iphdr</td>
-<td>Ip (v4) header. Currently somewhat limited
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="iphdr"></a>iphdr</td>
+      <td>Ip (v4) header. Currently somewhat limited
 implementation. The header checksum is automatically calculated. (It is
 currently not possible to specify another (invalid) checksum.)</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="11"><br>
-</td>
-<td>from</td>
-<td>Source IP address</td>
-</tr>
-<tr>
-<td>to</td>
-<td>Destination IP address</td>
-</tr>
-<tr>
-<td>protocol</td>
-<td>Currently, the only protocol supported is "igmp". Or
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="11"><br>
+      </td>
+      <td>from</td>
+      <td>Source IP address</td>
+    </tr>
+    <tr>
+      <td>to</td>
+      <td>Destination IP address</td>
+    </tr>
+    <tr>
+      <td>protocol</td>
+      <td>Currently, the only protocol supported is "igmp". Or
 you can specify an integer value.</td>
-</tr>
-<tr>
-<td>contentlength</td>
-<td>Size in bytes of everything that comes after this ip
+    </tr>
+    <tr>
+      <td>contentlength</td>
+      <td>Size in bytes of everything that comes after this ip
 header. The total IP packet size is calculated from this. If
 autocompletion is enabled, this value is calculated from the upper
 layers content.</td>
-</tr>
-<tr>
-<td>options</td>
-<td>Currently must be a hex string of the options to add.
+    </tr>
+    <tr>
+      <td>options</td>
+      <td>Currently must be a hex string of the options to add.
 Typical example for igmp is: options="94:04:00:00" (router alert).</td>
-</tr>
-<tr>
-<td>ttl</td>
-<td>Time To Live&nbsp;</td>
-</tr>
-<tr>
-<td>dscp</td>
-<td>The value of the dscp/tos field. (currently expects a
+    </tr>
+    <tr>
+      <td>ttl</td>
+      <td>Time To Live&nbsp;</td>
+    </tr>
+    <tr>
+      <td>dscp</td>
+      <td>The value of the dscp/tos field. (currently expects a
 one byte integer value.) Optional. Default value is 0.</td>
-</tr>
-<tr>
-<td>flags</td>
-<td>3 bits field with fragmentation related flags.
+    </tr>
+    <tr>
+      <td>flags</td>
+      <td>3 bits field with fragmentation related flags.
 (Currently must be expressed as an integer value) Optional. Default, if
 not specified, is unfragmented, fragmentation allowed.</td>
-</tr>
-<tr>
-<td>packetid</td>
-<td>The Packet Identification, used to identify fragments
+    </tr>
+    <tr>
+      <td>packetid</td>
+      <td>The Packet Identification, used to identify fragments
 of the same original packet. 16 bits integer value.</td>
-</tr>
-<tr>
-<td>fragmentoffset</td>
-<td>The Fragment Offset. 13 bits integer value. Optional.
+    </tr>
+    <tr>
+      <td>fragmentoffset</td>
+      <td>The Fragment Offset. 13 bits integer value. Optional.
 Default is 0.</td>
-</tr>
-<tr>
-<td>checksum</td>
-<td>The header checksum. Optional. By default, the tool
+    </tr>
+    <tr>
+      <td>checksum</td>
+      <td>The header checksum. Optional. By default, the tool
 calculates and uses the correct checksum.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="ipv6"></a>ipv6</td>
-<td>IP v6 Header</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="6"><br>
-<br>
-<br>
-<br>
-<br>
-<br>
-</td>
-<td>version</td>
-<td>version. Optional. By default, set to 6, which is the
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="ipv6"></a>ipv6</td>
+      <td>IP v6 Header</td>
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="6"><br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      </td>
+      <td>version</td>
+      <td>version. Optional. By default, set to 6, which is the
 only valid value.</td>
-</tr>
-<tr>
-<td>trafficClass</td>
-<td>Traffic class = dscp value. Optional. Default set to 0.</td>
-</tr>
-<tr>
-<td>flowLabel</td>
-<td>Flow label. Optional. Default set to 0.</td>
-</tr>
-<tr>
-<td>payloadLength</td>
-<td>Payload length. Optional. By default, the correct
+    </tr>
+    <tr>
+      <td>trafficClass</td>
+      <td>Traffic class = dscp value. Optional. Default set to 0.</td>
+    </tr>
+    <tr>
+      <td>flowLabel</td>
+      <td>Flow label. Optional. Default set to 0.</td>
+    </tr>
+    <tr>
+      <td>payloadLength</td>
+      <td>Payload length. Optional. By default, the correct
 length is calculated and used</td>
-</tr>
-<tr>
-<td>nextHeader</td>
-<td>Next Header. Same values are accepted as for the
+    </tr>
+    <tr>
+      <td>nextHeader</td>
+      <td>Next Header. Same values are accepted as for the
 protocol field in IpHdr (ipv4 header) tag. </td>
-</tr>
-<tr>
-<td>hopLimit</td>
-<td>Hop Limit (ttl). </td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="icmp"></a>icmp</td>
-<td>Icmp protocol layer.<br>
+    </tr>
+    <tr>
+      <td>hopLimit</td>
+      <td>Hop Limit (ttl). </td>
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="icmp"></a>icmp</td>
+      <td>Icmp protocol layer.<br>
 The Icmp protocol has 32 bits of fixed fields, 32 bits of variable
 fields and an additional data field. The data field is not considered
 part of the icmp layer. The 32 bits of variable fields can be addressed
@@ -1701,441 +1992,464 @@ by their fieldname, however only when the field is applicable for the
 icmp type (first fixed field) specified.<br>
 As the code is unfinished, it is currently impossible to construct
 other echo request and echo reply messages.</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="12"><br>
-</td>
-<td>type</td>
-<td>Icmp type. Supported values: integer value or one of :<br>
-<ul>
-<li>echoRequest (8)</li>
-<li>echoReply (0)</li>
-<li>destinationUnreachable (3)</li>
-<li>sourceQuench (4)</li>
-<li>redirect (5)</li>
-<li>routerAdvertisement (9)</li>
-<li>routerSolicitation (10)</li>
-<li>timeExceeded (11)</li>
-<li>parameterProblem (12)</li>
-<li>timestampRequest (13)</li>
-<li>timestampReply (14)</li>
-<li>informationRequest (15)</li>
-<li>informationReply (16)</li>
-<li>addressMaskRequest (17)</li>
-<li>addressMaskReply (18)</li>
-<li>traceroute (30)</li>
-<li>conversionError (31)</li>
-<li>domainNameRequest (37)</li>
-<li>domainNameReply (38)</li>
-</ul>
-</td>
-</tr>
-<tr>
-<td>code</td>
-<td>Icmp code. For echoRequest, echoReply,
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="12"><br>
+      </td>
+      <td>type</td>
+      <td>Icmp type. Supported values: integer value or one of :<br>
+      <ul>
+        <li>echoRequest (8)</li>
+        <li>echoReply (0)</li>
+        <li>destinationUnreachable (3)</li>
+        <li>sourceQuench (4)</li>
+        <li>redirect (5)</li>
+        <li>routerAdvertisement (9)</li>
+        <li>routerSolicitation (10)</li>
+        <li>timeExceeded (11)</li>
+        <li>parameterProblem (12)</li>
+        <li>timestampRequest (13)</li>
+        <li>timestampReply (14)</li>
+        <li>informationRequest (15)</li>
+        <li>informationReply (16)</li>
+        <li>addressMaskRequest (17)</li>
+        <li>addressMaskReply (18)</li>
+        <li>traceroute (30)</li>
+        <li>conversionError (31)</li>
+        <li>domainNameRequest (37)</li>
+        <li>domainNameReply (38)</li>
+      </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>code</td>
+      <td>Icmp code. For echoRequest, echoReply,
 routerAdvertisement, routerSolicitation,&nbsp;timestampRequest,
 timestampReply, informationRequest, informationReply,
 addressMaskRequest, addressMaskReply, domainNameRequest and
 domainNameReply the default value 0 is applied (optional field). For
 other icmp types, the field is mandatory.</td>
-</tr>
-<tr>
-<td>identifier</td>
-<td>Variable field, applicable only for echoRequest,
+    </tr>
+    <tr>
+      <td>identifier</td>
+      <td>Variable field, applicable only for echoRequest,
 echoReply, timestampRequest, timestampReply, informationRequest,
 informationReply, addressMaskRequest, addressMaskReply,
 domainNameRequest, domainNameReply, traceroute. Default value is 0
 (optional field). <br>
 According to the rfc (spec), this field can be used to match
 a&nbsp;reply to its request. </td>
-</tr>
-<tr>
-<td>sequencenr</td>
-<td>Variable field, applicable only for echoRequest,
+    </tr>
+    <tr>
+      <td>sequencenr</td>
+      <td>Variable field, applicable only for echoRequest,
 EchoReply, timestampRequest, timestampReply, informationRequest,
 informationReply, addressMaskRequest, addressMaskReply,
 domainNameRequest, domainNameReply. Default value is 0 (optional field).<br>
 According to the rfc (spec), this field can be used to match
 a&nbsp;reply to its request. </td>
-</tr>
-<tr>
-<td>nexthopmtu</td>
-<td>Variable field, applicable only for
+    </tr>
+    <tr>
+      <td>nexthopmtu</td>
+      <td>Variable field, applicable only for
 destinationUnreachable. Next hop MTU.</td>
-</tr>
-<tr>
-<td>ipaddress</td>
-<td>Variable field, applicable only for redirect. Ip
+    </tr>
+    <tr>
+      <td>ipaddress</td>
+      <td>Variable field, applicable only for redirect. Ip
 address.</td>
-</tr>
-<tr>
-<td>advertisementCount</td>
-<td>Variable field, applicable only for
+    </tr>
+    <tr>
+      <td>advertisementCount</td>
+      <td>Variable field, applicable only for
 routerAdvertisement. Advertisement count.</td>
-</tr>
-<tr>
-<td>addressEntrySize</td>
-<td>Variable field, applicable only for
+    </tr>
+    <tr>
+      <td>addressEntrySize</td>
+      <td>Variable field, applicable only for
 routerAdvertisement. Address entry size. Optional field. Default value
 is 2 (as per the rfc).</td>
-</tr>
-<tr>
-<td>lifetime</td>
-<td>Variable field, applicable only for
+    </tr>
+    <tr>
+      <td>lifetime</td>
+      <td>Variable field, applicable only for
 routerAdvertisement. Lifetime.</td>
-</tr>
-<tr>
-<td>pointer</td>
-<td>Variable field, applicable only for parameterProblem.
+    </tr>
+    <tr>
+      <td>pointer</td>
+      <td>Variable field, applicable only for parameterProblem.
 Pointer.</td>
-</tr>
-<tr>
-<td>offset</td>
-<td>Variable field, applicable only for conversionError.
+    </tr>
+    <tr>
+      <td>offset</td>
+      <td>Variable field, applicable only for conversionError.
 Offset.</td>
-</tr>
-<tr>
-<td>checksum</td>
-<td>Icmp checksum. Optional. Default is the correct value.
+    </tr>
+    <tr>
+      <td>checksum</td>
+      <td>Icmp checksum. Optional. Default is the correct value.
 Icmp checksum includes the header and data (next layers).</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="igmp"></a>igmp</td>
-<td>Igmp protocol layer (multicast routing).&nbsp;</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="8"><br>
-</td>
-<td>version</td>
-<td>Igmp protocol version.Currently, only igmp v2 and v3
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="igmp"></a>igmp</td>
+      <td>Igmp protocol layer (multicast routing).&nbsp;</td>
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="8"><br>
+      </td>
+      <td>version</td>
+      <td>Igmp protocol version.Currently, only igmp v2 and v3
 are supported. See below for igmp v3 specific sub-tags. </td>
-</tr>
-<tr>
-<td>type</td>
-<td>Igmp message type. Supported values are "join",
+    </tr>
+    <tr>
+      <td>type</td>
+      <td>Igmp message type. Supported values are "join",
 "report", "query" and "leave" for v2 and "query" and "report" for v3.</td>
-</tr>
-<tr>
-<td>to</td>
-<td>The multicast group IP address. For general queries,
+    </tr>
+    <tr>
+      <td>to</td>
+      <td>The multicast group IP address. For general queries,
 specify "0.0.0.0" (in line with igmp v2 specs). Not relevant for igmp
 v3 reports: these require group records: see below for the group tag.</td>
-</tr>
-<tr>
-<td>checksum</td>
-<td>Default is the correct checksum.</td>
-</tr>
-<tr>
-<td>responsetime</td>
-<td>Only valid for igmp v3 query. Response Time. Optional.
+    </tr>
+    <tr>
+      <td>checksum</td>
+      <td>Default is the correct checksum.</td>
+    </tr>
+    <tr>
+      <td>responsetime</td>
+      <td>Only valid for igmp v3 query. Response Time. Optional.
 Default value is 100 (rfc proposed default). Must be specified as an
 integer value (the rfc allows some kind of exponential values, which
 you'll currently need to calculate into integer (hex) value yourself).</td>
-</tr>
-<tr>
-<td>sflag</td>
-<td>Only valid for igmp v3 query. The S flag: to "disable
+    </tr>
+    <tr>
+      <td>sflag</td>
+      <td>Only valid for igmp v3 query. The S flag: to "disable
 router side processing". Optional. Default value is 0 (rfc proposed
 default). Must be specified as 0 or 1.</td>
-</tr>
-<tr>
-<td>qrv</td>
-<td>Only valid for igmp v3 query. The QRV (Querier's
+    </tr>
+    <tr>
+      <td>qrv</td>
+      <td>Only valid for igmp v3 query. The QRV (Querier's
 Robustness Variable). Optional. Default value is 2 (rfc proposed
 default). Must be specified as an integer value</td>
-</tr>
-<tr>
-<td>qqic</td>
-<td>Only valid for igmp v3 query. The QQIC (Querier's Query
+    </tr>
+    <tr>
+      <td>qqic</td>
+      <td>Only valid for igmp v3 query. The QQIC (Querier's Query
 Interval Code). Optional. Default value is 125 (rfc proposed default).
 Must be specified as an integer value.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="udp"></a>udp</td>
-<td>Udp protocol layer (connectionless layer 3 protocol)</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="4"><br>
-</td>
-<td>sourceport</td>
-<td>Source port number. 2 bytes integer value.</td>
-</tr>
-<tr>
-<td>destport</td>
-<td>Destination port number. 2 bytes integer value.</td>
-</tr>
-<tr>
-<td>length</td>
-<td>Length of the packet including higher layers.</td>
-</tr>
-<tr>
-<td>checksum</td>
-<td>Udp checksum. Optional. Default is correct
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="udp"></a>udp</td>
+      <td>Udp protocol layer (connectionless layer 3 protocol)</td>
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="4"><br>
+      </td>
+      <td>sourceport</td>
+      <td>Source port number. 2 bytes integer value.</td>
+    </tr>
+    <tr>
+      <td>destport</td>
+      <td>Destination port number. 2 bytes integer value.</td>
+    </tr>
+    <tr>
+      <td>length</td>
+      <td>Length of the packet including higher layers.</td>
+    </tr>
+    <tr>
+      <td>checksum</td>
+      <td>Udp checksum. Optional. Default is correct
 value.&nbsp;<br>
 The udp checksum violates the protocol separation: it also includes
 some of the IP header fields (so called Ip Pseudo Header). (Udp/tcp and
 ip are not really independent layers.) It also includes the next
 layers. </td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="tcp"></a>tcp</td>
-<td>Tcp protocol layer (connection oriented layer 3
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="tcp"></a>tcp</td>
+      <td>Tcp protocol layer (connection oriented layer 3
 protocol).&nbsp;</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="10"><br>
-</td>
-<td>sourceport</td>
-<td>Source port number. 2 bytes integer value.</td>
-</tr>
-<tr>
-<td>destport</td>
-<td>Destination port&nbsp;number. 2 bytes integer value.</td>
-</tr>
-<tr>
-<td>sequencenr</td>
-<td>Sequence number.&nbsp;4 bytes integer value. Per
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="10"><br>
+      </td>
+      <td>sourceport</td>
+      <td>Source port number. 2 bytes integer value.</td>
+    </tr>
+    <tr>
+      <td>destport</td>
+      <td>Destination port&nbsp;number. 2 bytes integer value.</td>
+    </tr>
+    <tr>
+      <td>sequencenr</td>
+      <td>Sequence number.&nbsp;4 bytes integer value. Per
 tcp spec, counted per byte of payload. The header field should
 represent the sequence number of the first byte (payload) in the
 current packet. During SYN (connection setup), should be "random" value
 (must not be 0 or 1).</td>
-</tr>
-<tr>
-<td>acknowledgenr</td>
-<td>Acknowledge number. Default is 0. Per the standards: if
+    </tr>
+    <tr>
+      <td>acknowledgenr</td>
+      <td>Acknowledge number. Default is 0. Per the standards: if
 the ack flag&nbsp; is set, this must match the sequence number of
 the last packet received successfully in sequence from the remote side.
 If the ack flag is not set, this should be 0. Note that there is no
 correlation between sequence numbers of the two sides. </td>
-</tr>
-<tr>
-<td>headerlength</td>
-<td>Size of the tcp header, counted per 4 bytes. Also
+    </tr>
+    <tr>
+      <td>headerlength</td>
+      <td>Size of the tcp header, counted per 4 bytes. Also
 called Data offset in specs. (Size of tcp header can vary due to the
 options field). Default is correct value.</td>
-</tr>
-<tr>
-<td>flags</td>
-<td>Tcp flags. 8 bits field, containing 8 flags. Default,
+    </tr>
+    <tr>
+      <td>flags</td>
+      <td>Tcp flags. 8 bits field, containing 8 flags. Default,
 no flags are assumed. You can either specify a hex value, or a series
 of flags, separated by a plus (+) sign. The following names should be
 used for the flags in that case: syn, fin, rst, psh, ack, urg, ecn, con.</td>
-</tr>
-<tr>
-<td>windowsize</td>
-<td>The receive window. In its most simple shape, the
+    </tr>
+    <tr>
+      <td>windowsize</td>
+      <td>The receive window. In its most simple shape, the
 amount of bytes (payload) that can still be receive in burst, without
 ack. The remote side should not send more then that amount of bytes
 before waiting for an ack. Default is 0xFFFF. </td>
-</tr>
-<tr>
-<td>urgentpointer</td>
-<td>Urgent pointer. Per the spec, if the URG flag is set,
+    </tr>
+    <tr>
+      <td>urgentpointer</td>
+      <td>Urgent pointer. Per the spec, if the URG flag is set,
 then this 16-bit field is an offset from the sequence number indicating
 the last urgent data byte. (These things are not widely supported
 (corretly). Default is 0.</td>
-</tr>
-<tr>
-<td>checksum</td>
-<td>Checksum. Default is correct checksum.</td>
-</tr>
-<tr>
-<td>options</td>
-<td>Tcp options field. Currently only supporting hex string
+    </tr>
+    <tr>
+      <td>checksum</td>
+      <td>Checksum. Default is correct checksum.</td>
+    </tr>
+    <tr>
+      <td>options</td>
+      <td>Tcp options field. Currently only supporting hex string
 as input. If you don't provide a multiple of 4 bytes, pierf will do a
 padding with 0 bytes to the next 4 bytes boundary. Default is no
 options.</td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1"><a name="signature"></a>signature</td>
-<td>Inserts an 8 bytes signature field. The signature
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1"><a name="signature"></a>signature</td>
+      <td>Inserts an 8 bytes signature field. The signature
 fields has following structure: 0xCD40........CD40: it is delimited at
 start and end by two bytes with fixed value 0xCD40. In between, it has
 a 4 bytes unsigned integer that is automatically incremented every time
 a packet is transmitted/received. At reception (validation), a message
 is printed to the screen, every time a packet is received out of order.
-The actual value is then set to the newly received value.</td>
-</tr>
-<tr>
-<td><br>
-</td>
-<td>name</td>
-<td>Name of the signature field. For future use, currently
+The actual value is then set to the newly received value.<br>
+There has been taken care of efficient transmission: the counter is
+incremented directly in the constructed packet. Unlike other variable
+substitutions, there is no full reconstruction/update of the packet
+needed. (This will still happen of course if you are using variables
+elsewhere in the packet)<br>
+      </td>
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td>name</td>
+      <td>Name of the signature field. For future use, currently
 simply stored.</td>
-</tr>
-<tr>
-<td colspan="4" rowspan="1"><span style="font-weight: bold;">Igmp v3 subtags</span></td>
-</tr>
-<tr>
-<td colspan="1" rowspan="5"><br>
-</td>
-<td colspan="2" rowspan="1">group</td>
-<td>Sub-tag of igmp version="3" type="report" only.
+    </tr>
+    <tr>
+      <td colspan="4" rowspan="1"><span style="font-weight: bold;">Igmp
+v3 subtags</span></td>
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="5"><br>
+      </td>
+      <td colspan="2" rowspan="1">group</td>
+      <td>Sub-tag of igmp version="3" type="report" only.
 Implements the group record. In Igmp v3, more then one multicast group
 subscription can be reported at once.</td>
-</tr>
-<tr>
-<td colspan="1" rowspan="2"><br>
-</td>
-<td>type</td>
-<td>group record type. An integer value or one of following
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="2"><br>
+      </td>
+      <td>type</td>
+      <td>group record type. An integer value or one of following
 strings are allowed: include (1), exclude (2), changeToInclude (3),
 changeToExclude (4), addNewSource (5), blockOldSource (6).</td>
-</tr>
-<tr>
-<td>to</td>
-<td>Multicast group ip address. </td>
-</tr>
-<tr>
-<td colspan="2" rowspan="1">source</td>
-<td>Sub-tag of either igmp v3 query, or of a group tag of
+    </tr>
+    <tr>
+      <td>to</td>
+      <td>Multicast group ip address. </td>
+    </tr>
+    <tr>
+      <td colspan="2" rowspan="1">source</td>
+      <td>Sub-tag of either igmp v3 query, or of a group tag of
 igmp v3 report. One element of the source list. (Igmp v3 allows to
 limit the sources from which to multicast.)</td>
-</tr>
-<tr>
-<td><br>
-</td>
-<td>address</td>
-<td>The Ip address of the source</td>
-</tr>
-<tr style="font-weight: bold;">
-<th colspan="4" rowspan="1">Common arguments</th>
-</tr>
-<tr>
-<td><br>
-</td>
-<td><br>
-</td>
-<td>auto</td>
-<td>Supported on scene, seq, packet and all packet layer
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td>address</td>
+      <td>The Ip address of the source</td>
+    </tr>
+    <tr style="font-weight: bold;">
+      <th colspan="4" rowspan="1">Common arguments</th>
+    </tr>
+    <tr>
+      <td><br>
+      </td>
+      <td><br>
+      </td>
+      <td>auto</td>
+      <td>Supported on scene, seq, packet and all packet layer
 tags. Possible values are "manual" and "auto". Optional. Default for a
 scene tag is "auto". Default for the underlaying tags is enherited from
 its parent container.</td>
-</tr>
-</tbody>
+    </tr>
+  </tbody>
 </table>
+
 <br>
+
 <h2><a name="Appendix_B._Overview_of_supported_auto"></a>Appendix
 B. Overview of supported auto mechanisms</h2>
+
 <ul>
-<li>eth</li>
-<ul>
-<li>Ignore all vlan's immediately following the own eth layer</li>
-<li>If followed by an arp (request/reply), copy the source
+
+  <li>eth</li>
+  <ul>
+    <li>Ignore all vlan's immediately following the own eth layer</li>
+    <li>If followed by an arp (request/reply), copy the source
 and destination mac address from the arp layer and set ethertype to
 0x0806.</li>
-<li>Followed by iphdr</li>
-<ul>
-<li>Set the ethertype to 0x0800.</li>
-<li>If followed by igmp, derive the multicast mac address
+    <li>Followed by iphdr</li>
+    <ul>
+      <li>Set the ethertype to 0x0800.</li>
+      <li>If followed by igmp, derive the multicast mac address
 from the multicast ip address.</li>
-<li>If followed by any other layer, stop.</li>
-</ul>
-<li>Followed by ipv6: set the ethertype to 0x86DD</li>
-<li>Followed by a vlan: set the ethertype to the ethertype
+      <li>If followed by any other layer, stop.</li>
+    </ul>
+    <li>Followed by ipv6: set the ethertype to 0x86DD</li>
+    <li>Followed by a vlan: set the ethertype to the ethertype
 used for the vlan (typically 0x8100).</li>
-<li>If followed by any other layer, stop.</li>
-</ul>
-<li>vlans (vlan stack)</li>
-<ul>
-<li>If followed by arp, set the bodyEthertype to 0x0806</li>
-<li>If followed by an iphdr, set the bodyEthertype to 0x0800</li>
-<li>If followed by an ipv6, set the bodyEthertype to 0x86DD</li>
-<li>If followed by another vlan stack, set the bodyEthertyp
+    <li>If followed by any other layer, stop.</li>
+  </ul>
+  <li>vlans (vlan stack)</li>
+  <ul>
+    <li>If followed by arp, set the bodyEthertype to 0x0806</li>
+    <li>If followed by an iphdr, set the bodyEthertype to 0x0800</li>
+    <li>If followed by an ipv6, set the bodyEthertype to 0x86DD</li>
+    <li>If followed by another vlan stack, set the bodyEthertyp
 to the ethertype used by the other vlan stack (typically 0x8100)</li>
-</ul>
-<li>iphdr</li>
-<ul>
-<li>Always: calculate the contentlength as the size of all
+  </ul>
+  <li>iphdr</li>
+  <ul>
+    <li>Always: calculate the contentlength as the size of all
 upper layers</li>
-<li>If followed by icmp</li>
-<ul>
-<li>Set the protocol to icmp (0x01), ttl to 32 and options
+    <li>If followed by icmp</li>
+    <ul>
+      <li>Set the protocol to icmp (0x01), ttl to 32 and options
 to "" (none)</li>
-</ul>
-<li>If followed by igmp:</li>
-<ul>
-<li>Copy the destination ip address from the igmp multicast
+    </ul>
+    <li>If followed by igmp:</li>
+    <ul>
+      <li>Copy the destination ip address from the igmp multicast
 ip address. In case of general query, set the destination ip address to
 224.0.0.1.</li>
-<li>Set the protocol to igmp (0x02),&nbsp; ttl to 1 and
+      <li>Set the protocol to igmp (0x02),&nbsp; ttl to 1 and
 options to "router alert" (94:04:00:00).</li>
-</ul>
-<li>If followed by udp</li>
-<ul>
-<li>Set the protocol to udp (0x11), ttl to 128 and options
+    </ul>
+    <li>If followed by udp</li>
+    <ul>
+      <li>Set the protocol to udp (0x11), ttl to 128 and options
 to "" (none)</li>
-</ul>
-<li>If followed by tcp</li>
-<ul>
-<li>Set te protocol to tcp (0x06), ttl to 128 and options
+    </ul>
+    <li>If followed by tcp</li>
+    <ul>
+      <li>Set te protocol to tcp (0x06), ttl to 128 and options
 to "" (none)</li>
-</ul>
-</ul>
-<li>ipv6</li>
-<ul>
-<li>Always: calculate the payloadLength as the size of all
+    </ul>
+  </ul>
+  <li>ipv6</li>
+  <ul>
+    <li>Always: calculate the payloadLength as the size of all
 upper layers</li>
-<li>If followed by udp</li>
-<ul>
-<li>Set the protocol to udp (0x11), ttl to 128 and options
+    <li>If followed by udp</li>
+    <ul>
+      <li>Set the protocol to udp (0x11), ttl to 128 and options
 to "" (none)</li>
-</ul>
-<li>If followed by tcp</li>
-<ul>
-<li>Set te protocol to tcp (0x06), ttl to 128 and options
+    </ul>
+    <li>If followed by tcp</li>
+    <ul>
+      <li>Set te protocol to tcp (0x06), ttl to 128 and options
 to "" (none)</li>
-</ul>
-</ul>
-<li>udp</li>
-<ul>
-<li>Always: calculate the length as the size of udp and all
+    </ul>
+  </ul>
+  <li>udp</li>
+  <ul>
+    <li>Always: calculate the length as the size of udp and all
 upper layers</li>
+  </ul>
 </ul>
-</ul>
+
 <h2><a name="Appendix_C._Supported_functions_for"></a>Appendix
 C. Supported functions for&nbsp;variable
 assignment</h2>
+
 The variable assignment is function based. To assign a new value to a
 variable using the assign-variable tag, the value attribute must
 strictly respect the below syntax. Improvement may be expected in this
 area, based on needs.<br>
+
 <br>
+
 Some basic rules:<br>
+
 <ul>
-<li>Plain new values cannot &nbsp;be specified. A function
+
+  <li>Plain new values cannot &nbsp;be specified. A function
 must always be used. If you want to assign simply a new constant value,
 use the concat function with only one string as argument. E.g.
 concat("myNewString")</li>
-<li>Functions currently cannot be nested. If you'd need such,
+  <li>Functions currently cannot be nested. If you'd need such,
 as a workaround, use multiple variables and concat them in a separate
 variable assignment.</li>
-<li>No blanks are allowed.</li>
-<li>Plain string values (as an argument to&nbsp;functions)
+  <li>No blanks are allowed.</li>
+  <li>Plain string values (as an argument to&nbsp;functions)
 must be specified between double quotes (").</li>
-<li>Variables names (for variables used as an argument to
+  <li>Variables names (for variables used as an argument to
 functions) must start with a dollar sign ($).</li>
 </ul>
+
 The following functions are supported:<br>
+
 <ul>
-<li>concat() : Takes one or more arguments. Concatenates the
+
+  <li>concat() : Takes one or more arguments. Concatenates the
 string value of each of the arguments into one string. Arguments may be
 plain string values or variables.</li>
-<li>hex() : Takes one variable as argument. The variable may be
+  <li>hex() : Takes one variable as argument. The variable may be
 a counter or a string with a decimal integer value. Converts this to a
 string that represents the hex value of that string.</li>
-<li>field() : Takes the name of the field as only argument. Can
+  <li>field() : Takes the name of the field as only argument. Can
 only be used inside a packet layer that is part of a match statement.
 (An example is given in the chapter on packet matching above.) Note:
 for the &lt;raw&gt; macket tag, there is a special value "data"
 that doesn't really represent a field name, but rather then entire raw
 data.</li>
 </ul>
+
 <h2><a name="License"></a>Appendic D. License</h2>
+
 <ul>
-<li>Copyright (c) 2006, Pieter Blommaert<br>
+
+  <li>Copyright (c) 2006, Pieter Blommaert<br>
 All rights reserved.<br>
-<br>
+    <br>
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:<br>
@@ -2147,7 +2461,7 @@ documentation and/or other materials provided with the distribution.<br>
 The names of the author and contributors may be used to endorse or
 promote products derived from this software without specific prior
 written permission.<br>
-<br>
+    <br>
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -2159,7 +2473,7 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</li>
-<li>Small clarification of my choice for this type (free BSD)
+  <li>Small clarification of my choice for this type (free BSD)
 style of license:<br>
 At first i liked copyleft style (e.g. GPL) of licenses until I came to
 realise that enforced freedom is a contradiction in terminis. Once i
@@ -2168,10 +2482,11 @@ what is allowed and what not. I also wanted at any time to keep all of
 my rights to do with the code whatever i want. So i decided that the
 above, free BSD style license, is the only license that makes my small
 contribution somewhat useful to the community.&nbsp;</li>
-<li>I intended my tool for network and equipment tests. I
+  <li>I intended my tool for network and equipment tests. I
 disclaim all responsibility for the use of this software, however I
 would be personally offended if it is intentionally used for illegal or
 aggressive purpose. There are no excuses that justify misusing or
 breaking well-intended equipment and/or services.</li>
 </ul>
+
 </body></html>

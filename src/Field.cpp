@@ -80,7 +80,7 @@ bool Field::isVar() const
   return mValueState == eVar;
   }
 
-void Field::wasDefaulted() throw (Exception)
+void Field::wasDefaulted() noexcept(false)
   {
   if (mValueState == eManual || mValueState == eAuto)
     {
@@ -103,12 +103,12 @@ void Field::wasManuallySet()
     }
   }
 
-void Field::wasAutoSet() throw (Exception)
+void Field::wasAutoSet() noexcept(false)
   {
   mValueState = eAuto;
   }
 
-void Field::setManual(const char* varStr, bool storeAsString) throw (Exception)
+void Field::setManual(const char* varStr, bool storeAsString) noexcept(false)
   {
   if (storeAsString)
     {
@@ -128,7 +128,7 @@ void Field::setManual(const char* varStr, bool storeAsString) throw (Exception)
     }
   }
 
-void Field::setManualFromVar(const char* varStr) throw (Exception)
+void Field::setManualFromVar(const char* varStr) noexcept(false)
   {
   Var* var = VarContainer::getVar(varStr);
   if (var==NULL)
@@ -152,7 +152,7 @@ Var* Field::getVar()
   return mVar;
   }
 
-bool Field::copyVar() throw (Exception)
+bool Field::copyVar() noexcept(false)
   {
   if (mValueState == eVar)
     {

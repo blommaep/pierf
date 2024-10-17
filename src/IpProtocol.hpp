@@ -24,9 +24,9 @@ using namespace std;
 class IpProtocol: public Bitfield8 
   {
   public:
-    void setManualFromValue(const char* inString) throw (Exception);
-    void setAuto(const char* inString) throw (Exception);
-    void setDefault(const char* inString) throw (Exception);
+    void setManualFromValue(const char* inString) noexcept(false);
+    void setAuto(const char* inString) noexcept(false);
+    void setDefault(const char* inString) noexcept(false);
     void setDefault(const uchar inValue)
       {
       Bitfield8::setDefault(inValue);

@@ -25,16 +25,16 @@ class Bitfield32: public Field
     ulong32 mData;
     enum DisplayType {eHex, eDec, eChar}; //Hex, Decimal or ascii char display
     DisplayType mDisplayType;
-    void stringToVal(const char* inString) throw (Exception);
-    void setVal(ulong32 val) throw (Exception);
+    void stringToVal(const char* inString) noexcept(false);
+    void setVal(ulong32 val) noexcept(false);
   public:
     Bitfield32();
-    void setDefault(const char* inString) throw (Exception);
-    void setManualFromValue(const char* inString) throw (Exception);
-    void setAuto(const char* inString) throw (Exception);
-    void setDefault(const ulong32 inValue) throw (Exception);
-    void setManualFromValue(const ulong32 inValue) throw (Exception);
-    void setAuto(const ulong32 inValue) throw (Exception);
+    void setDefault(const char* inString) noexcept(false);
+    void setManualFromValue(const char* inString) noexcept(false);
+    void setAuto(const char* inString) noexcept(false);
+    void setDefault(const ulong32 inValue) noexcept(false);
+    void setManualFromValue(const ulong32 inValue) noexcept(false);
+    void setAuto(const ulong32 inValue) noexcept(false);
     void displayDecimal();
     void displayChar();
     string getStringFromBinary() const;

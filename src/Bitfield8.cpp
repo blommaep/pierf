@@ -22,7 +22,7 @@ Bitfield8::Bitfield8()
   {
   }
 
-void Bitfield8::setOffset(uchar offset) throw (Exception)
+void Bitfield8::setOffset(uchar offset) noexcept(false)
   {
   if (offset > 7)
     {
@@ -31,7 +31,7 @@ void Bitfield8::setOffset(uchar offset) throw (Exception)
   mOffset = offset;
   }
 
-void Bitfield8::stringToVal(const char* inString) throw (Exception)
+void Bitfield8::stringToVal(const char* inString) noexcept(false)
   {
   int temp = textToLong(inString);
   if (temp < 0 || temp > 0xFF)
@@ -41,25 +41,25 @@ void Bitfield8::stringToVal(const char* inString) throw (Exception)
   setVal((uchar)temp);
   }
 
-void Bitfield8::setVal(ushort val) throw (Exception)
+void Bitfield8::setVal(ushort val) noexcept(false)
   {
   mData = val;
   // no exception/checks. This is merely here for easing enherited classes to overload the setVal
   }
 
-void Bitfield8::setDefault(const char* inString) throw (Exception)
+void Bitfield8::setDefault(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasDefaulted();
   }
 
-void Bitfield8::setManualFromValue(const char* inString) throw (Exception)
+void Bitfield8::setManualFromValue(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasManuallySet();
   }
 
-void Bitfield8::setAuto(const char* inString) throw (Exception)
+void Bitfield8::setAuto(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasAutoSet();

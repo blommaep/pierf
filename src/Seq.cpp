@@ -42,7 +42,7 @@ void Seq::push_back(PlayStep* playstep)
   mPlaySteps.push_back(playstep);
   }
 
-void Seq::setRepeat(char* repeat) throw (Exception)
+void Seq::setRepeat(char* repeat) noexcept(false)
   {
   mRepeat = textToLong(repeat);
   }
@@ -61,7 +61,7 @@ void Seq::play()
     }
   }
 
-int Seq::size()
+int Seq::size() const
   {
   return mPlaySteps.size();
   }

@@ -18,7 +18,7 @@
 #include <string.h>
 //#include <asm/bytorder.h>
 
-void IpAddress::stringToVal(const char* inString) throw (Exception)
+void IpAddress::stringToVal(const char* inString) noexcept(false)
   {
   unsigned int i=0,j=0,k=0;
   mAddress.whole=0;
@@ -68,19 +68,19 @@ IpAddress::IpAddress()
   mAddress.whole=0;
   }
 
-void IpAddress::setDefault(const char* inString) throw (Exception)
+void IpAddress::setDefault(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasManuallySet();
   }
 
-void IpAddress::setManualFromValue(const char* inString) throw (Exception)
+void IpAddress::setManualFromValue(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasManuallySet();
   }
 
-void IpAddress::setAuto(const char* inString) throw (Exception)
+void IpAddress::setAuto(const char* inString) noexcept(false)
   {
   stringToVal(inString);
   wasManuallySet();

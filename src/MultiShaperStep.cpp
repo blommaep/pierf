@@ -24,7 +24,7 @@ MultiShaperStep::~MultiShaperStep()
   {
   }
 
-void MultiShaperStep::addPacket(Packet* packet) throw (Exception)
+void MultiShaperStep::addPacket(Packet* packet) noexcept(false)
   {
   Shaper* shaper = packet->getShaper();
   if (shaper == NULL)

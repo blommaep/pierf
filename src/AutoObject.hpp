@@ -24,9 +24,9 @@ class AutoObject
     AutoObject();
     virtual ~AutoObject();
     void setAuto(AutoComplete newval);
-    void setAuto(char* instr) throw (Exception);
+    void setAuto(char* instr) noexcept(false);
     void enheritAuto(AutoObject* mother);
-    void setOrEnheritAuto(char* instr, AutoObject* mother) throw (Exception);
+    void setOrEnheritAuto(char* instr, AutoObject* mother) noexcept(false);
     AutoComplete getAuto();
     bool isAuto(); // true if auto is set
   };

@@ -24,7 +24,7 @@ class SleepStep: public PlayStep
   public:
     SleepStep();
     ~SleepStep();
-    void setSleep(char* sleep) throw (Exception);
+    void setSleep(char* sleep) noexcept(false);
     void play();
     string getString() const;
   };

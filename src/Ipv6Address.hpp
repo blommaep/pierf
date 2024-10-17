@@ -24,12 +24,12 @@ class Ipv6Address: public Field
   {
   private:
     uchar mBytes[16];
-    void stringToVal(const char* inString) throw (Exception);
+    void stringToVal(const char* inString) noexcept(false);
   public:
     Ipv6Address();
-    void setDefault(const char* inString) throw (Exception);
-    void setManualFromValue(const char* inString) throw (Exception);
-    void setAuto(const char* inString) throw (Exception);
+    void setDefault(const char* inString) noexcept(false);
+    void setManualFromValue(const char* inString) noexcept(false);
+    void setAuto(const char* inString) noexcept(false);
     string getStringFromBinary() const;
     bool getStringFromBinary(string& stringval) const;
     uchar* copyTo(uchar* toPtr);

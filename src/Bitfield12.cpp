@@ -22,7 +22,7 @@ Bitfield12::Bitfield12()
   {
   }
 
-void Bitfield12::setVal(ushort val) throw (Exception)
+void Bitfield12::setVal(ushort val) noexcept(false)
   {
   if (val > 0x0FFF)
     {
@@ -31,7 +31,7 @@ void Bitfield12::setVal(ushort val) throw (Exception)
   mData = val;
   }
 
-void Bitfield12::setOffset(uchar offset) throw (Exception)
+void Bitfield12::setOffset(uchar offset) noexcept(false)
   {
   if (offset > 4)
     {

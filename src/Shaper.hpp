@@ -39,7 +39,7 @@ class Shaper
     Shaper(const char* name);
     Shaper(string& name);
     ~Shaper();
-    void setRate(const char* rateStr) throw (Exception);
+    void setRate(const char* rateStr) noexcept(false);
     void getShapeDelay(const ulong32 size, struct timeval& delay, struct timeval& sendTime, struct timeval& curTime);
     void shapeDelay(const ulong32 size, struct timeval& delay, struct timeval& sendTime, struct timeval& curTime);
     void shape(const ulong32 size);

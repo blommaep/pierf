@@ -25,7 +25,7 @@ Udp::Udp()
   mLength.displayDecimal();
   }
 
-void Udp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
+void Udp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) noexcept(false)
   {
   char* autoStr=NULL;
   int i=0;
@@ -89,50 +89,50 @@ void Udp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory
   
   }
 
-void Udp::setSourcePort(const char* sourcePort, bool storeAsString) throw (Exception)
+void Udp::setSourcePort(const char* sourcePort, bool storeAsString) noexcept(false)
   {
   try
     {
     mSourcePort.setManual(sourcePort, storeAsString);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Source port invalid: " + string(e.what()));
     }
   }
 
-void Udp::setDestPort(const char* destPort, bool storeAsString) throw (Exception)
+void Udp::setDestPort(const char* destPort, bool storeAsString) noexcept(false)
   {
   try
     {
     mDestPort.setManual(destPort, storeAsString);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Destination port invalid: " + string(e.what()));
     }
   }
 
-void Udp::setLength(const char* length, bool storeAsString) throw (Exception)
+void Udp::setLength(const char* length, bool storeAsString) noexcept(false)
   {
   try
     {
     mLength.setManual(length, storeAsString);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("UDP length invalid: " + string(e.what()));
     }
   }
 
 
-void Udp::setChecksum(const char* checkSum, bool storeAsString) throw (Exception)
+void Udp::setChecksum(const char* checkSum, bool storeAsString) noexcept(false)
   {
   try
     {
     mChecksum.setManual(checkSum, storeAsString);
     }
-  catch (Exception e)
+  catch (Exception& e)
     {
     throw Exception("Checksum invalid: " + string(e.what()));
     }
@@ -206,7 +206,7 @@ ulong32 Udp::getTailSize()
   return 0;
   }
 
-bool Udp::copyVar() throw (Exception)
+bool Udp::copyVar() noexcept(false)
   {
   bool copy = false;
   bool res;

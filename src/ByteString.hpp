@@ -22,16 +22,16 @@ using namespace std;
 class ByteString: public vector<uchar>
   {
   private:
-    void stringToVal(const char* inString) throw (Exception); // -1 to insert at the end
+    void stringToVal(const char* inString) noexcept(false); // -1 to insert at the end
     bool mParseStrict;
     bool mInputChar; // true to store the input directly, as a text string, rather then to interprete it in a binary way.
 
   public:
     ByteString();
-    ByteString(const char* inString) throw (Exception);
-    ByteString(const string& inString) throw (Exception);
-    void addString(const char* inString) throw (Exception);
-    void addString(const string& inString) throw (Exception);
+    ByteString(const char* inString) noexcept(false);
+    ByteString(const string& inString) noexcept(false);
+    void addString(const char* inString) noexcept(false);
+    void addString(const string& inString) noexcept(false);
     void addBytes(const uchar* inBytes, ulong32 nrBytes);
     void resetString();
     string getString() const;

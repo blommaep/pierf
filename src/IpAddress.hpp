@@ -29,12 +29,12 @@ class IpAddress: public Field
       } u_fourBytes;
 
     u_fourBytes mAddress;
-    void stringToVal(const char* inString) throw (Exception);
+    void stringToVal(const char* inString) noexcept(false);
   public:
     IpAddress();
-    void setDefault(const char* inString) throw (Exception);
-    void setManualFromValue(const char* inString) throw (Exception);
-    void setAuto(const char* inString) throw (Exception);
+    void setDefault(const char* inString) noexcept(false);
+    void setManualFromValue(const char* inString) noexcept(false);
+    void setAuto(const char* inString) noexcept(false);
     ulong32 getAddress();
     string getStringFromBinary() const;
     bool getStringFromBinary(string& stringval) const;

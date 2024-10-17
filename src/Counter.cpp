@@ -235,7 +235,7 @@ double Counter::getTotalTime()
   return time; 
   }
 
-void Counter::setStringValue(const char* inString) throw (Exception)
+void Counter::setStringValue(const char* inString) noexcept(false)
   {
   mCount = textToLong(inString);
   }

@@ -87,7 +87,7 @@ bool SignatureField::match(SignatureField& other)
   return true;
   }
 
-bool SignatureField::copyVar() throw (Exception)
+bool SignatureField::copyVar() noexcept(false)
   {
   return true;
   }
