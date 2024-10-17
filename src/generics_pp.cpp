@@ -11,6 +11,8 @@
 
 #include "generics.hpp"
 #include <sstream>
+#include <string.h>
+#include <stdlib.h>
 
 void setChecksum(uchar* ckLoc, uchar* start, uchar* stop)
   {
@@ -92,7 +94,7 @@ ulong textToLong(const char* inString) throw (Exception)
     {
     ulong temp = 0;
     int i;
-    for (i=2;(i<8 && inString[i] != 0);i++)
+    for (i=2;(i<10 && inString[i] != 0);i++) // first 2 characters are 0x, so read char 2 till 10
       {
       temp = temp * 16 + charToNible(inString[i]);
       }

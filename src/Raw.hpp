@@ -28,14 +28,16 @@ class Raw: public Element
     // Although they are not really fields, they are set by the user in the tag and impact the element content, so they need to be tracked as fields
     Bitfield16 mSize;
     StringField mFiller;
+    Bitfield16 mType;
     bool mDataFieldEntered;
   public:
     Raw();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
     void addString(const char* inString) throw (Exception);
     void addString(const string& inString) throw (Exception);
     void setSize(ulong size);
     void setSize(const char* size);
+    void setType(const char* type) throw (Exception);
     void setFiller(const char* filler);
     string getString();
     bool getString(string& stringval, const char* fieldName);
@@ -51,6 +53,8 @@ class Raw: public Element
     bool tryComplete(ElemStack& stack);
     string whatsMissing();
     bool match(Element* other);
+    Element* getNewBlank();
+    void copySize(Raw* fromRaw); // for packet match by compare method
   };
 
 #endif

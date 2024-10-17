@@ -14,9 +14,11 @@
 #include <iostream> // for cout and cin
 #include <fstream>
 #include "zthread/Thread.h"
+#include <string.h>
+#include "VarContainer.hpp"
 
 CounterStep::CounterStep()
-  : mReceiveStep(NULL), mCounter(NULL), mValue(0)
+  : mReceiveStep(NULL), mCounter(NULL), mValue(0), mActionVar(NULL)
   {
   }
 
@@ -72,8 +74,28 @@ void CounterStep::setValue(const char* value) throw (Exception)
   mValue = textToLong(value);
   }
 
+void CounterStep::setVar(const char* varName) throw (Exception)
+  {
+  Var* var = VarContainer::getVar(varName);
+  if (var == NULL)
+    {
+    throw Exception("Unexisting variable with name: " + string(varName));
+    }
+  if (var->isConst())
+    {
+    throw Exception("Cannot assign to a constant: " + string(varName));
+    }
+  mActionVar = var;
+  }
+
 void CounterStep::play()
   {
+  // just overwrite mValue every time in case of variable
+  if (mActionVar != NULL)
+    {
+    mValue = textToLong(mActionVar->getStringValue().c_str());
+    }
+
   switch(mAction)
     {
     case eIncrement:

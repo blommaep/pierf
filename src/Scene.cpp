@@ -37,7 +37,10 @@ Scene::~Scene()
   for (iter = mParts.begin();iter != mParts.end();iter++)
     {
     Seq* elem= *iter;
-    delete elem;
+    if (!elem->isRef())
+      {
+      delete elem;
+      }
     }
   }
 

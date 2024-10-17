@@ -13,12 +13,14 @@
 #include "VarContainer.hpp"
 
 #include <sstream>
+#include <string.h>
+#include <typeinfo>
 
 IgmpGroupRec::IgmpGroupRec()
   {
   }
 
-void IgmpGroupRec::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception)
+void IgmpGroupRec::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
   {
   //tbd : currently dummy. This parsing is still done in the ParseConfig.cpp
   }
@@ -51,17 +53,13 @@ void IgmpGroupRec::setType(const char* type) throw (Exception)
     {
     mType.setManualFromValue((uchar) 4);
     }
-  else if (!strcmp(type,"changeToExclude"))
+  else if (!strcmp(type,"allowNewSources"))
     {
     mType.setManualFromValue((uchar) 5);
     }
-  else if (!strcmp(type,"allowNewSources"))
-    {
-    mType.setManualFromValue((uchar) 6);
-    }
   else if (!strcmp(type,"blockOldSources"))
     {
-    mType.setManualFromValue((uchar) 4);
+    mType.setManualFromValue((uchar) 6);
     }
   else
     {
@@ -69,15 +67,15 @@ void IgmpGroupRec::setType(const char* type) throw (Exception)
     }
   }
 
-void IgmpGroupRec::setMcastAddress(const char* mcastAddr) throw (Exception)
+void IgmpGroupRec::setMcastAddress(const char* mcastAddr, bool storeAsString) throw (Exception)
   {
-  mMcastIp.setManual(mcastAddr);
+  mMcastIp.setManual(mcastAddr, storeAsString);
   }
 
-void IgmpGroupRec::addSource(char* srcAddr) throw (Exception)
+void IgmpGroupRec::addSource(char* srcAddr, bool storeAsString) throw (Exception)
   {
   IpAddress ip;
-  ip.setManual(srcAddr);
+  ip.setManual(srcAddr, storeAsString);
   mSourceList.push_back(ip);
   }
 
@@ -311,3 +309,8 @@ bool IgmpGroupRec::match(Element* other)
   return true;  
   }
 
+Element* IgmpGroupRec::getNewBlank()
+  {
+  IgmpGroupRec* igmpGroupRec = new IgmpGroupRec();
+  return (Element*) igmpGroupRec;
+  }

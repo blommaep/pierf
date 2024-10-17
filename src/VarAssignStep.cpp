@@ -13,6 +13,8 @@
 
 #include <iostream> // for cout and cin
 #include <fstream>
+#include <string.h>
+#include <typeinfo>
 #include "VarContainer.hpp"
 
 VarAssignStep::VarAssignStep()
@@ -80,7 +82,7 @@ void VarAssignStep::play()
           }
         newValue += var->getStringValue();
         }
-      else if (*curPos == '"')
+      else if (*curPos == '"' or *curPos == '\'')
         {
         curPos++;
         while (*curPos != '"' && *curPos != 0)
@@ -103,7 +105,7 @@ void VarAssignStep::play()
         }
       else if (*curPos != ')')
         {
-        throw Exception("Syntax error in variable-assign formula (comma missing)");
+        throw Exception("Syntax error in variable-assign formula (closing bracket missing)");
         }
       }
     if (*curPos++ != ')')

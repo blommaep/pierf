@@ -3,6 +3,11 @@
 
 <scene id="arp">
 <seq>
+
+<text>
+Hello
+</text>
+
 <!-- Arp request on one port -->
 <packet port="broadcom">
 <eth />

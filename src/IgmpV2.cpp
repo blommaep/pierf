@@ -13,6 +13,8 @@
 #include "VarContainer.hpp"
 
 #include <sstream>
+#include <typeinfo> 
+#include <string.h> 
 
 
 //// OVERLOADED CLASSES FOR DEDICATED FIELD INTERPRETATIONS ////
@@ -98,7 +100,7 @@ void IgmpV2Type::setDefault(const char* inString) throw (Exception)
     }
   }
 
-string IgmpV2Type::getString()
+string IgmpV2Type::getStringFromBinary()
   {
   stringstream retval;
 
@@ -121,7 +123,7 @@ string IgmpV2Type::getString()
   return retval.str();
   }
 
-bool IgmpV2Type::getString(string& stringval)
+bool IgmpV2Type::getStringFromBinary(string& stringval)
   {
   if (hasValue())
     {
@@ -139,7 +141,7 @@ IgmpV2::IgmpV2()
   mResponseTime.displayDecimal();
   }
 
-void IgmpV2::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception)
+void IgmpV2::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
   {
   char* autoStr=NULL;
   int i=0;
@@ -153,22 +155,22 @@ void IgmpV2::parseAttrib(const char** attr, AutoObject* parent, bool checkMandat
     else if (!strcmp(attr[i],"type"))
       {
       i++;
-      setMsgType(attr[i++]);
+      setMsgType(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"to"))
       {
       i++;
-      setMcastIp(attr[i++]);
+      mMcastIp.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"responsetime"))
       {
       i++;
-      setResponseTime(attr[i++]);
+      mResponseTime.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"checksum"))
       {
       i++;
-      setChecksumValue(attr[i++]);
+      mChecksum.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"auto"))
       {
@@ -202,9 +204,9 @@ void IgmpV2::parseAttrib(const char** attr, AutoObject* parent, bool checkMandat
 
   }
 
-void IgmpV2::setMsgType(const char* msgTypeStr) throw (Exception)
+void IgmpV2::setMsgType(const char* msgTypeStr, bool storeAsString) throw (Exception)
   {
-  mMsgType.setManual(msgTypeStr);
+  mMsgType.setManual(msgTypeStr, storeAsString);
   if (mMsgType.getValue() == 0x11)
     {
     mResponseTime.setDefault((uchar)0x64);
@@ -213,17 +215,17 @@ void IgmpV2::setMsgType(const char* msgTypeStr) throw (Exception)
 
 void IgmpV2::setMcastIp(const char* mcastIpStr) throw (Exception)
   {
-  mMcastIp.setManual(mcastIpStr);
+  mMcastIp.setManual(mcastIpStr, false);
   }
 
 void IgmpV2::setChecksumValue(const char* checksum) throw (Exception)
   {
-  mChecksum.setManual(checksum);
+  mChecksum.setManual(checksum, false);
   }
 
 void IgmpV2::setResponseTime(const char* responseTime)
   {
-  mResponseTime.setManual(responseTime);
+  mResponseTime.setManual(responseTime, false);
   }
 
 string IgmpV2::getTypeString()
@@ -423,3 +425,8 @@ bool IgmpV2::match(Element* other)
   return true;  
   }
 
+Element* IgmpV2::getNewBlank()
+  {
+  IgmpV2* igmpV2 = new IgmpV2();
+  return (Element*) igmpV2;
+  }

@@ -24,7 +24,7 @@ class Igmp: public Element // Dummy Element, only to distinguish igmp v2 and v3 
     Bitfield8 mVersion;
   public:
     Igmp();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
     uchar getVersion();
     string getString();
     bool getString(string& stringval, const char* fieldName);
@@ -40,6 +40,7 @@ class Igmp: public Element // Dummy Element, only to distinguish igmp v2 and v3 
     bool tryComplete(ElemStack& stack);
     string whatsMissing();
     bool match(Element* other);
+    Element* getNewBlank();
   };
 
 #endif

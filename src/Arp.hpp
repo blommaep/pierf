@@ -42,8 +42,8 @@ class ArpType: public Bitfield16
       {
       Bitfield16::setAuto(inValue);
       }
-    string getString();
-    bool getString(string& stringval);
+    string getStringFromBinary() const;
+    bool getStringFromBinary(string& stringval) const;
   };
 
 
@@ -64,10 +64,9 @@ class Arp: public Element
     string getTypeString();
   public:
     Arp();
-    Arp(char* type, char* sourceMac, char* destMac, char* sourceIp, char* destIp) throw (Exception);
-    Arp(char* sourceMac, char* sourceIp, char* destIp) throw (Exception);
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception);
-    void setType(const char* type) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
+    // set functions only kept for backward compatibility
+    void setType(const char* type, bool storeAsString) throw (Exception);
     void setSourceMac(const char* sourceMac) throw (Exception);
     void setDestMac(const char* destMac) throw (Exception);
     void setSourceIp(const char* sourceIp) throw (Exception);
@@ -88,6 +87,7 @@ class Arp: public Element
     const MacAddress& getSourceMac();
     const MacAddress& getDestMac();
     bool match(Element* other);
+    Element* getNewBlank();
   };
 
 #endif

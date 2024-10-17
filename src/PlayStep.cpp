@@ -16,3 +16,7 @@ PlayStep::~PlayStep()
   {
   }
 
+bool PlayStep::isRef()
+  {
+  return false;
+  }

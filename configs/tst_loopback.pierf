@@ -32,12 +32,32 @@
 <var id="$icmpCode1" type="string" const="no" value="9" />
 <var id="$identifier1" type="string" const="no" value="9" />
 <var id="$sequencenr1" type="string" const="no" value="9" />
+<var id="$dscp1" type="string" const="no" value="63" />
+<var id="$flowlabel1" type="string" const="no" value="1" />
+<var id="$version1" type="string" const="no" value="0" />
+<var id="$ipv6addr1" type="string" const="no" value="fc00::3:1" />
+<var id="$ipv6addr2" type="string" const="no" value="fc00::4:1" />
+
+<var id="$tcpport1" type="string" const="no" value="1" />
+<var id="$tcpport2" type="string" const="no" value="2" />
+<var id="$tcplength1" type="string" const="no" value="2" />
+<var id="$sequencenr2" type="string" const="no" value="1" />
+<var id="$acknowledgenr1" type="string" const="no" value="2" />
+<var id="$flags1" type="string" const="no" value="rst" />
+<var id="$windowsize1" type="string" const="no" value="1" />
+<var id="$urgentpointer1" type="string" const="no" value="1" />
+<var id="$checksum2" type="string" const="no" value="1" />
+<var id="$message1" type="string" const="no" value="This is message 1" />
+<var id="$counter1" type="counter" />
 
 <scene id="main">
 <seq>
 
 <text>This config will generate a file "loopback.cap" that contains various packets. It will also receive them again and assign variables to the various fields.
 </text>
+
+
+<!-- ETH AND RAW (BINARY) -->
 
 <packet port="loopback">
   <eth from="CD:EF:AB:CD:EF:FF" to="12:34:56:78:09:AB" ethertype="0x0000"/>
@@ -88,6 +108,11 @@
   </firstof>
 </receive>
 
+
+
+
+<!-- ETH AND RAW USING SIZE AND FILLER VIA VARIABLES -->
+
 <packet port="loopback">
   <eth from="$eth1" to="$eth2" ethertype="$ethertype1"/>
   <raw filler="$raw1" size="16"></raw>
@@ -110,6 +135,93 @@
     </match>
   </firstof>
 </receive>
+
+
+
+
+
+
+<!-- RAW TEXT -->
+
+<packet port="loopback">
+  <eth from="CD:EF:AB:CD:EF:FF" to="12:34:56:78:09:AB" ethertype="0x0000"/>
+  <raw type="text">This is a text field</raw>
+</packet>
+
+<receive port="loopback" nomatch="next">
+  <firstof>
+    <match>
+      <eth>
+      </eth>
+      <raw>
+        <assign-variable name="$raw1" value="field(data)" />
+      </raw>
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test for eth/raw (text) variable capture NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="$eth1" to="$eth2" ethertype="$ethertype1"/>
+  <raw data="$raw1"></raw>
+</packet>
+
+<receive port="loopback" nomatch="next">
+  <firstof>
+    <match>
+      <eth from="CD:EF:AB:CD:EF:FF" to="12:34:56:78:09:AB" ethertype="0x0000"/>
+      <raw type="text">This is a text field</raw>
+      <seq>
+        <text>Loopback test on eth/raw (text) OK</text>
+      </seq>
+    </match>
+    <match>
+      <eth />
+      <seq>
+        <text>Loopback test on eth/raw (text) NOK</text>
+      </seq>
+    </match>
+  </firstof>
+</receive>
+
+
+
+<!-- RAW TEXT CONTINUED, MATCH BY STRING -->
+
+<packet port="loopback">
+  <eth from="$eth1" to="$eth2" ethertype="$ethertype1"/>
+  <raw data="$raw1"></raw>
+</packet>
+
+<receive port="loopback" nomatch="next">
+  <firstof>
+    <match bystring="true">
+      <eth from="CD:EF:AB:CD:EF:FF" to="12:34:56:78:09:AB" ethertype="0x0000"/>
+      <raw type="text" data="This.*field" />
+      <seq>
+        <text>Loopback test on eth/raw (text match by string) OK</text>
+      </seq>
+    </match>
+    <match>
+      <eth />
+      <seq>
+        <text>Loopback test on eth/raw (text match by string) NOK</text>
+      </seq>
+    </match>
+  </firstof>
+</receive>
+
+
+
+
+
+
+<!-- VLANS IPHDR AND IGMP -->
 
 <packet port="loopback">
   <eth from="02:02:02:02:02:03" to="01:00:5E:00:00:01" ethertype="0x8100"/>
@@ -154,6 +266,12 @@
   </firstof>
 </receive>
 
+
+
+
+
+<!-- IGMP TYPE TEST -->
+
 <packet port="loopback">
   <eth from="$eth1" to="$eth2" ethertype="$ethertype1"/>
   <vlans stack="$stack1" bodyEthertype="$ethertype2" />
@@ -176,11 +294,17 @@
     <match>
       <eth />
       <seq>
-        <text>Loopback test on igmp v2 query NOK</text>
+        <text>Loopback test for igmp v2 query NOK</text>
       </seq>
     </match>
   </firstof>
 </receive>
+
+
+
+
+
+<!-- IGMP V3 QUERY TEST -->
 
 <packet port="loopback">
   <eth from="02:02:02:02:02:03" to="01:00:5E:00:00:01" ethertype="0x8100"/>
@@ -236,7 +360,7 @@
   <eth from="$eth1" to="$eth2" ethertype="$ethertype1"/>
   <vlans stack="$stack1" bodyEthertype="$ethertype2" />
   <iphdr from="$ip1" to="$ip2" protocol="igmp" contentlength="$contentlength1" packetid="$packetid1" ttl="$ttl1" options="$options1" />  
-  <igmp version="3" type="query" to="$ip1" responsetime="$responsetime1" sflag="$sflag1" qrv="$qrv1" qqic="$qqic1">
+  <igmp version="3" type="query" to="$ip3" responsetime="$responsetime1" sflag="$sflag1" qrv="$qrv1" qqic="$qqic1">
     <source address="192.168.10.100" />
     <source address="192.168.10.101" />
   </igmp>
@@ -244,6 +368,19 @@
 
 <receive port="loopback">
   <firstof>
+    <match> <!-- Reverse test: mismatch must be ignored (mismatch in source address -->
+      <eth from="02:02:02:02:02:03" to="01:00:5E:00:00:01" ethertype="0x8100"/>
+      <vlans stack="701" bodyEthertype="0x0800" />
+      <iphdr from="192.168.10.1" to="224.0.0.1" protocol="igmp" contentlength="20" packetid="1" ttl="1" options="94:04:00:00" />  
+      <igmp version="3" type="query" to="0.0.0.0" responsetime="0x64" sflag="0x00" qrv="0x02" qqic="0x7D">
+        <source address="192.168.10.100" />
+        <source address="192.168.10.10" />
+      </igmp>
+
+      <seq>
+        <text>Loopback test for igmp v3 query NOK: mismatch ignored</text>
+      </seq>      
+    </match>
     <match>
       <eth from="02:02:02:02:02:03" to="01:00:5E:00:00:01" ethertype="0x8100"/>
       <vlans stack="701" bodyEthertype="0x0800" />
@@ -260,7 +397,7 @@
     <match>
       <eth />
       <seq>
-        <text>Loopback test on igmp v2 query NOK</text>
+        <text>Loopback test on igmp v3 query NOK</text>
       </seq>
     </match>
   </firstof>
@@ -268,6 +405,8 @@
 
 
 
+
+<!-- UDP TEST -->
 
 <packet port="loopback">
   <eth from="02:02:02:02:02:02" to="02:02:02:02:02:03" ethertype="0x8100"/>
@@ -344,6 +483,10 @@
   </firstof>
 </receive>
 
+
+
+<!-- ARP REQUEST TEST -->
+
 <packet port="loopback">
   <eth from="02:02:02:02:02:06" to="FF:FF:FF:FF:FF:FF" ethertype="0x8100"/>
   <vlans stack="800:120" bodyEthertype="0x0806" />
@@ -404,6 +547,12 @@
   </firstof>
 </receive>
 
+
+
+
+
+<!-- ARP REPLY TEST -->
+
 <packet port="loopback">
   <eth from="02:02:02:02:02:03" to="02:02:02:02:02:02" ethertype="0x8100"/>
   <vlans stack="700:120" bodyEthertype="0x0806" />
@@ -463,6 +612,13 @@
     </match>
   </firstof>
 </receive>
+
+
+
+
+
+
+<!-- ICMP TEST -->
 
 <packet port="loopback">
   <eth from="02:02:02:02:02:03" to="00:13:21:61:3D:F2" ethertype="0x8100"/>
@@ -538,6 +694,338 @@
     </match>
   </firstof>
 </receive>
+
+
+
+
+
+<!-- IPV6: ETHERNET / IPV6 / UDP test -->
+
+<packet port="loopback">
+  <eth from="02:02:02:02:02:03" to="00:13:21:61:3D:F2" />
+  <ipv6 from="fc00::1" to="fc00::1" trafficClass="0xAB" flowLabel="0x12345" hopLimit="0xEF"/>
+  <udp sourceport="1234" destport="1235" />
+  <raw>12:34:56:78:09:AB:CD:EF</raw>
+</packet>
+
+<receive port="loopback" nomatch="next">
+  <firstof>
+    <match>
+      <eth>
+        <assign-variable name="$eth1" value="field(from)" />
+        <assign-variable name="$eth2" value="field(to)" />
+        <assign-variable name="$ethertype1" value="field(ethertype)" />
+      </eth>
+      <ipv6>
+        <assign-variable name="$ipv6addr1" value="field(from)" />
+        <assign-variable name="$ipv6addr2" value="field(to)" />
+        <assign-variable name="$version1" value="field(version)" />
+        <assign-variable name="$dscp1" value="field(trafficClass)" />
+        <assign-variable name="$flowlabel1" value="field(flowLabel)" />
+        <assign-variable name="$contentlength1" value="field(payloadLength)" />
+        <assign-variable name="$protocol1" value="field(nextHeader)" />
+        <assign-variable name="$ttl1" value="field(hopLimit)" />
+      </ipv6>
+      <udp>
+        <assign-variable name="$udpport1" value="field(sourceport)" />
+        <assign-variable name="$udpport2" value="field(destport)" />
+        <assign-variable name="$udplength1" value="field(length)" />
+        <assign-variable name="$checksum1" value="field(checksum)" />
+      </udp>
+      <raw />
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test on ipv6 NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="$eth1" to="$eth2" ethertype="$ethertype1" />
+  <ipv6 from="$ipv6addr1" to="$ipv6addr2" version="$version1" trafficClass="$dscp1" flowLabel="$flowlabel1" payloadLength="$contentlength1" nextHeader="$protocol1" hopLimit="$ttl1"/>
+  <udp sourceport="$udpport1" destport="$udpport2" length="$udplength1" checksum="$checksum1"  />
+  <raw>12:34:56:78:09:AB:CD:EF</raw>
+</packet>
+
+<receive port="loopback" nomatch="next">
+  <firstof>
+    <match>
+      <eth from="02:02:02:02:02:03" to="00:13:21:61:3D:F2" ethertype="0x86DD" />
+      <ipv6 from="fc00::1" to="fc00::1" version="6" trafficClass="0xAB" flowLabel="0x12345" payloadLength="16" nextHeader="udp" hopLimit="0xEF"/>
+      <udp sourceport="1234" destport="1235" length="16" />
+      <raw />
+      <seq>
+        <text>Loopback test on ipv6 OK</text>
+      </seq>
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test on ipv6 NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+
+
+
+
+<!-- TCP TEST -->
+
+<packet port="loopback">
+  <eth from="02:02:02:02:02:02" to="02:02:02:02:02:03" ethertype="0x0800"/>
+  <iphdr from="192.168.103.3" to="192.168.103.4" protocol="tcp" packetid="1" ttl="128" options="" />
+  <tcp sourceport="9234" destport="9235" sequencenr="222" acknowledgenr="444" flags="syn+ack" windowsize="65535" urgentpointer="228"  />
+  <raw>01:23:45:67:89:AB:CD:EF</raw>
+</packet>
+
+<receive port="loopback">
+  <firstof>
+    <match>
+      <eth>
+        <assign-variable name="$eth1" value="field(from)" />
+        <assign-variable name="$eth2" value="field(to)" />
+        <assign-variable name="$ethertype1" value="field(ethertype)" />
+      </eth>
+      <iphdr>
+        <assign-variable name="$ip1" value="field(from)" />
+        <assign-variable name="$ip2" value="field(to)" />
+        <assign-variable name="$protocol1" value="field(protocol)" />
+        <assign-variable name="$packetid1" value="field(packetid)" />
+        <assign-variable name="$contentlength1" value="field(contentlength)" />
+        <assign-variable name="$options1" value="field(options)" />
+        <assign-variable name="$ttl1" value="field(ttl)" />
+      </iphdr>
+      <tcp>
+        <assign-variable name="$tcpport1" value="field(sourceport)" />
+        <assign-variable name="$tcpport2" value="field(destport)" />
+        <assign-variable name="$tcplength1" value="field(headerlength)" />
+        <assign-variable name="$sequencenr2" value="field(sequencenr)" />
+        <assign-variable name="$acknowledgenr1" value="field(acknowledgenr)" />
+        <assign-variable name="$flags1" value="field(flags)" />
+        <assign-variable name="$windowsize1" value="field(windowsize)" />
+        <assign-variable name="$urgentpointer1" value="field(urgentpointer)" />
+        <assign-variable name="$checksum2" value="field(checksum)" />
+      </tcp>
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test for tcp (variable capture) NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+
+
+<packet port="loopback">
+  <eth from="$eth1" to="$eth2" ethertype="$ethertype1"/>
+  <iphdr from="$ip1" to="$ip2" protocol="$protocol1" contentlength="$contentlength1" packetid="$packetid1" ttl="$ttl1" options="$options1" />
+  <tcp sourceport="$tcpport1" destport="$tcpport2" sequencenr="$sequencenr2" acknowledgenr="$acknowledgenr1" flags="$flags1" windowsize="$windowsize1" urgentpointer="$urgentpointer1" checksum="$checksum2"  />
+  <raw>01:23:45:67:89:AB:CD:EF</raw>
+</packet>
+
+<receive port="loopback">
+  <firstof>
+    <match>
+      <eth from="02:02:02:02:02:02" to="02:02:02:02:02:03" ethertype="0x0800"/>
+      <iphdr from="192.168.103.3" to="192.168.103.4" protocol="tcp" contentlength="28" packetid="1" ttl="128" options="" />
+      <tcp sourceport="9234" destport="9235" sequencenr="0x00DE" acknowledgenr="0x01BC" headerlength="5" flags="0x12" windowsize="0xFFFF" urgentpointer="0x00E4" options="" checksum="0x76A9"  />
+      <raw>01:23:45:67:89:AB:CD:EF</raw>
+      <seq>
+        <text>Loopback test on tcp OK</text>
+      </seq>      
+    </match>
+    <match>
+      <eth />
+      <seq>
+        <text>Loopback test on tcp NOK</text>
+      </seq>
+    </match>
+  </firstof>
+</receive>
+
+
+
+
+<!-- NAMED SEQUENCE COMBINED WITH LOOP AND COUNTER TEST -->
+
+<counter ref="$counter1" action="reset" />
+
+<seq id="mySequence">
+  <packet port="loopback">
+    <eth from="02:02:02:02:02:02" to="02:02:02:02:02:03" ethertype="0x0800"/>
+    <iphdr from="192.168.103.3" to="192.168.103.4" protocol="tcp" packetid="1" ttl="128" options="" />
+    <tcp sourceport="9234" destport="9235" sequencenr="222" acknowledgenr="444" flags="syn+ack" windowsize="65535" urgentpointer="228"  />
+    <raw type="text" data="$message1" />
+  </packet>
+
+  <receive port="loopback">
+    <firstof>
+      <match>
+        <eth from="02:02:02:02:02:02" to="02:02:02:02:02:03" ethertype="0x0800"/>
+        <iphdr from="192.168.103.3" to="192.168.103.4" protocol="tcp" packetid="1" ttl="128" options="" />
+        <tcp sourceport="9234" destport="9235" sequencenr="0x00DE" acknowledgenr="0x01BC" headerlength="5" flags="0x12" windowsize="0xFFFF" urgentpointer="0x00E4" options="" />
+        <raw type="text" data="$message1" />
+        <seq>
+          <text>Sub sequence with id: receive OK</text>
+          <counter ref="$counter1" action="report" />
+          <counter ref="$counter1" action="increment" />
+          <assign-variable name="$message1" value='concat("Was received : ",$counter1)' />
+        </seq>      
+      </match>
+      <match>
+        <eth />
+        <seq>
+          <text>Sub sequence with id: receive NOK</text>
+        </seq>
+      </match>
+    </firstof>
+  </receive>
+
+</seq>
+
+<seq repeat="3" >
+  <seq ref="mySequence" />
+</seq>
+
+
+
+
+
+<!-- MATCH BY COMPARE METHOD: RAW TEST -->
+
+<packet port="loopback">
+  <eth from="CD:EF:AB:CD:EF:FF" to="12:34:56:78:09:AB" ethertype="0x0000"/>
+  <raw>12:34:56:78:09:AB:CD:EF:AB:CD:EF:12:34:56:78:09</raw>
+</packet>
+
+<receive port="loopback" nomatch="next">
+  <firstof>
+    <match method="compare">
+      <raw size="6">
+        <assign-variable name="$eth2" value="field(data)" />
+      </raw>
+      <raw size="6" data="CD:EF:AB:CD:EF:FF" />
+      <raw size="2" />
+      <raw>
+        <assign-variable name="$raw1" value="field(data)" />
+      </raw>
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test for raw match by compare method NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="CD:EF:AB:CD:EF:FF" to="$eth2" ethertype="0x0000"/>
+  <raw data="$raw1" />
+</packet>
+
+<receive port="loopback" nomatch="next">
+  <firstof>
+    <match>
+      <eth from="CD:EF:AB:CD:EF:FF" to="12:34:56:78:09:AB" ethertype="0x0000"/>
+      <raw>12:34:56:78:09:AB:CD:EF:AB:CD:EF:12:34:56:78:09</raw>
+      <seq>
+        <text>Loopback test for raw match by compare method OK</text>
+      </seq>
+    </match>
+    <match>
+      <eth />
+      <seq>
+        <text>Loopback test for variable reuse after raw match by compare method NOK </text>
+      </seq>
+    </match>
+  </firstof>
+</receive>
+
+
+
+
+
+
+<!-- MATCH BY COMPARE: RANDOM CRAZY STACK WITH ALL KIND OF ELEMENTS TEST -->
+
+<packet port="loopback">
+  <eth from="CD:EF:AB:CD:EF:FF" to="12:34:56:78:09:AB" ethertype="0x8100"/>
+  <vlans stack="402" bodyEthertype="0x0800" />
+  <iphdr from="192.168.10.1" to="224.0.0.1" protocol="igmp" packetid="1" contentlength="8" options="94:04:00:00" />
+  <igmp version="2" type="query" responsetime="100" to="0.0.0.0" />
+  <igmp version="3" type="query" to="0.0.0.0" responsetime="0x64" sflag="0x00" qrv="0x02" qqic="0x7D">
+    <source address="192.168.10.100" />
+    <source address="192.168.10.101" />
+  </igmp>
+  <udp sourceport="1234" destport="1235" length="16" checksum="0x08AB"  />
+  <arp type="req" fromMac="02:02:02:02:02:07" toMac="FF:FF:FF:FF:FF:FF" fromIp="192.168.10.7" toIp="192.168.10.9" />
+  <ipv6 from="fc00::1" to="fc00::1" trafficClass="0xAB" flowLabel="0x12345" hopLimit="0xEF"/>
+  <icmp type="echoRequest" code="0x01" checksum="0x7078" identifier="12" sequencenr="123" />
+  <tcp sourceport="9234" destport="9235" sequencenr="222" acknowledgenr="444" flags="syn+ack" windowsize="65535" urgentpointer="228"  checksum="0x0"/>
+</packet>
+
+<receive port="loopback" nomatch="next">
+  <firstof>
+    <match method="compare"> <!-- REVERSE TEST: MISMATCH (TCP PORT) MUST BE SKIPPED -->
+      <eth from="CD:EF:AB:CD:EF:FF" to="12:34:56:78:09:AB" ethertype="0x8100"/>
+      <vlans stack="402" bodyEthertype="0x0800" />
+      <iphdr from="192.168.10.1" to="224.0.0.1" protocol="igmp" packetid="1" contentlength="8" options="94:04:00:00" />
+      <igmp version="2" type="query" responsetime="100" to="0.0.0.0" />
+      <igmp version="3" type="query" to="0.0.0.0" responsetime="0x64" sflag="0x00" qrv="0x02" qqic="0x7D">
+        <source address="192.168.10.100" />
+        <source address="192.168.10.101" />
+      </igmp>
+      <udp sourceport="1234" destport="1235" length="16" checksum="0x08AB"  />
+      <arp type="req" fromMac="02:02:02:02:02:07" toMac="FF:FF:FF:FF:FF:FF" fromIp="192.168.10.7" toIp="192.168.10.9" />
+      <ipv6 from="fc00::1" to="fc00::1" trafficClass="0xAB" flowLabel="0x12345" hopLimit="0xEF"/>
+      <icmp type="echoRequest" code="0x01" checksum="0x7078" identifier="12" sequencenr="123" />
+      <tcp sourceport="9234" destport="0" sequencenr="222" acknowledgenr="444" flags="syn+ack" windowsize="65535" urgentpointer="228"  checksum="0x0"/>
+
+      <seq>
+        <text>Loopback test for match by compare (all protocols) NOK: Mismatch ignored</text>
+      </seq>
+    </match>
+    <match method="compare">
+      <eth from="CD:EF:AB:CD:EF:FF" to="12:34:56:78:09:AB" ethertype="0x8100"/>
+      <vlans stack="402" bodyEthertype="0x0800" />
+      <iphdr from="192.168.10.1" to="224.0.0.1" protocol="igmp" packetid="1" contentlength="8" options="94:04:00:00" />
+      <igmp version="2" type="query" responsetime="100" to="0.0.0.0" />
+      <igmp version="3" type="query" to="0.0.0.0" responsetime="0x64" sflag="0x00" qrv="0x02" qqic="0x7D">
+        <source address="192.168.10.100" />
+        <source address="192.168.10.101" />
+      </igmp>
+      <udp sourceport="1234" destport="1235" length="16" checksum="0x08AB"  />
+      <arp type="req" fromMac="02:02:02:02:02:07" toMac="FF:FF:FF:FF:FF:FF" fromIp="192.168.10.7" toIp="192.168.10.9" />
+      <ipv6 from="fc00::1" to="fc00::1" trafficClass="0xAB" flowLabel="0x12345" hopLimit="0xEF"/>
+      <icmp type="echoRequest" code="0x01" checksum="0x7078" identifier="12" sequencenr="123" />
+      <tcp sourceport="9234" destport="9235" sequencenr="222" acknowledgenr="444" flags="syn+ack" windowsize="65535" urgentpointer="228"  checksum="0x0"/>
+
+      <seq>
+        <text>Loopback test for match by compare (all protocols) OK</text>
+      </seq>
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test for match by compare (all protocols) NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+
+
+
+
+
 
 </seq>
 </scene>

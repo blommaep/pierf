@@ -21,29 +21,11 @@
 
 using namespace std;
 
-class FieldRecord 
-  {
-  public:
-    enum FieldAttrib {eHasDefault, eLastDummy};
-    FieldRecord(Field* field, const char* fieldName);
-    void setAttrib(FieldAttrib attrib);
-    void clearAttrib(FieldAttrib attrib);
-    Field* getField();
-    bool hasAttrib(FieldAttrib attrib);
-  private:
-    Field* mField;
-    string mName;
-    bool mAttribs[eLastDummy];
-  };
 
-class FieldStack
+class FieldStack: public vector<Field*>
   {
   private:
-    vector<FieldRecord*> mRecords;
   public:
-    FieldStack();
-    ~FieldStack();
-    FieldRecord* addField(Field* field, const char* fieldName);
   };
 
 #endif

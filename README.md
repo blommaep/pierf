@@ -111,5 +111,5 @@ Clarification of the above example:
 
 # Further manuals and help
 
-See [pierf.html](pierf.html)
+See [pierf.html](src/pierf.html)
 

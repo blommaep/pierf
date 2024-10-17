@@ -34,8 +34,8 @@ class MacAddress: public Field
     void autoCopy(const MacAddress& copyFrom);
     void setAddressFromMcastIp(ulong mcastIp) throw (Exception);
     bool analyze(uchar*& fromPtr, ulong& remainingSize); //uchar*&: call by reference of uchar*
-    string getString();
-    bool getString(string& stringval);
+    string getStringFromBinary() const;
+    bool getStringFromBinary(string& stringval) const;
     uchar* copyTo(uchar* toPtr);
     bool match(const MacAddress& other);
   };

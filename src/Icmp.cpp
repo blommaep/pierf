@@ -13,6 +13,9 @@
 
 #include <sstream>
 #include "VarContainer.hpp"
+#include <string.h>
+#include <typeinfo>
+
 
 //// OVERLOADED CLASSES FOR DEDICATED FIELD INTERPRETATIONS ////
 
@@ -123,7 +126,7 @@ void IcmpType::setDefault(const char* inString) throw (Exception)
   Bitfield8::setDefault(stringToVal(inString));
   }
 
-string IcmpType::getString()
+string IcmpType::getStringFromBinary() const
   {
   stringstream retval;
   if (hasValue()) 
@@ -195,7 +198,7 @@ string IcmpType::getString()
   return retval.str();
   }
 
-bool IcmpType::getString(string& stringval)
+bool IcmpType::getStringFromBinary(string& stringval) const
   {
   if (hasValue())
     {
@@ -211,7 +214,7 @@ Icmp::Icmp()
   {
   }
 
-void Icmp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception)
+void Icmp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
   {
   char* autoStr=NULL;
   int i=0;
@@ -220,22 +223,22 @@ void Icmp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandator
     if (!strcmp(attr[i],"type"))
       {
       i++;
-      setType(attr[i++]);
+      setType(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"code"))
       {
       i++;
-      setCode(attr[i++]);
+      setCode(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"checksum"))
       {
       i++;
-      setChecksum(attr[i++]);
+      setChecksum(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"identifier"))
       {
       i++;
-      setId(attr[i++]);
+      setId(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"sequencenr"))
       {
@@ -306,11 +309,11 @@ void Icmp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandator
     }
   }
 
-void Icmp::setType(const char* strType) throw (Exception)
+void Icmp::setType(const char* strType, bool storeAsString) throw (Exception)
   {
   try
     {
-    mType.setManual(strType);
+    mType.setManual(strType, storeAsString);
     }
   catch (Exception e)
     {
@@ -370,11 +373,11 @@ void Icmp::setType(const char* strType) throw (Exception)
     }
   }
 
-void Icmp::setCode(const char* strCode) throw (Exception)
+void Icmp::setCode(const char* strCode, bool storeAsString) throw (Exception)
   {
   try
     {
-    mCode.setManual(strCode);
+    mCode.setManual(strCode, storeAsString);
     }
   catch (Exception e)
     {
@@ -382,11 +385,11 @@ void Icmp::setCode(const char* strCode) throw (Exception)
     }
   }
 
-void Icmp::setChecksum(const char* strChecksum) throw (Exception)
+void Icmp::setChecksum(const char* strChecksum, bool storeAsString) throw (Exception)
   {
   try
     {
-    mChecksum.setManual(strChecksum);
+    mChecksum.setManual(strChecksum, storeAsString);
     }
   catch (Exception e)
     {
@@ -394,32 +397,39 @@ void Icmp::setChecksum(const char* strChecksum) throw (Exception)
     }
   }
 
-void Icmp::setId(const char* strId) throw (Exception)
+void Icmp::setId(const char* strId, bool storeAsString) throw (Exception)
   {
-  switch (mType.getValue())
+  if (storeAsString)
     {
-    case 0: // echo request/reply
-    case 8:
-    case 13: // timestamp request/reply
-    case 14:
-    case 15: // information request/reply
-    case 16:
-    case 17: // address mask request/reply
-    case 18:
-    case 30: // traceroute 
-    case 37: // domain name request/reply
-    case 38:
-      break;
-    default:
-      throw Exception("Identifier specified for an icmp type that does not support it: " + intToString(mType.getValue()));
+    // tbd: currently FlexField not really supporting strings and match
     }
-  try
+  else
     {
-    mSpecificData.setShort("identifier", 0, strId, FlexField32::eHowManual);
-    }
-  catch (Exception e)
-    {
-    throw Exception("Id value invalid: " + string(e.what()));
+    switch (mType.getValue())
+      {
+      case 0: // echo request/reply
+      case 8:
+      case 13: // timestamp request/reply
+      case 14:
+      case 15: // information request/reply
+      case 16:
+      case 17: // address mask request/reply
+      case 18:
+      case 30: // traceroute 
+      case 37: // domain name request/reply
+      case 38:
+        break;
+      default:
+        throw Exception("Identifier specified for an icmp type that does not support it: " + intToString(mType.getValue()));
+      }
+    try
+      {
+      mSpecificData.setShort("identifier", 0, strId, FlexField32::eHowManual);
+      }
+    catch (Exception e)
+      {
+      throw Exception("Id value invalid: " + string(e.what()));
+      }
     }
   }
 
@@ -466,7 +476,7 @@ void Icmp::setOffset(const char* strOffset) throw (Exception)
     }
   catch (Exception e)
     {
-    throw Exception("Sequencenr value invalid: " + string(e.what()));
+    throw Exception("Offset value invalid: " + string(e.what()));
     }
   }
 
@@ -485,7 +495,7 @@ void Icmp::setNexthopMtu(const char* strMtu) throw (Exception)
     }
   catch (Exception e)
     {
-    throw Exception("Sequencenr value invalid: " + string(e.what()));
+    throw Exception("Next hop MTU value invalid: " + string(e.what()));
     }
   }
 
@@ -504,7 +514,7 @@ void Icmp::setIpaddress(const char* strIp) throw (Exception)
     }
   catch (Exception e)
     {
-    throw Exception("Sequencenr value invalid: " + string(e.what()));
+    throw Exception("IP Address value invalid: " + string(e.what()));
     }
   }
 
@@ -515,7 +525,7 @@ void Icmp::setAdvertisementCount(const char* strCount) throw (Exception)
     case 9: // router advertisement
       break;
     default:
-      throw Exception("Ipaddress specified for an icmp type that does not support it: " + intToString(mType.getValue()));
+      throw Exception("Advertisemnt count specified for an icmp type that does not support it: " + intToString(mType.getValue()));
     }
   try
     {
@@ -523,7 +533,7 @@ void Icmp::setAdvertisementCount(const char* strCount) throw (Exception)
     }
   catch (Exception e)
     {
-    throw Exception("Sequencenr value invalid: " + string(e.what()));
+    throw Exception("Advertisement count value invalid: " + string(e.what()));
     }
   }
 
@@ -534,7 +544,7 @@ void Icmp::setAddressEntrySize(const char* strSize) throw (Exception)
     case 9: // router advertisement
       break;
     default:
-      throw Exception("Ipaddress specified for an icmp type that does not support it: " + intToString(mType.getValue()));
+      throw Exception("Address Entry Size specified for an icmp type that does not support it: " + intToString(mType.getValue()));
     }
   try
     {
@@ -542,7 +552,7 @@ void Icmp::setAddressEntrySize(const char* strSize) throw (Exception)
     }
   catch (Exception e)
     {
-    throw Exception("Sequencenr value invalid: " + string(e.what()));
+    throw Exception("Address Entry Size value invalid: " + string(e.what()));
     }
   }
 
@@ -553,7 +563,7 @@ void Icmp::setLifetime(const char* strLifetime) throw (Exception)
     case 9: // router advertisement
       break;
     default:
-      throw Exception("Ipaddress specified for an icmp type that does not support it: " + intToString(mType.getValue()));
+      throw Exception("Lifetime specified for an icmp type that does not support it: " + intToString(mType.getValue()));
     }
   try
     {
@@ -561,7 +571,7 @@ void Icmp::setLifetime(const char* strLifetime) throw (Exception)
     }
   catch (Exception e)
     {
-    throw Exception("Sequencenr value invalid: " + string(e.what()));
+    throw Exception("Lifetime value invalid: " + string(e.what()));
     }
   }
 
@@ -572,7 +582,7 @@ void Icmp::setPointer(const char* strPointer) throw (Exception)
     case 12: // Parameter problem
       break;
     default:
-      throw Exception("Ipaddress specified for an icmp type that does not support it: " + intToString(mType.getValue()));
+      throw Exception("Pointer (icmp) specified for an icmp type that does not support it: " + intToString(mType.getValue()));
     }
   try
     {
@@ -580,7 +590,7 @@ void Icmp::setPointer(const char* strPointer) throw (Exception)
     }
   catch (Exception e)
     {
-    throw Exception("Sequencenr value invalid: " + string(e.what()));
+    throw Exception("ICMP Pointer value invalid: " + string(e.what()));
     }
   }
 
@@ -824,3 +834,8 @@ bool Icmp::match(Element* other)
   return true;  
   }
 
+Element* Icmp::getNewBlank()
+  {
+  Icmp* icmp = new Icmp();
+  return (Element*) icmp;
+  }

@@ -14,10 +14,12 @@
 
 #include <iostream> // for cout and cin
 #include <fstream>
+#include <string.h>
 #include "zthread/Thread.h"
 
+
 MatchStep::MatchStep()
-  : mMatchPacket(NULL)
+  : mMatchPacket(NULL), mMatchByString(false), mMatchMethod(eAnalyze)
   {
   }
 
@@ -39,14 +41,64 @@ void MatchStep::setFirstOfStep(FirstOfStep* firstOfStep)
   mFirstOfStep = firstOfStep;
   }
 
+void MatchStep::setMatchByString(const char* byString)
+  {
+  if (!strcmp(byString,"true"))
+    {
+    mMatchByString = true;
+    }
+  else if (!strcmp(byString,"false"))
+    {
+    mMatchByString = false;
+    }
+  else
+    {
+    throw Exception("Value of byString attribute must be \"true\" or \"false\" in match tag.");
+    }
+  }
+
+void MatchStep::setMatchMethod(const char* matchMethod)
+  {
+  if (!strcmp(matchMethod,"analyze"))
+    {
+    mMatchMethod = eAnalyze;
+    }
+  else if (!strcmp(matchMethod,"compare"))
+    {
+    mMatchMethod = eCompare;
+    }
+  else
+    {
+    throw Exception("Value of matchMethod attribute must be \"analyze\" or \"compare\" in match tag.");
+    }
+  }
+
+bool MatchStep::getMatchByString()
+  {
+  return mMatchByString;
+  }
+
 void MatchStep::play()
   {
   Packet* receivedPacket = mFirstOfStep->getCurrentPacket();
-  if (mMatchPacket->match(receivedPacket))
+  if (mMatchMethod == eAnalyze)
     {
-//    cout << "Packet match" << endl;
-    mFirstOfStep->matched();  
-    Seq::play();
+    if (mMatchPacket->match(receivedPacket))
+      {
+  //    cout << "Packet match" << endl;
+      mFirstOfStep->matched();  
+      Seq::play();
+      }
+    }
+  else // eCompare
+    {
+    Packet* comparePacket = mFirstOfStep->getAnalyzePacket(); // every time a new packet
+    if (comparePacket->compare(mMatchPacket,mMatchByString)) // the tempory captured packet (comparePacket) runs the compare because it has the binary
+      {
+      mFirstOfStep->matched();  
+      Seq::play();
+      }
+    delete comparePacket;
     }
   }
 

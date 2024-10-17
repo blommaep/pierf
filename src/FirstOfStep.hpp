@@ -31,6 +31,7 @@ class FirstOfStep: public PlayStep
     ~FirstOfStep();
     void addMatchStep(MatchStep* matchStep);
     Packet* getCurrentPacket();
+    Packet* getAnalyzePacket(); // For explicit match
     void matched(); // called by the MatchStep to indicate a match
     void setReceiveStep(ReceiveStep* receiveStep);
     void play();

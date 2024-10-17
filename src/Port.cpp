@@ -17,6 +17,8 @@
 #include <sstream>
 #include "zthread/Guard.h"
 #include <sys/time.h>
+#include <stdio.h>
+#include <string.h>
 
 //because on different platforms, the include files for sockaddr_in seem to be located on different places
 //and somehow, the libpcap library didn't seem to locate them correctly on my linux

@@ -1,6 +1,7 @@
 #include "VarContainer.hpp"
 #include "Counter.hpp"
 #include "StringVar.hpp"
+#include "string.h"
 #include <typeinfo>
 
 map<string,Var*>* VarContainer::mVars = NULL; // Initial value

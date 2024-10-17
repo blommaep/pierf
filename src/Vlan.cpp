@@ -14,9 +14,13 @@
 #include <iostream> // for cout and cin
 #include <fstream>
 #include <sstream>
+#include <string.h>
+#include <stdlib.h>
 #include "Arp.hpp"
 #include "IpHdr.hpp"
+#include "Ipv6.hpp"
 #include "VarContainer.hpp"
+#include <typeinfo>
 
 void Vlan::stringToVal(const char* inString, int insertBefore) throw (Exception)
   {
@@ -37,7 +41,7 @@ void Vlan::stringToVal(const char* inString, int insertBefore) throw (Exception)
       insertBefore--;
       if (insertPos==mVlans.end())
         {
-        throw Exception("Trying to instert a vlan in a stack with lower size. Insert position requested is: " + intToString(insertBefore));
+        throw Exception("Trying to insert a vlan in a stack with lower size. Insert position requested is: " + intToString(insertBefore));
         }
       }    
     }
@@ -89,6 +93,7 @@ void Vlan::stringToVal(const char* inString, int insertBefore) throw (Exception)
         }
       priority = priority * 8192; // shift 13 bits
       newVlan += priority;
+      j=0;
       readWhat = eReady;
       }
     else if ((inString[i] >= '0') && (inString[i] <= '9'))
@@ -157,7 +162,7 @@ Vlan::~Vlan()
   {
   }
 
-void Vlan::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception)
+void Vlan::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
   {
   char* autoStr=NULL;
   int i=0;
@@ -166,17 +171,17 @@ void Vlan::parseAttrib(const char** attr, AutoObject* parent, bool checkMandator
     if (!strcmp(attr[i],"stack"))
       {
       i++;
-      setStack(attr[i++]);
+      setStack(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"bodyEthertype"))
       {
       i++;
-      setBodyEthertype(attr[i++]);
+      mBodyEthertype.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"vlanEthertype"))
       {
       i++;
-      setVlanEthertype(attr[i++]);
+      mVlanEthertype.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"auto"))
       {
@@ -266,10 +271,10 @@ bool Vlan::getString(string& stringval, const char* fieldName)
   return false;
   }
 
-void Vlan::setStack(const char* stack) throw (Exception)
+void Vlan::setStack(const char* stack, bool storeAsString) throw (Exception)
   {
-  mVlanString.setManual(stack);
-  if (!mVlanString.isVar())
+  mVlanString.setManual(stack, storeAsString);
+  if (!mVlanString.isVar() && !mVlanString.isString())
     {
     mVlans.clear();
     stringToVal(mVlanString.getString().c_str(),-1);
@@ -278,12 +283,12 @@ void Vlan::setStack(const char* stack) throw (Exception)
 
 void Vlan::setBodyEthertype(const char* ethertype) throw (Exception)
   {
-  mBodyEthertype.setManual(ethertype);
+  mBodyEthertype.setManual(ethertype, false);
   }
 
 void Vlan::setVlanEthertype(const char* ethertype) throw (Exception)
   {
-  mVlanEthertype.setManual(ethertype);
+  mVlanEthertype.setManual(ethertype, false);
   }
 
 ushort Vlan::getEthertype() // Gives the ethertype of the tag, so what must be used by the lower layer (normally ethernet itself)
@@ -403,6 +408,10 @@ Element* Vlan::analyze_GetNextElem()
       {
       return new IpHdr();
       }
+    if (ethertype == 0x86DD)
+      {
+      return new Ipv6();
+      }
     else if (ethertype == 0x0806)
       {
       return new Arp();
@@ -475,6 +484,14 @@ bool Vlan::tryComplete(ElemStack& stack)
             }
           state = eDone;
           }
+        else if (typeid(*elem) == typeid(Ipv6))
+          { 
+          if (!mBodyEthertype.hasValue())
+            {
+            mBodyEthertype.setAuto(0x86DD);
+            }
+          state = eDone;
+          }
         else
           {
           state= eDone; // expecting strict stack order
@@ -531,3 +548,8 @@ bool Vlan::match(Element* other)
   return true;  
   }
 
+Element* Vlan::getNewBlank()
+  {
+  Vlan* vlan = new Vlan();
+  return (Element*) vlan;
+  }

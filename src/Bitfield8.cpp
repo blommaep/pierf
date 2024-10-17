@@ -18,8 +18,17 @@
 
 
 Bitfield8::Bitfield8()
-  : mDisplayType(eHex)
+  : mOffset(0), mDisplayType(eHex)
   {
+  }
+
+void Bitfield8::setOffset(uchar offset) throw (Exception)
+  {
+  if (offset > 7)
+    {
+    throw Exception("Invalid offset for an 8 bit field. Maximum offset is 7");
+    }
+  mOffset = offset;
   }
 
 void Bitfield8::stringToVal(const char* inString) throw (Exception)
@@ -84,7 +93,7 @@ void Bitfield8::displayChar()
   mDisplayType = eChar;
   }
 
-string Bitfield8::getString()
+string Bitfield8::getStringFromBinary() const
   {
   stringstream retval;
 
@@ -106,11 +115,11 @@ string Bitfield8::getString()
   return retval.str();
   }
 
-bool Bitfield8::getString(string& stringval)
+bool Bitfield8::getStringFromBinary(string& stringval) const
   {
   if (hasValue())
     {
-    stringval = getString();
+    stringval = getStringFromBinary();
     return true;
     }
   return false;
@@ -133,19 +142,58 @@ bool Bitfield8::operator!=(unsigned int value)
 
 uchar* Bitfield8::copyTo(uchar* toPtr)
   {
-  *toPtr++ = mData;
-  return toPtr;
+  if (mOffset == 0)
+    {
+    *toPtr++ = mData;
+    return toPtr;
+    }
+  else // remind: in network order, offset is reverse: in arithmetic, MSB is left bit, cf Bitfield4 for full more clarific 
+    {
+    // add zero's at the proper place
+    ushort temp = (ushort) mData;
+    temp = htons(temp << (8-mOffset));
+
+    ushort* tmp = (ushort*) toPtr;
+    
+    // Two masks are needed to mask out the part of what is there that needs to be kept
+    ushort mask1 = htons(0x00FF >> mOffset);
+    ushort mask2 = htons(0xFF00 << (8-mOffset));
+    mask1 |= mask2;
+    *tmp &= mask1;
+
+    // Now insert our value
+    *tmp |= temp;
+
+    toPtr++; //Advance always only 1 byte
+    return toPtr; 
+    }
   }
 
 bool Bitfield8::analyze(uchar*& fromPtr, ulong& remainingSize)
   {
-  if (remainingSize < 1)
+  if (mOffset==0)
     {
-    return false;
+    if (remainingSize < 1)
+      {
+      return false;
+      }
+    
+    mData = *fromPtr;
     }
-  
-  mData = *fromPtr;
-  fromPtr++;
+  else
+    {
+    if (remainingSize < 2)
+      {
+      return false;
+      }
+    
+    ushort temp = ntohs(* ((ushort*)fromPtr));
+    temp >>= (8-mOffset); // shift mOffset, so that it becomes the base value
+    temp = temp & 0x00FF; // now, keep only the lower bits.
+    mData = (uchar) temp;
+    }
+
+  fromPtr++; // always 1 byte
   remainingSize--;
   wasCaptured();
   return true;
@@ -155,6 +203,11 @@ bool Bitfield8::match(Bitfield8& other)
   {
   if (isPrintable() && other.hasValue())
     {
+    if (isString() || other.isString())
+      {
+      return matchByString(other);
+      }
+    
     if (mData != other.mData)
       {
       return false;

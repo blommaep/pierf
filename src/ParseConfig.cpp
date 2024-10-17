@@ -15,6 +15,7 @@
 #include <iostream> 
 #include <fstream>
 #include <sstream>
+#include <string.h>
 
 #include "zthread/Thread.h"
 using namespace ZThread;
@@ -23,16 +24,19 @@ using namespace ZThread;
 #include "Vlan.hpp"
 #include "Arp.hpp"
 #include "IpHdr.hpp"
+#include "Ipv6.hpp"
 #include "Igmp.hpp"
 #include "IgmpV2.hpp"
 #include "Icmp.hpp"
 #include "Udp.hpp"
+#include "Tcp.hpp"
 #include "SleepStep.hpp"
 #include "MirrorStep.hpp"
 #include "PrintStep.hpp"
 #include "CounterStep.hpp"
 #include "MatchStep.hpp"
 #include "VarAssignStep.hpp"
+#include "SignatureElem.hpp"
 
 using namespace std;
 
@@ -52,7 +56,7 @@ void pierfc_char_hndl(void *data, const char *txt, int txtlen)
   }
 
 ParseConfig::ParseConfig()
-  :mCurReceiveStep(NULL), mHandlingMatchElems(false), mCurMultiShaper(NULL)
+  :mCurrentSequenceUpdateAllowed(true), mCurReceiveStep(NULL), mHandlingMatchElems(false), mCurMultiShaper(NULL), mCurMatch(NULL)
   {
   }
 
@@ -65,6 +69,14 @@ ParseConfig::~ParseConfig()
     delete scene;
     }
 
+  // delete named sequences are not deleted anywhere else
+  map<string,Seq*>::iterator seqIter;
+  for (seqIter=mSeqs.begin(); seqIter != mSeqs.end(); seqIter++)
+    {
+    Seq* seq = (*seqIter).second;
+    delete seq;
+    }
+  
 // Since introduction of threaded Ports, the Thread library will cleanup the ports...
   map<string,Port*>::iterator portsIter;
   for (portsIter = mPorts.begin(); portsIter != mPorts.end(); portsIter++)
@@ -312,6 +324,13 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
             parserException("Unexpected attribute: " + string(attr[i]) + " in <port> tag.");
             }
           }
+
+        char defaultType[] = "default";
+        if (typeStr == NULL)
+          {
+          typeStr=defaultType;
+          }
+
         if ((portName != NULL) && (portDev != NULL))
           {
           mCurPort = new Port(portName, portDev);
@@ -606,6 +625,8 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
 
         char* autoStr=NULL;
         char* repeatStr=NULL;
+        char* idStr=NULL;
+        char* refStr=NULL;
         int i=0;
         while (attr[i] != NULL)
           {
@@ -614,10 +635,20 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
             i++;
             autoStr = (char*) attr[i++];
             }
-          if (!strcmp(attr[i],"repeat"))
+          else if (!strcmp(attr[i],"repeat"))
             {
             i++;
             repeatStr = (char*) attr[i++];
+            }
+          else if (!strcmp(attr[i],"id"))
+            {
+            i++;
+            idStr = (char*) attr[i++];
+            }
+          else if (!strcmp(attr[i],"ref"))
+            {
+            i++;
+            refStr = (char*) attr[i++];
             }
           else
             {
@@ -626,7 +657,27 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
             }
           }
 
-        Seq* seq = new Seq();
+        Seq* seq;
+        if (idStr != NULL)
+          {
+          if (refStr != NULL)
+            {
+            parserException("Seq tag cannot have id and ref attribute at the same time");
+            }
+          seq = new Seq();
+          seq->setName(idStr);
+          mSeqs[idStr] = seq;
+          }
+        else if (refStr != NULL)
+          {
+          seq = mSeqs[refStr];
+          mCurrentSequenceUpdateAllowed=false;
+          }
+        else
+          {
+          seq = new Seq();
+          }
+
         mCurSeq = seq;
         mSeqStack.push_back(seq);
         mCurScene->push_back(seq);
@@ -642,6 +693,11 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
         }
       break;
     case eSeq:
+      if (!mCurrentSequenceUpdateAllowed)
+        {
+        parserException("A sequence reference must be empty");
+        }
+
       if (elem == "packet")
         {
         Packet* packet = handlePacketTag(attr, mCurSeq);
@@ -690,6 +746,7 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
         char* idStr=NULL;
         char* actionStr=NULL;
         char* valueStr=NULL;
+        char* varStr=NULL;
         int i=0;
         while (attr[i] != NULL)
           {
@@ -707,6 +764,11 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
             {
             i++;
             valueStr = (char*) attr[i++];
+            }
+          else if (!strcmp(attr[i],"var"))
+            {
+            i++;
+            varStr = (char*) attr[i++];
             }
           else
             {
@@ -732,6 +794,14 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
           if (valueStr != NULL)
             {
             counterStep->setValue(valueStr);
+            }
+          if (varStr != NULL)
+            {
+            if (valueStr != NULL)
+              {
+              parserException("A counter action can only have a fixed value OR a variable as argument, not both." + string(idStr));
+              }
+            counterStep->setVar(varStr);
             }
           if (mCurReceiveStep != NULL)
             {
@@ -825,6 +895,8 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
         mStateStack.push_back(eSeq);
         char* autoStr=NULL;
         char* repeatStr=NULL;
+        char* idStr=NULL;
+        char* refStr=NULL;
         int i=0;
         while (attr[i] != NULL)
           {
@@ -833,10 +905,20 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
             i++;
             autoStr = (char*) attr[i++];
             }
-          if (!strcmp(attr[i],"repeat"))
+          else if (!strcmp(attr[i],"repeat"))
             {
             i++;
             repeatStr = (char*) attr[i++];
+            }
+          else if (!strcmp(attr[i],"id"))
+            {
+            i++;
+            idStr = (char*) attr[i++];
+            }
+          else if (!strcmp(attr[i],"ref"))
+            {
+            i++;
+            refStr = (char*) attr[i++];
             }
           else
             {
@@ -845,7 +927,27 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
             }
           }
 
-        Seq* seq = new Seq();
+        Seq* seq;
+        if (idStr != NULL)
+          {
+          if (refStr != NULL)
+            {
+            parserException("Seq tag cannot have id and ref attribute at the same time");
+            }
+          seq = new Seq();
+          seq->setName(idStr);
+          mSeqs[idStr] = seq;
+          }
+        else if (refStr != NULL)
+          {
+          seq = mSeqs[refStr];
+          mCurrentSequenceUpdateAllowed=false;
+          }
+        else
+          {
+          seq = new Seq();
+          }
+        
         mSeqStack.push_back(seq);
         mCurSeq->push_back(seq);
         seq->setOrEnheritAuto(autoStr, mCurSeq);
@@ -1105,6 +1207,8 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
         mStateStack.push_back(eCounter);
         char* idStr=NULL;
         char* actionStr=NULL;
+        char* valueStr=NULL;
+        char* varStr=NULL;
         int i=0;
         while (attr[i] != NULL)
           {
@@ -1118,7 +1222,17 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
             i++;
             actionStr = (char*) attr[i++];
             }
-          else
+          else if (!strcmp(attr[i],"value"))
+            {
+            i++;
+            valueStr = (char*) attr[i++];
+            }
+          else if (!strcmp(attr[i],"var"))
+            {
+            i++;
+            varStr = (char*) attr[i++];
+            }
+          else            
             {
             parserException("Unexpected attribute: " + string(attr[i]) + " in <counter> tag.");
             i++;
@@ -1139,6 +1253,18 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
           CounterStep* counterStep = new CounterStep();
           counterStep->setCounter(counter);
           counterStep->setAction(actionStr);
+          if (valueStr != NULL)
+            {
+            counterStep->setValue(valueStr);
+            }
+          if (varStr != NULL)
+            {
+            if (valueStr != NULL)
+              {
+              parserException("A counter action can only have a fixed value OR a variable as argument, not both." + string(idStr));
+              }
+            counterStep->setVar(varStr);
+            }
           counterStep->setReceiveStep(mCurReceiveStep);
           mCurReceiveStep->push_back(counterStep);
           }
@@ -1156,6 +1282,29 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
           parserException(missing);
           }
         }
+      else if (elem == "text")
+        {
+        mStateStack.push_back(eText);
+        char* autoStr=NULL;
+        int i=0;
+        while (attr[i] != NULL)
+          {
+          if (!strcmp(attr[i],"auto"))
+            {
+            i++;
+            autoStr = (char*) attr[i++];
+            }
+          else
+            {
+            parserException("Unexpected attribute: " + string(attr[i]) + " in <seq> tag.");
+            i++;
+            }
+          }
+
+        mCurText = new StringStep();
+        mCurSeq->push_back(mCurText);
+        mCurText->setOrEnheritAuto(autoStr, mCurSeq);
+        }
       else
         {
         parserException("Reading unexpected tag in <recieve> section: " + elem);
@@ -1167,7 +1316,38 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
         mStateStack.push_back(eMatch);
         mHandlingMatchElems = true;
 
+        char* byStringStr=NULL;
+        char* matchMethod=NULL;
+        int i=0;
+        while (attr[i] != NULL)
+          {
+          if (!strcmp(attr[i],"bystring"))
+            {
+            i++;
+            byStringStr = (char*) attr[i++];
+            }
+          else if (!strcmp(attr[i],"method"))
+            {
+            i++;
+            matchMethod = (char*) attr[i++];
+            }
+          else
+            {
+            parserException("Unexpected attribute: " + string(attr[i]) + " in <match> tag.");
+            i++;
+            }
+          }
+
         MatchStep* matchStep = new MatchStep;
+        if (byStringStr != NULL)
+          {
+          matchStep->setMatchByString(byStringStr);
+          }
+        if (matchMethod != NULL)
+          {
+          matchStep->setMatchMethod(matchMethod);
+          }
+
         mCurFirstOfStep->addMatchStep(matchStep);
         mCurMatch = matchStep; // Store it as a match (currently unused: nested match not supported
         mMatchStack.push_back(matchStep);
@@ -1236,6 +1416,11 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
     case ePacket:
       {
       bool checkMandatory = true; // Not all fields must be added for a match condition
+      bool storeAsString = false;
+      if (mCurMatch != NULL)
+        {
+        storeAsString=mCurMatch->getMatchByString();
+        }
       if (state == eMatch)
         {
         checkMandatory = false;
@@ -1250,7 +1435,7 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
           }
         mCurrentPacket->push_back(mCurRaw);
         mCurElem = mCurRaw;
-        mCurRaw->parseAttrib(attr, mCurrentPacket, checkMandatory); // may throw exception
+        mCurRaw->parseAttrib(attr, mCurrentPacket, checkMandatory, storeAsString); // may throw exception
         }
       else if (elem == "eth")
         {
@@ -1262,7 +1447,7 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
           }
         mCurElem = eth;
         mCurrentPacket->push_back(eth);
-        eth->parseAttrib(attr, mCurrentPacket, checkMandatory); // may throw exception
+        eth->parseAttrib(attr, mCurrentPacket, checkMandatory, storeAsString); // may throw exception
         }
       else if (elem == "vlans")
         {
@@ -1274,7 +1459,7 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
           }
         mCurElem = vlan;
         mCurrentPacket->push_back(vlan);
-        vlan->parseAttrib(attr, mCurrentPacket, checkMandatory); // may throw exception
+        vlan->parseAttrib(attr, mCurrentPacket, checkMandatory, storeAsString); // may throw exception
         }
       else if (elem == "arp")
         {
@@ -1286,7 +1471,7 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
           }
         mCurElem = arp;
         mCurrentPacket->push_back(arp);
-        arp->parseAttrib(attr, mCurrentPacket, checkMandatory); // may throw exception
+        arp->parseAttrib(attr, mCurrentPacket, checkMandatory, storeAsString); // may throw exception
         }
       else if (elem == "iphdr")
         {
@@ -1299,11 +1484,24 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
 
         mCurElem = ipHdr;
         mCurrentPacket->push_back(ipHdr);
-        ipHdr->parseAttrib(attr, mCurrentPacket, checkMandatory); // may throw exception
+        ipHdr->parseAttrib(attr, mCurrentPacket, checkMandatory, storeAsString); // may throw exception
+        }
+      else if (elem == "ipv6")
+        {
+        mStateStack.push_back(eIpv6);
+        Ipv6* ipv6 = new Ipv6();
+        if (ipv6 == NULL)
+          {
+          parserException("Failed to allocate heap memory");
+          }
+
+        mCurElem = ipv6;
+        mCurrentPacket->push_back(ipv6);
+        ipv6->parseAttrib(attr, mCurrentPacket, checkMandatory, storeAsString); // may throw exception
         }
       else if (elem == "icmp")
         {
-        mStateStack.push_back(eIgmp);
+        mStateStack.push_back(eIcmp);
         Icmp* icmp = new Icmp(); 
         if (icmp == NULL)
           {
@@ -1312,7 +1510,7 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
 
         mCurElem = icmp;
         mCurrentPacket->push_back(icmp);
-        icmp->parseAttrib(attr, mCurrentPacket, checkMandatory); // may throw exception
+        icmp->parseAttrib(attr, mCurrentPacket, checkMandatory, storeAsString); // may throw exception
         }
       else if (elem == "igmp")
         {
@@ -1327,7 +1525,7 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
 
         mCurElem = igmp;
         mCurrentPacket->push_back(igmp);
-        igmp->parseAttrib(attr, mCurrentPacket, checkMandatory); // may throw exception
+        igmp->parseAttrib(attr, mCurrentPacket, checkMandatory, storeAsString); // may throw exception
         uchar version = igmp->getVersion();
 
         if (version == 2)
@@ -1339,7 +1537,7 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
             }
           mCurElem = igmpv2;
           mCurrentPacket->push_back(igmpv2);
-          igmpv2->parseAttrib(attr, mCurrentPacket, checkMandatory); 
+          igmpv2->parseAttrib(attr, mCurrentPacket, checkMandatory, storeAsString); 
           }
         else if (version == 3)
           {
@@ -1350,7 +1548,7 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
             }
           mCurElem = mCurIgmpV3;
           mCurrentPacket->push_back(mCurIgmpV3);
-          mCurIgmpV3->parseAttrib(attr, mCurrentPacket, checkMandatory); 
+          mCurIgmpV3->parseAttrib(attr, mCurrentPacket, checkMandatory, storeAsString); 
 
           if (mCurIgmpV3->getType() == 0x11)
             {
@@ -1376,7 +1574,31 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
           }
         mCurElem = udp;
         mCurrentPacket->push_back(udp);
-        udp->parseAttrib(attr, mCurrentPacket, checkMandatory); // may throw exception
+        udp->parseAttrib(attr, mCurrentPacket, checkMandatory, storeAsString); // may throw exception
+        }
+      else if (elem == "tcp")
+        {
+        mStateStack.push_back(eTcp);
+        Tcp* tcp = new Tcp(); // to be completed
+        if (tcp == NULL)
+          {
+          parserException("Failed to allocate heap memory");
+          }
+        mCurElem = tcp;
+        mCurrentPacket->push_back(tcp);
+        tcp->parseAttrib(attr, mCurrentPacket, checkMandatory, storeAsString); // may throw exception
+        }
+      else if (elem == "signature")
+        {
+        mStateStack.push_back(eSignature);
+        SignatureElem* signature = new SignatureElem(); // to be completed
+        if (signature == NULL)
+          {
+          parserException("Failed to allocate heap memory");
+          }
+        mCurElem = signature;
+        mCurrentPacket->push_back(signature);
+        signature->parseAttrib(attr, mCurrentPacket, checkMandatory, storeAsString); // may throw exception
         }
       else
         { // syntax error
@@ -1404,9 +1626,15 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
             }
           }
 
+        bool storeAsString = false;
+        if (mCurMatch != NULL)
+          {
+          storeAsString=mCurMatch->getMatchByString();
+          }
+
         if (strAddress != NULL)
           {
-          mCurIgmpV3->addSource(strAddress);
+          mCurIgmpV3->addSource(strAddress, storeAsString);
           }
         else
           {
@@ -1459,7 +1687,14 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
           {
           parserException("Missing mandatory attributes to <group> tag: " + missing);
           }
-        mCurIgmpGroupRec = mCurIgmpV3->addGroupRecord(strType,strTo);
+
+        bool storeAsString = false;
+        if (mCurMatch != NULL)
+          {
+          storeAsString=mCurMatch->getMatchByString();
+          }
+
+        mCurIgmpGroupRec = mCurIgmpV3->addGroupRecord(strType, strTo, storeAsString);
         mCurElem = mCurIgmpGroupRec;
         }
       else
@@ -1487,9 +1722,15 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
             }
           }
 
+        bool storeAsString = false;
+        if (mCurMatch != NULL)
+          {
+          storeAsString=mCurMatch->getMatchByString();
+          }
+        
         if (strAddress != NULL)
           {
-          mCurIgmpGroupRec->addSource(strAddress);
+          mCurIgmpGroupRec->addSource(strAddress, storeAsString);
           }
         else
           {
@@ -1521,9 +1762,11 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
     case eVlans:
     case eArp:
     case eIpHdr:
+    case eIpv6:
     case eIcmp:
     case eIgmp: // v2
     case eIgmpV3Source:
+    case eTcp:
     case eUdp:
       {
       if (elem == "assign-variable")
@@ -1589,6 +1832,7 @@ void ParseConfig::start_hndl(const char* el, const char **attr) throw (Exception
         }
       }
       break;
+    case eSignature:
     case eSleep:
     case ePort:
     case eLog:
@@ -1633,6 +1877,7 @@ void ParseConfig::end_hndl(const char *el) throw (Exception)
         {
         mCurSeq = NULL;
         }
+      mCurrentSequenceUpdateAllowed=true; // a referenced sequence must be empty, so it could never have children. => After going to a higher layer, updates are always allowed: it cannot be e referenced sequence
       }
       break;
     case eReceive:
@@ -1687,11 +1932,14 @@ void ParseConfig::end_hndl(const char *el) throw (Exception)
     case eVlans:
     case eArp:
     case eIpHdr:
+    case eIpv6:
     case eIcmp:
     case eIgmp:
     case eIgmpGroupRecord:
     case eIgmpV3Source:
     case eUdp:
+    case eTcp:
+    case eSignature:
     case ePlay:
     case eText:
     case eShaper:
@@ -1734,6 +1982,7 @@ void ParseConfig::char_hndl(const char *txt, int txtlen) throw (Exception)
     case eVlans:
     case eArp:
     case eIpHdr:
+    case eIpv6:
     case eIcmp:
     case eIgmp:
     case eIgmpV3Query:
@@ -1741,6 +1990,8 @@ void ParseConfig::char_hndl(const char *txt, int txtlen) throw (Exception)
     case eIgmpGroupRecord:
     case eIgmpV3Source:
     case eUdp:
+    case eTcp:
+    case eSignature:
     case ePlay:
     case eShaper:
     case eMultiShaper:
@@ -1912,6 +2163,9 @@ string ParseConfig::stateToString(State state)
     case eIpHdr:
       return "iphdr";
       break;
+    case eIpv6:
+      return "ipv6";
+      break;
     case eIcmp:
       return "icmp";
       break;
@@ -1932,6 +2186,12 @@ string ParseConfig::stateToString(State state)
       break;
     case eUdp:
       return "udp";
+      break;
+    case eTcp:
+      return "tcp";
+      break;
+    case eSignature:
+      return "signature";
       break;
     case ePlay:
       return "play";

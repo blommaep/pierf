@@ -17,6 +17,7 @@
 #include "Element.hpp"
 #include "StringField.hpp"
 #include "IpAddress.hpp"
+#include "IpProtocol.hpp"
 #include "Bitfield3.hpp"
 #include "Bitfield4.hpp"
 #include "Bitfield6.hpp"
@@ -27,30 +28,6 @@
 #include "Exception.hpp"
 
 using namespace std;
-
-// Some fields have dedicated input parsing/output (print). Overload them here
-
-class IpProtocol: public Bitfield8 
-  {
-  public:
-    void setManualFromValue(const char* inString) throw (Exception);
-    void setAuto(const char* inString) throw (Exception);
-    void setDefault(const char* inString) throw (Exception);
-    void setDefault(const uchar inValue)
-      {
-      Bitfield8::setDefault(inValue);
-      }
-    void setManualFromValue(const uchar inValue)
-      {
-      Bitfield8::setManualFromValue(inValue);
-      }
-    void setAuto(const uchar inValue)
-      {
-      Bitfield8::setAuto(inValue);
-      }
-    string getString();
-    bool getString(string& stringval);
-  };
 
 // Currently very basic, to be extended with introduction of other protocols that run on top
 
@@ -73,24 +50,23 @@ class IpHdr: public Element
     ushort getTotalLength();
   public:
     IpHdr();
-    IpHdr(char* fromIp, char* toIp) throw (Exception);
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
     void setFrom(const char* fromIp) throw (Exception);
     void setTo(const char* toIp) throw (Exception);
     void setDscp(uchar dscp) throw (Exception);
     void setDscp(const char* dscpStr) throw (Exception);
     void setContentLength(ushort contentLength);
-    void setContentLength(const char* contentLengthStr) throw (Exception);
-    void setFlags(const char* flags) throw (Exception);
+    void setContentLength(const char* contentLengthStr, bool storeAsString) throw (Exception);
+    void setFlags(const char* flags, bool storeAsString) throw (Exception);
     void setPacketId(ushort packetId);
-    void setPacketId(const char* packetId) throw (Exception);
+    void setPacketId(const char* packetId, bool storeAsString) throw (Exception);
     void setFragmentOffset(ushort fragmentOffset) throw (Exception);
-    void setFragmentOffset(const char* fragmentOffset) throw (Exception);
-    void setTtl(const char* ttl) throw (Exception);
+    void setFragmentOffset(const char* fragmentOffset, bool storeAsString) throw (Exception);
+    void setTtl(const char* ttl, bool storeAsString) throw (Exception);
     void setProtocol(uchar protocol);
     void setProtocol(const char* protocolStr) throw (Exception);
-    void setOptions(const char* optionStr) throw (Exception);
-    void setChecksumVal(const char* checksum) throw (Exception);
+    void setOptions(const char* optionStr, bool storeAsString) throw (Exception);
+    void setChecksumVal(const char* checksum, bool storeAsString) throw (Exception);
     bool addPseudoHeaderChecksum(ChecksumIp& cksum);
     string getString();
     bool getString(string& stringval, const char* fieldName);
@@ -106,6 +82,7 @@ class IpHdr: public Element
     bool tryComplete(ElemStack& stack);
     string whatsMissing();
     bool match(Element* other);
+    Element* getNewBlank();
   };
 
 #endif

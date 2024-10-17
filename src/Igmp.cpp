@@ -14,13 +14,14 @@
 #include "IgmpV3.hpp"
 
 #include <sstream>
+#include <string.h>
 
 Igmp::Igmp()
   {
   mVersion.setDefault((uchar) 2);
   }
 
-void Igmp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception)
+void Igmp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
   {
   int i=0;
   char* strVersion=NULL;
@@ -43,7 +44,7 @@ void Igmp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandator
     throw Exception("Missing mandatory attribute to <igmp> tag: version");
     }
 
-  mVersion.setManual(strVersion);
+  mVersion.setManual(strVersion, false); // igmp version must be set, it is necessary for distinction & further parsing
   if (mVersion.isVar())
     {
     throw Exception("Igmp version cannot be defined by a non const variable");
@@ -179,3 +180,8 @@ bool Igmp::match(Element* other)
   return true; // Even V2 or V3 distinction is left up to the next layer
   }
 
+Element* Igmp::getNewBlank()
+  {
+  Igmp* igmp =  new Igmp();
+  return (Element*) igmp;
+  }

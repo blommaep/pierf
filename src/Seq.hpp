@@ -26,6 +26,7 @@ class Seq: public PlayStep
     vector<PlayStep*> mPlaySteps;
     AutoComplete mAuto;
     ulong mRepeat; 
+    string mName;
   public:
     Seq();
     ~Seq();
@@ -34,6 +35,8 @@ class Seq: public PlayStep
     void setRepeat(char* repeat) throw (Exception);
     void send(); // depreciated. use play()
     void play();
+    void setName(char* name);
+    bool isRef();
     int size();
   };
 

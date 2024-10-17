@@ -26,13 +26,18 @@ EXPAT_ROOT = lib/expat
 ZTHREAD_ROOT = lib/zthread
 ZTHREAD_LIB = ${ZTHREAD_ROOT}/src/.libs/libZThread.a
 
-CFLAGS = -I${PCAP_INCLUDE} -I${EXPAT_ROOT}/lib -I${ZTHREAD_ROOT}/include -Wall -fexceptions -DHAVE_EXPAT_CONFIG_H 
+PCRE_ROOT := lib/pcre
+PCRE_LIB := ${PCRE_ROOT}/.libs/libpcre.a
+#PCRE_LIBCPP := ${PCRE_ROOT}/.libs/libpcrecpp.a
+PCRE_INCLUDE := ${PCRE_ROOT}
+
+CFLAGS = -I${PCAP_INCLUDE} -I${EXPAT_ROOT}/lib -I${ZTHREAD_ROOT}/include -I${PCRE_INCLUDE} -Wall -fexceptions -fpermissive -DHAVE_EXPAT_CONFIG_H 
 ifeq ($(OSTYPE),CYGWIN_NT)
 CFLAGS += -mno-cygwin
 endif
 
 #LIBS = -L ${PCAP_PATH} -lwpcap -llibexpat 
-LIBS= ${EXPAT_ROOT}/.libs/libexpat.a ${ZTHREAD_LIB} 
+LIBS= ${EXPAT_ROOT}/.libs/libexpat.a ${ZTHREAD_LIB} ${PCRE_LIB} 
 ifeq ($(OSTYPE),CYGWIN_NT)
 LIBS += ${PCAP_PATH}/libwpcap.a 
 else
@@ -96,7 +101,7 @@ ${LINK} -g -o ${PIERFEXE} ${PIERFOBJS} ${LIBS}
 endef
 
 #### Final targets and clean
-${PIERFEXE}: ${PIERFOBJS} objs/released objs/debug
+${PIERFEXE}: objs/released objs/debug ${PIERFOBJS} objs/released objs/debug
 	echo Buildig pierf for ${OSTYPE}.
 	${PIERF_MAKE_EXE}
 
@@ -106,14 +111,14 @@ threadTest.exe: threadTest.cpt
 	${CXX} ${CFLAGS} -c -o ${OBJPATH}/threadTest.o ${OBJPATH}/threadTest.cpp
 	${LINK} -g -o threadTest.exe ${OBJPATH}/threadTest.o ${LIBS}
 
-objs: 
-	mkdir objs
+objs/released:
+	mkdir -p objs/released
 
-objs/released: objs
-	mkdir objs/released
+objs/debug:
+	mkdir -p objs/debug
 
-objs/debug: objs
-	mkdir objs/debug
+lib/done:
+	${MAKE} -C lib
 
 compressed: ${PIERFEXE}
 	@echo Created a compressed pierf executable for ${OSTYPE}
@@ -125,7 +130,7 @@ released: commit clean ${PIERFEXE} count
 	echo ${TOOLVERS} > lastReleasedVersion.txt
 	/usr/bin/zip pierf.zip ${PIERFEXE} pierf.html license.txt Readme.txt configs/*
 	rm -f pierf_sources.zip
-	/usr/bin/zip pierf_sources.zip $(wildcard *.cpp) $(wildcard *.c) $(wildcard *.hpp) $(wildcard *.h) Makefile license.txt lastReleasedVersion.txt lib/Makefile lib/ZThread-2.3.2.patch $(wildcard configs/*)
+	/usr/bin/zip pierf_sources.zip $(wildcard *.cpp) $(wildcard *.c) $(wildcard *.hpp) $(wildcard *.h) Makefile license.txt lastReleasedVersion.txt pierf.html Readme.txt configs/* lib/Makefile lib/ZThread-2.3.2.patch $(wildcard configs/*)
 ifeq ($(OSTYPE),CYGWIN_NT)
 	svn commit -m "Update pierf.zip/pierf_sources.zip for released version"
 endif
@@ -161,15 +166,16 @@ ${OBJPATH}/pierf.o : pierf.cpp
 	${CXX} -DVERSION=${TOOLVERSION} ${CFLAGS} -c -o ${OBJPATH}/pierf.o pierf.cpp
 
 ${OBJPATH}/%.o : %.c;
-	${CC} ${CFLAGS} -c -o ${OBJPATH}/$*.o $<
+	${CC} -I/usr/include ${CFLAGS} -c -o ${OBJPATH}/$*.o $<
 
 ${OBJPATH}/%.o : %.cpp;
 	${CXX} ${CFLAGS} -c -o ${OBJPATH}/$*.o $<
 
 #From the gnu manual chapter 4.14: Automatic dependency list generation from the source (include statements)
 #Must be on one line for the temp filename $$ to be identical
+#Dirty trick: .c file is made first as part of include dependency, so putting mkdir -p objs/released here to create at least the released dir automatically since no other system works
 ${OBJPATH}/%.d: %.c
-	set -e; rm -f $@; \
+	mkdir -p objs/released; set -e; rm -f $@; \
 	$(CC) -M $(CFLAGS) $< > $@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$

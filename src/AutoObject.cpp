@@ -10,6 +10,7 @@
 
 
 #include "AutoObject.hpp"
+#include <string.h>
 
 AutoObject::AutoObject()
   :mAuto(eAutoEnherit) // default

@@ -193,13 +193,18 @@ void ByteString::resetString()
   clear();
   }
 
-string ByteString::getString()
+string ByteString::getString() const
+  {
+  return getString(mInputChar);
+  }
+
+string ByteString::getString(bool asChar) const
   {
   stringstream retval;
 
-  if (mInputChar)
+  if (asChar)
     {
-    vector<uchar>::iterator iter;
+    vector<uchar>::const_iterator iter;
     for (iter=begin();iter!=end();iter++)
       {
       retval << *iter;
@@ -211,7 +216,7 @@ string ByteString::getString()
     retval.setf(ios::hex,ios::basefield); 
     retval.fill('0');
 
-    vector<uchar>::iterator iter;
+    vector<uchar>::const_iterator iter;
     for (iter=begin();iter!=end();) // !! LOOP INCREMENT INSIDE
       {
       retval << setw(2) << (int) (*iter);
@@ -269,6 +274,12 @@ void ByteString::setInputChar(bool asChar)
   {
   mInputChar = asChar;
   }
+
+bool ByteString::hasInputChar() const
+  {
+  return mInputChar;
+  }
+
 
 bool ByteString::match(ByteString& other)
   {

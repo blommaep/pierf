@@ -58,9 +58,10 @@ class FlexField32: public Field
     ushort getShort(int pos);
     ulong getLong();
     bool hasValue();
-    string getString();
-    bool getString(string& stringval);
-    bool getString(string& stringval, const string& fieldname);
+    string getStringFromBinary() const;
+    bool getStringFromBinary(string& stringval) const;
+    string getString() const;
+    bool getString(string& stringval, const string& fieldname) const;
     uchar* copyTo(uchar* toPtr);
     bool analyze(uchar*& fromPtr, ulong& remainingSize);     
     bool match(FlexField32& other);

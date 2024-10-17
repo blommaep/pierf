@@ -37,8 +37,9 @@ class Vlan: public Element
     Vlan(char* inString) throw (Exception);
     Vlan(string& inString) throw (Exception);    
     ~Vlan();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception);
-    void setStack(const char* stack) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
+    void setStack(const char* stack, bool storeAsString) throw (Exception);
+    // setEthertype functions only kept for backward compatibility
     void setBodyEthertype(const char* ethertype) throw (Exception);
     void setVlanEthertype(const char* ethertype) throw (Exception);
     ushort getEthertype(); // Gives the ethertype of the tag, so what must be used by the lower layer (normally ethernet itself)
@@ -56,6 +57,7 @@ class Vlan: public Element
     bool tryComplete(ElemStack& stack);
     string whatsMissing();
     bool match(Element* other);
+    Element* getNewBlank();
   };
 
 #endif

@@ -34,11 +34,13 @@ class ByteString: public vector<uchar>
     void addString(const string& inString) throw (Exception);
     void addBytes(const uchar* inBytes, ulong nrBytes);
     void resetString();
-    string getString();
+    string getString() const;
+    string getString(bool asChar) const; // allow explicit request for ascii interpret
     uchar* copyTo(uchar* toPtr);
     uchar* copyTo(uchar* toPtr, ulong maxSize); // copy max. maxSize bytes
     void setStrict(bool strict);
-    void setInputChar(bool asChar); 
+    void setInputChar(bool asChar);
+    bool hasInputChar() const;
     bool match(ByteString& other);
   };
 

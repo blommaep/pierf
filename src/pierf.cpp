@@ -34,8 +34,9 @@ int main(int argc, char **argv)
   if (argc != 2)
     {
     cout << "usage: " << argv[0] << " [configfile]" << endl;
+    cout << "Help file: pierf.html" << endl;
     cout << "Version: " << VERSION << endl;
-    cout << "Copyright (c) 2006-2007, Pieter Blommaert: see license.txt" << endl;
+    cout << "Copyright (c) 2006-2011, Pieter Blommaert: see license.txt" << endl;
     return 1;
     }
 

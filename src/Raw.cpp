@@ -12,19 +12,23 @@
 #include "Raw.hpp"
 
 #include <sstream>
+#include <string.h>
+#include <typeinfo>
 
 Raw::Raw()
   {
-  mSize.setDefault((ushort)0);
+//  mSize.setDefault((ushort)0); // removed: there is no reason to have a default for size (default is the size of the binary data, but that is coded) and it disturbs analyze_Head to have a value for mSize (could change that too, but didn't)
+  mType.setDefault((ushort)0); // in absence of better design, using a 16 bits integer for the type: 0 = hex, 1 = text
   mData.setStrict(false);
   mDataFieldEntered = false;
   }
 
-void Raw::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception)
+void Raw::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
   {
   int i=0;
   char* autoStr = NULL;
-  const char* dataStr = NULL;
+  const char* dataStr = NULL; // data and filler must be assured to be done last: parsing depends on type
+  const char* fillerStr = NULL; 
 
   while (attr[i] != NULL)
     {
@@ -41,7 +45,12 @@ void Raw::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory
     else if (!strcmp(attr[i],"filler"))
       {
       i++;
-      setFiller(attr[i++]);
+      fillerStr = attr[i++];
+      }
+    else if (!strcmp(attr[i],"type"))
+      {
+      i++;
+      setType(attr[i++]);
       }
     else if (!strcmp(attr[i],"data")) // Optional: can be defined as a data tag for too for variable input
       {
@@ -54,10 +63,15 @@ void Raw::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory
       }
     }
 
+  if (fillerStr != NULL)
+    {
+    setFiller(fillerStr);
+    }
+
   setOrEnheritAuto(autoStr,parent);
   if (dataStr != NULL)
     {
-    mData.setManual(dataStr);
+    mData.setManual(dataStr, storeAsString);
     mDataFieldEntered = true;
     }
   }
@@ -90,18 +104,39 @@ void Raw::addString(const string& inString) throw (Exception)
 
 void Raw::setSize(ulong size)
   {
-  mSize.setManual(intToString(size).c_str());
+  mSize.setManual(intToString(size).c_str(), false);
   }
 
 void Raw::setSize(const char* size)
   {
-  mSize.setManual(size);
+  mSize.setManual(size, false);
+  }
+
+void Raw::setType(const char* type) throw (Exception)
+  {
+  if (!strcmp(type,"hex"))
+    {
+    mType.setManual(intToString(ulong(0)).c_str(), false);
+    mFiller.setInputChar(false);
+    mData.setInputChar(false);
+    }
+  else if (!strcmp(type,"text"))
+    {
+    ulong ltype = 1;
+    mType.setManual(intToString(ltype).c_str(), false);
+    mFiller.setInputChar(true);
+    mData.setInputChar(true);
+    }
+  else
+    {
+    throw Exception("Invalid type: must be hex or text");
+    }
   }
 
 void Raw::setFiller(const char* filler)
   {
   mFiller.resetString();
-  mFiller.setManual(filler);
+  mFiller.setManual(filler, false);
   }
 
 string Raw::getString()
@@ -167,8 +202,12 @@ bool Raw::copyVar() throw (Exception)
 uchar* Raw::copyTo(uchar* toPtr)
   {
   ulong curSize = mData.size();
-  ulong targetSize = (ulong) mSize.getValue();
-  if (curSize < targetSize || !mSize.isManual())
+  ulong targetSize = 0;
+  if (mSize.isManual())
+    {
+    targetSize = (ulong) mSize.getValue();
+    }
+  if (curSize < targetSize || targetSize==0)
     {
     // start by copying the defined content
     toPtr = mData.copyTo(toPtr);
@@ -204,7 +243,7 @@ uchar* Raw::copyTo(uchar* toPtr)
     }
   else // just print te Data part untill mSize length
     {
-    toPtr = mData.copyTo(toPtr,(ulong) mSize.getValue());
+    toPtr = mData.copyTo(toPtr,targetSize);
     }
 
   return toPtr;
@@ -217,10 +256,24 @@ uchar* Raw::copyTail(uchar* toPtr)
 
 bool Raw::analyze_Head(uchar*& fromPtr, ulong& remainingSize)
   {
-  mData.addBytes(fromPtr,remainingSize);
+  if (mSize.hasValue()) // copied from match packet in compare: in compare mode, always take exactly same size if it is specified
+    {
+    ulong rawSize = (ulong) mSize.getValue();
+    if (remainingSize < rawSize)
+      {
+      return false;
+      }
+    mData.addBytes(fromPtr,rawSize);
+    fromPtr += rawSize;
+    remainingSize -= rawSize;
+    }
+  else
+    {
+    mData.addBytes(fromPtr,remainingSize);
+    fromPtr += remainingSize;
+    remainingSize = 0;
+    }
   mData.wasCaptured();
-  fromPtr += remainingSize;
-  remainingSize = 0;
   return true;
   }
 
@@ -245,7 +298,6 @@ bool Raw::tryComplete(ElemStack& stack)
     {
     return true;
     }
-  
 
   return true; // always complete
   }
@@ -271,3 +323,17 @@ bool Raw::match(Element* other)
   return true;  
   }
 
+Element* Raw::getNewBlank()
+  {
+  Raw* raw = new Raw();
+  if (mSize.isManual())
+    {
+    raw->mSize = mSize;
+    }
+  return (Element*) raw;
+  }
+
+void Raw::copySize(Raw* fromRaw)
+  {
+  mSize=fromRaw->mSize;
+  }

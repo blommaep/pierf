@@ -1,0 +1,26 @@
+<pierf>
+<port id="broadcom" device="\Device\NPF_{93B53BC7-06FF-42E6-9795-89EE4ED7C48D}" />
+
+<var id="counter1" type="counter" />
+<scene id="counterTest">
+<seq>
+<!-- To have a clean rate, wait for the first packet and then reset the counter -->
+<receive port="broadcom" />
+<counter ref="counter1" action="reset" />
+</seq>
+
+<seq repeat="9999">
+<seq repeat="500">
+
+<receive port="broadcom">
+<counter ref="counter1" action="increment" />
+</receive>
+</seq>
+
+<counter ref="counter1" action="report" />
+<counter ref="counter1" action="reset" />
+</seq>
+</scene>
+
+<play scene="counterTest" />
+</pierf>

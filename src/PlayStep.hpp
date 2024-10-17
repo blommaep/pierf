@@ -25,6 +25,7 @@ class PlayStep: public AutoObject
   public:
     virtual ~PlayStep();
     virtual void play()=0;
+    bool isRef();
   };
 
 #endif

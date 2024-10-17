@@ -42,8 +42,8 @@ class IgmpV2Type: public Bitfield8
       {
       Bitfield8::setAuto(inValue);
       }
-    string getString();
-    bool getString(string& stringval);
+    string getStringFromBinary();
+    bool getStringFromBinary(string& stringval);
   };
 
 /////////////////// IGMP V2 ITSELF ///////////////////////
@@ -59,8 +59,8 @@ class IgmpV2: public Element
     string getTypeString();
   public:
     IgmpV2();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception);
-    void setMsgType(const char* msgTypeStr) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
+    void setMsgType(const char* msgTypeStr, bool storeAsString) throw (Exception);
     void setMcastIp(const char* mcastIpStr) throw (Exception);
     void setChecksumValue(const char* checksum) throw (Exception);
     void setResponseTime(const char* responseTime);
@@ -79,6 +79,7 @@ class IgmpV2: public Element
     string whatsMissing();
     IpAddress getDestIp();
     bool match(Element* other);
+    Element* getNewBlank();
   };
 
 #endif

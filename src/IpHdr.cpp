@@ -15,113 +15,12 @@
 #include "IgmpV2.hpp"
 #include "IgmpV3.hpp"
 #include "Udp.hpp"
+#include "Tcp.hpp"
 #include "VarContainer.hpp"
 #include <sstream>
+#include <string.h>
+#include <typeinfo>
 
-//// OVERLOADED CLASSES FOR DEDICATED FIELD INTERPRETATIONS ////
-
-void IpProtocol::setManualFromValue(const char* inString) throw (Exception)
-  {
-  if (!strcmp(inString,"icmp"))
-    {
-    Bitfield8::setManualFromValue(0x01);
-    }
-  else if (!strcmp(inString,"igmp"))
-    {
-    Bitfield8::setManualFromValue(0x02);
-    }
-  else if (!strcmp(inString,"udp"))
-    {
-    Bitfield8::setManualFromValue(0x11);
-    }
-  else if (!strncmp(inString,"0x",2))
-    {
-    Bitfield8::setManualFromValue(inString);
-    }
-  else
-    {
-    throw Exception("Protocol not (yet) supported: " + string(inString));
-    }
-  }
-
-void IpProtocol::setAuto(const char* inString) throw (Exception)
-  {
-  if (!strcmp(inString,"icmp"))
-    {
-    Bitfield8::setAuto(0x01);
-    }
-  else if (!strcmp(inString,"igmp"))
-    {
-    Bitfield8::setAuto(0x02);
-    }
-  else if (!strcmp(inString,"udp"))
-    {
-    Bitfield8::setAuto(0x11);
-    }
-  else if (!strncmp(inString,"0x",2))
-    {
-    Bitfield8::setAuto(inString);
-    }
-  else
-    {
-    throw Exception("Protocol not (yet) supported: " + string(inString));
-    }
-  }
-
-void IpProtocol::setDefault(const char* inString) throw (Exception)
-  {
-  if (!strcmp(inString,"icmp"))
-    {
-    Bitfield8::setDefault(0x01);
-    }
-  else if (!strcmp(inString,"igmp"))
-    {
-    Bitfield8::setDefault(0x02);
-    }
-  else if (!strcmp(inString,"udp"))
-    {
-    Bitfield8::setDefault(0x11);
-    }
-  else if (!strncmp(inString,"0x",2))
-    {
-    Bitfield8::setDefault(inString);
-    }
-  else
-    {
-    throw Exception("Protocol not (yet) supported: " + string(inString));
-    }
-  }
-
-string IpProtocol::getString()
-  {
-  if (mData == 0x01)
-    {
-    return "icmp";
-    }
-  else if (mData == 0x02)
-    {
-    return "igmp";
-    }
-  else if (mData == 0x11)
-    {
-    return "udp";
-    }
-
-  return Bitfield8::getString();
-  }
-
-bool IpProtocol::getString(string& stringval)
-  {
-  if (hasValue())
-    {
-    stringval = getString();
-    return true;
-    }
-  return false;
-  }
-
-
-/////////////////// IP HDR ITSELF ///////////////////////
 
 IpHdr::IpHdr()
   {
@@ -129,24 +28,12 @@ IpHdr::IpHdr()
   mDscp.setDefault((uchar)0);
   mFlags.setDefault((uchar)0);
   mFlags.setOffset(5); // flagss fill the first three bits of the byte
-//  mHeaderLength.setOffset(4); 
+  mHeaderLength.setOffset(0); 
   mFragmentOffset.setDefault((ushort)0);
   mTtl.displayDecimal();
   }
 
-IpHdr::IpHdr(char* fromIp, char* toIp) throw (Exception)
-  {
-  mFromIp.setManual(fromIp);
-  mToIp.setManual(toIp);
-  mDscp.setOffset(2);
-  mDscp.setDefault((uchar)0);
-  mFlags.setDefault((uchar)0);
-  mFlags.setOffset(5);
-  mFragmentOffset.setDefault((ushort)0);
-  mTtl.displayDecimal();
-  }
-
-void IpHdr::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception)
+void IpHdr::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
   {
   char* autoStr=NULL;
   int i=0;
@@ -155,57 +42,57 @@ void IpHdr::parseAttrib(const char** attr, AutoObject* parent, bool checkMandato
     if (!strcmp(attr[i],"from"))
       {
       i++;
-      setFrom(attr[i++]);
+      mFromIp.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"to"))
       {
       i++;
-      setTo(attr[i++]);
+      mToIp.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"dscp"))
       {
       i++;
-      setDscp(attr[i++]);
+      mDscp.setManual(attr[i++], storeAsString);  
       }
     else if (!strcmp(attr[i],"protocol"))
       {
       i++;
-      setProtocol(attr[i++]);
+      mProtocol.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"contentlength"))
       {
       i++;
-      setContentLength(attr[i++]);
+      setContentLength(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"options"))
       {
       i++;
-      setOptions(attr[i++]);
+      setOptions(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"ttl"))
       {
       i++;
-      setTtl(attr[i++]);
+      setTtl(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"flags"))
       {
       i++;
-      setFlags(attr[i++]);
+      setFlags(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"packetid"))
       {
       i++;
-      setPacketId(attr[i++]);
+      setPacketId(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"fragmentoffset"))
       {
       i++;
-      setFragmentOffset(attr[i++]);
+      setFragmentOffset(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"checksum"))
       {
       i++;
-      setChecksumVal(attr[i++]);
+      setChecksumVal(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"auto"))
       {
@@ -264,17 +151,17 @@ void IpHdr::parseAttrib(const char** attr, AutoObject* parent, bool checkMandato
 
 void IpHdr::setFrom(const char* fromIp) throw (Exception)
   {
-  mFromIp.setManual(fromIp);
+  mFromIp.setManual(fromIp, false);
   }
 
 void IpHdr::setTo(const char* toIp) throw (Exception)
   {
-  mToIp.setManual(toIp);
+  mToIp.setManual(toIp, false);
   }
 
 void IpHdr::setDscp(const char* dscpStr) throw (Exception)
   {
-  mDscp.setManual(dscpStr);  
+  mDscp.setManual(dscpStr, false);  
   }
 
 void IpHdr::setContentLength(ushort contentLength)
@@ -282,11 +169,11 @@ void IpHdr::setContentLength(ushort contentLength)
   mContentLength.setManualFromValue(contentLength);
   }
 
-void IpHdr::setContentLength(const char* contentLengthStr) throw (Exception)
+void IpHdr::setContentLength(const char* contentLengthStr, bool storeAsString) throw (Exception)
   {
   try
     {
-    mContentLength.setManual(contentLengthStr);
+    mContentLength.setManual(contentLengthStr, storeAsString);
     }
   catch (Exception e)
     {
@@ -294,11 +181,11 @@ void IpHdr::setContentLength(const char* contentLengthStr) throw (Exception)
     }
   }
 
-void IpHdr::setTtl(const char* ttl) throw (Exception)
+void IpHdr::setTtl(const char* ttl, bool storeAsString) throw (Exception)
   {
   try
     {
-    mTtl.setManual(ttl);
+    mTtl.setManual(ttl, storeAsString);
     }
   catch (Exception e)
     {
@@ -313,7 +200,7 @@ void IpHdr::setProtocol(uchar protocol)
 
 void IpHdr::setProtocol(const char* protocolStr) throw (Exception)
   {
-  mProtocol.setManual(protocolStr);
+  mProtocol.setManual(protocolStr, false);
   }
 
 void IpHdr::setPacketId(ushort packetId)
@@ -321,27 +208,27 @@ void IpHdr::setPacketId(ushort packetId)
   mPacketId.setManualFromValue(packetId);
   }
 
-void IpHdr::setFlags(const char* flags) throw (Exception)
+void IpHdr::setPacketId(const char* packetId, bool storeAsString) throw (Exception)
   {
   try
     {
-    mFlags.setManual(flags);
-    }
-  catch(Exception e)
-    {
-    throw Exception("Invalid flags value: " + string(e.what()));
-    }
-  }
-
-void IpHdr::setPacketId(const char* packetId) throw (Exception)
-  {
-  try
-    {
-    mPacketId.setManual(packetId);
+    mPacketId.setManual(packetId, storeAsString);
     }
   catch(Exception e)
     {
     throw Exception("Invalid fragmentid: " + string(e.what()));
+    }
+  }
+
+void IpHdr::setFlags(const char* flags, bool storeAsString) throw (Exception)
+  {
+  try
+    {
+    mFlags.setManual(flags, storeAsString);
+    }
+  catch(Exception e)
+    {
+    throw Exception("Invalid flags value: " + string(e.what()));
     }
   }
 
@@ -357,35 +244,42 @@ void IpHdr::setFragmentOffset(ushort fragmentOffset) throw (Exception)
     }
   }
 
-void IpHdr::setFragmentOffset(const char* fragmentOffset) throw (Exception)
+void IpHdr::setFragmentOffset(const char* fragmentOffset, bool storeAsString) throw (Exception)
   {
-  ushort temp;
-  try
+  if (storeAsString)
     {
-    temp = atos((char*) fragmentOffset);
+    mFragmentOffset.setManual(fragmentOffset, storeAsString);
     }
-  catch(Exception e)
+  else
     {
-    throw Exception("Invalid fragmentoffset: " + string(e.what()));
+    ushort temp;
+    try
+      {
+      temp = atos((char*) fragmentOffset);
+      }
+    catch(Exception e)
+      {
+      throw Exception("Invalid fragmentoffset: " + string(e.what()));
+      }
+    setFragmentOffset(temp);
     }
-  setFragmentOffset(temp);
   }
 
-void IpHdr::setOptions(const char* optionStr) throw (Exception)
+void IpHdr::setOptions(const char* optionStr, bool storeAsString) throw (Exception)
   {
   mOptions.resetString();
-  mOptions.setManual(optionStr);
+  mOptions.setManual(optionStr, storeAsString);
   if (mOptions.size() > 40) // total IP header must be < 60 bytes
     {
     throw Exception("Adding the option to the IP header makes this field too large (> 40 bytes): " + string(optionStr));    
     }
   }
 
-void IpHdr::setChecksumVal(const char* checksum) throw (Exception)
+void IpHdr::setChecksumVal(const char* checksum, bool storeAsString) throw (Exception)
   {
   try
     {
-    mChecksum.setManual(checksum);
+    mChecksum.setManual(checksum, storeAsString);
     }
   catch (Exception e)
     {
@@ -460,24 +354,8 @@ string IpHdr::getString() //tbd: some fields missing
   if (mProtocol.isPrintable())
     {
     retval << "protocol=\"";
-
-    if (mProtocol == 0x01)
-      {
-      retval << "icmp\"";
-      }
-    else if (mProtocol == 0x02)
-      {
-      retval << "igmp\"";
-      }
-    else if (mProtocol == 0x11)
-      {
-      retval << "udp\"";
-      }
-    else
-      {
-      retval << hex << (int) mProtocol.getValue();
-      retval << "\"";
-      }
+    retval << mProtocol.getString();
+    retval << "\"";
     }
   if (mContentLength.isPrintable())  
     {
@@ -733,6 +611,9 @@ Element* IpHdr::analyze_GetNextElem()
       case 0x02:
         return new Igmp();
         break;
+      case 0x06:
+        return new Tcp();
+        break;
       case 0x11:
         return new Udp();
         break;
@@ -816,8 +697,9 @@ bool IpHdr::tryComplete(ElemStack& stack)
         }
       else // in all other states, need to get the length for calculating contentlength
         {
-        if (!elem->checkComplete() && (typeid(*elem) != typeid(Udp)))
+        if (!elem->checkComplete() && (typeid(*elem) != typeid(Udp)) && (typeid(*elem) != typeid(Tcp)))
           // Udp has fixed header length and udp needs the IP packet size itself to complete the checksum
+          // Tcp doesn't have fixed header lenght, but can calculate header lenght before it is complete
           {
           calcContentLength=false;
           }
@@ -857,6 +739,22 @@ bool IpHdr::tryComplete(ElemStack& stack)
             if (!mProtocol.hasValue())
               {
               mProtocol.setAuto(0x11);
+              }
+            if (!mOptions.hasValue()) 
+              {
+              mOptions.setAuto(""); 
+              }
+            state = eDone;
+            }
+          else if (typeid(*elem) == typeid(Tcp))
+            {
+            if (!mTtl.hasValue())
+              {
+              mTtl.setAuto(128);
+              }
+            if (!mProtocol.hasValue())
+              {
+              mProtocol.setAuto(0x06);
               }
             if (!mOptions.hasValue()) 
               {
@@ -1061,5 +959,11 @@ bool IpHdr::match(Element* other)
 
   return true;  
   
+  }
+
+Element* IpHdr::getNewBlank()
+  {
+  IpHdr* ipHdr = new IpHdr();
+  return (Element*) ipHdr;
   }
 

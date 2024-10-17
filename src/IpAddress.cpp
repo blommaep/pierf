@@ -14,6 +14,8 @@
 #include <iostream> // for cout and cin
 #include <fstream>
 #include <sstream>
+#include <stdlib.h>
+#include <string.h>
 //#include <asm/bytorder.h>
 
 void IpAddress::stringToVal(const char* inString) throw (Exception)
@@ -89,7 +91,7 @@ ulong IpAddress::getAddress()
   return mAddress.whole;
   }
 
-string IpAddress::getString()
+string IpAddress::getStringFromBinary() const
   {
   stringstream retval; //creates an ostringstream object
   
@@ -102,11 +104,11 @@ string IpAddress::getString()
   return(retval.str()); //returns the string form of the stringstream object
   }
 
-bool IpAddress::getString(string& stringval)
+bool IpAddress::getStringFromBinary(string& stringval) const
   {
   if (hasValue())
     {
-    stringval = getString();
+    stringval = getStringFromBinary();
     return true;
     }
   return false;
@@ -139,8 +141,13 @@ bool IpAddress::analyze(uchar*& fromPtr, ulong& remainingSize)
 
 bool IpAddress::match(IpAddress& other)
   {
-  if (isPrintable() && other.hasValue())
+  if (isComparable() && other.hasValue())
     {
+    if (isString() || other.isString())
+      {
+      return matchByString(other);
+      }
+
     if (mAddress.whole != other.mAddress.whole)
       {
       return false;

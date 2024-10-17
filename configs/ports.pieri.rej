@@ -1,0 +1,12 @@
+***************
+*** 1,5 ****
+  <pierf>
+! <port id="broadcom" device="\Device\NPF_{06484B56-54BD-4B23-82A5-FAF3088EBD76}" />
+! <port id="realtec" device="\Device\NPF_{15A8B0DA-C67B-45D0-AD6E-29E2F19B8C8C}" />
+! <port id="filesample" infile="igmp.cap" outfile="filesample.cap" realtime="yes" />
+  </pierf>
+--- 1,4 ----
+  <pierf>
+! <port id="broadcom" device="eth0" />
+! <port id="realtec" device="eth0" />
+  </pierf>

@@ -1,0 +1,88 @@
+<pierf>
+<port id="loopback" type="loopback" outfile="loopback.cap" silent="true"/>
+
+<var type="string" id="$eth1" value="00:00:00:01:01:01" />
+<var type="string" id="$eth2" value="00:00:00:02:02:02" />
+<var type="string" id="$ip1" value="192.168.99.1" />
+<var type="string" id="$ip2" value="192.168.99.2" />
+<var type="string" id="$port1" value="9234" />
+<var type="string" id="$port2" value="9235" />
+<var type="counter" id="$seq1" />
+<var type="counter" id="$seq2" />
+
+<scene id="main">
+<seq>
+<counter ref="$seq1" action="reset" value="222"/>
+<counter ref="$seq2" action="reset" value="444"/>
+
+<packet port="loopback">
+<eth from="$eth1" to="$eth2"/>
+<iphdr from="$ip1" to="$ip2" packetid="1" dscp="1"/>
+<tcp sourceport="$port1" destport="$port2" sequencenr="$seq1" flags="syn" />
+</packet>
+
+<counter ref="$seq1" action="increment" />
+
+<packet port="loopback">
+<eth from="$eth2" to="$eth1"/>
+<iphdr from="$ip2" to="$ip1" packetid="1" dscp="0"/>
+<tcp sourceport="$port1" destport="$port2" sequencenr="$seq2" acknowledgenr="$seq1" flags="syn+ack" />
+</packet>
+
+<counter ref="$seq2" action="increment"/>
+
+<packet port="loopback">
+<eth from="$eth1" to="$eth2"/>
+<iphdr from="$ip1" to="$ip2" packetid="1" dscp="0"/>
+<tcp sourceport="$port1" destport="$port2" sequencenr="$seq1" acknowledgenr="$seq2" flags="ack" />
+</packet>
+
+<!-- Send data -->
+<seq repeat="100">
+
+<packet port="loopback">
+<eth from="$eth1" to="$eth2"/>
+<iphdr from="$ip1" to="$ip2" packetid="1" dscp="0"/>
+<tcp sourceport="$port1" destport="$port2" sequencenr="$seq1" acknowledgenr="$seq2" flags="ack" />
+<raw size="1200" filler="01:23:45:67:89:AB:CD:EF" />
+</packet>
+
+<counter ref="$seq1" action="increment" value="1200"/>
+
+<packet port="loopback">
+<eth from="$eth2" to="$eth1"/>
+<iphdr from="$ip2" to="$ip1" packetid="1" dscp="0"/>
+<tcp sourceport="$port1" destport="$port2" sequencenr="$seq2" acknowledgenr="$seq1" flags="ack" />
+<raw size="1200" filler="01:23:45:67:89:AB:CD:EF" />
+</packet>
+
+<counter ref="$seq2" action="increment" value="1200"/>
+</seq>
+
+<packet port="loopback">
+<eth from="$eth1" to="$eth2"/>
+<iphdr from="$ip1" to="$ip2" packetid="1" dscp="0"/>
+<tcp sourceport="$port1" destport="$port2" sequencenr="$seq1" acknowledgenr="$seq2" flags="ack+fin" />
+</packet>
+
+<counter ref="$seq1" action="increment"/>
+
+<packet port="loopback">
+<eth from="$eth2" to="$eth1"/>
+<iphdr from="$ip2" to="$ip1" packetid="1" dscp="0"/>
+<tcp sourceport="$port1" destport="$port2" sequencenr="$seq2" acknowledgenr="$seq1" flags="fin+ack" />
+</packet>
+
+<counter ref="$seq2" action="increment" value="1200"/>
+
+<packet port="loopback">
+<eth from="$eth1" to="$eth2"/>
+<iphdr from="$ip1" to="$ip2" packetid="1" dscp="0"/>
+<tcp sourceport="$port1" destport="$port2" sequencenr="$seq1" acknowledgenr="$seq2" flags="ack" />
+</packet>
+
+</seq>
+</scene>
+
+<play scene="main" />
+</pierf>

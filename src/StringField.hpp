@@ -29,8 +29,10 @@ class StringField: public Field, public ByteString
     void setDefault(const char* inString) throw (Exception);
     void setManualFromValue(const char* inString) throw (Exception);
     void setAuto(const char* inString) throw (Exception);
-    string getString();
-    bool getString(string& stringval);    
+    string getString() const; // return string, no checks
+    string getStringFromBinary() const;
+    bool getString(string& stringval) const;
+    bool getStringFromBinary(string& stringval) const;    
     uchar* copyTo(uchar* toPtr);
     uchar* copyTo(uchar* toPtr, ulong maxSize); // copy max. maxSize bytes
     bool analyze(uchar*& fromPtr, ulong& remainingSize); // consumes all of remainingSize

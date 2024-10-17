@@ -27,6 +27,7 @@ class CounterStep: public PlayStep
     enum CounterAction {eIncrement, eReset, eHold, eCont, eReport};
     CounterAction mAction;
     ulong mValue; 
+    Var* mActionVar;
   public:
     CounterStep();
     ~CounterStep();
@@ -35,6 +36,7 @@ class CounterStep: public PlayStep
     void setAction(char* action);
     void setAction(CounterAction action);
     void setValue(const char* value) throw (Exception); // May be used with reset/increment, default=0 resp. 1
+    void setVar(const char* varName) throw (Exception); // Alternative to fixed value, use var
     void play();
   };
 

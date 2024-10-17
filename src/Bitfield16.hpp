@@ -37,8 +37,8 @@ class Bitfield16: public Field
     void setAuto(const ushort inValue) throw (Exception);
     void displayDecimal();
     void displayChar();
-    string getString();
-    bool getString(string& stringval);
+    string getStringFromBinary() const;
+    bool getStringFromBinary(string& stringval) const;
     ushort getValue();
     bool operator==(unsigned int value);
     bool operator!=(unsigned int value);

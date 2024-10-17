@@ -46,6 +46,13 @@ Packet* FirstOfStep::getCurrentPacket()
   return mCurrentPacket;
   }
 
+Packet* FirstOfStep::getAnalyzePacket()
+  {
+  Packet* packet = new Packet;
+  packet->setRawPacket(mReceiveStep->getPacket(),mReceiveStep->getPacketSize());
+  return packet; 
+  }
+
 void FirstOfStep::matched() // called by the MatchStep to indicate a match
   {
   mMatched = true;
@@ -57,6 +64,7 @@ void FirstOfStep::play()
   mCurrentPacket = mReceiveStep->getAnalyzePacket();
   mCurrentPacket->analyse();
 
+  //PBLO todo: must set mMatched false before start and have a condition not to do further matches if matched is true
   vector<MatchStep *>::iterator iter;
   for (iter = mMatches.begin();iter != mMatches.end() && !mMatched;iter++)
     {

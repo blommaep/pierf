@@ -83,7 +83,7 @@ void Bitfield16::displayChar()
   mDisplayType = eChar;
   }
 
-string Bitfield16::getString()
+string Bitfield16::getStringFromBinary() const
   {
   stringstream retval;
 
@@ -106,11 +106,11 @@ string Bitfield16::getString()
   return retval.str();
   }
 
-bool Bitfield16::getString(string& stringval)
+bool Bitfield16::getStringFromBinary(string& stringval) const
   {
   if (hasValue())
     {
-    stringval = getString();
+    stringval = getStringFromBinary();
     return true;
     }
   return false;
@@ -154,8 +154,13 @@ bool Bitfield16::analyze(uchar*& fromPtr, ulong& remainingSize)
 
 bool Bitfield16::match(Bitfield16& other)
   {
-  if (isPrintable() && other.hasValue())
+  if (isComparable() && other.hasValue())
     {
+    if (isString() || other.isString())
+      {
+      return matchByString(other);
+      }
+
     if (mData != other.mData)
       {
       return false;

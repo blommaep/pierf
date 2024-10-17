@@ -13,6 +13,7 @@
 #include "Arp.hpp"
 #include "Vlan.hpp"
 #include "IpHdr.hpp"
+#include "Ipv6.hpp"
 #include "IgmpV2.hpp"
 #include "Igmp.hpp"
 
@@ -20,6 +21,8 @@
 #include <fstream>
 #include <sstream>
 #include <typeinfo>
+#include "typeinfo"
+#include <string.h>
 
 Ethernet::Ethernet()
   {
@@ -29,7 +32,7 @@ Ethernet::Ethernet(MacAddress& from, MacAddress& to) throw (Exception)
   : mFrom(from), mTo(to) {} ;
 
 
-void Ethernet::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception)
+void Ethernet::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
   {
   char* autoStr=NULL;
   int i=0;
@@ -38,17 +41,17 @@ void Ethernet::parseAttrib(const char** attr, AutoObject* parent, bool checkMand
     if (!strcmp(attr[i],"from"))
       {
       i++;
-      setFrom(attr[i++]);
+      mFrom.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"to"))
       {
       i++;
-      setTo(attr[i++]);
+      mTo.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"ethertype"))
       {
       i++;
-      setEthertype(attr[i++]);
+      mEthertype.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"auto"))
       {
@@ -94,17 +97,17 @@ void Ethernet::setTo(MacAddress& to)
 
 void Ethernet::setFrom(const char* from)
   {
-  mFrom.setManual(from);
+  mFrom.setManual(from, false);
   }
 
 void Ethernet::setTo(const char* to)
   {
-  mTo.setManual(to);
+  mTo.setManual(to, false);
   }
 
 void Ethernet::setEthertype(const char* ethertype) throw (Exception)
   {
-  mEthertype.setManual(ethertype);
+  mEthertype.setManual(ethertype, false);
   }
 
 bool Ethernet::copyVar() throw (Exception)
@@ -163,6 +166,10 @@ Element* Ethernet::analyze_GetNextElem()
       {
       return new IpHdr();
       }
+    if (ethertype == 0x86DD)
+      {
+      return new Ipv6();
+      }
     else if (ethertype == 0x0806)
       {
       return new Arp();
@@ -183,19 +190,20 @@ bool Ethernet::match(Element* other)
     }
   Ethernet* otherEth = (Ethernet*) other;
 
-  if (!mFrom.match(otherEth->mFrom))
     {
-    return false;
+    if (!mFrom.match(otherEth->mFrom))
+      {
+      return false;
+      }
+    if (!mTo.match(otherEth->mTo))
+      {
+      return false;
+      }
+    if (!mEthertype.match(otherEth->mEthertype))
+      {
+      return false;
+      }
     }
-  if (!mTo.match(otherEth->mTo))
-    {
-    return false;
-    }
-  if (!mEthertype.match(otherEth->mEthertype))
-    {
-    return false;
-    }
-
   return true;  
   }
 
@@ -255,7 +263,7 @@ bool Ethernet::tryComplete(ElemStack& stack)
   {
   if (isAuto())
     {
-    enum CompleteState {eIdle,eFoundSelf,eFoundIp,eFoundIgmp,eDone};
+    enum CompleteState {eIdle,eFoundSelf,eFoundIp,eFoundIpv6,eFoundIgmp,eDone};
     CompleteState state = eIdle;
     vector<Element*>::iterator iter;
     for (iter=stack.begin();((iter != stack.end()) && (state != eDone));iter++)
@@ -302,6 +310,14 @@ bool Ethernet::tryComplete(ElemStack& stack)
             }
           state = eFoundIp;
           }
+        else if (typeid(*elem) == typeid(Ipv6))
+          { 
+          if (!mEthertype.hasValue())
+            {
+            mEthertype.setAuto(0x86DD);
+            }
+//          state = eFoundIpv6;
+          }
         else
           {
           state= eDone; // expecting strict stack order
@@ -347,8 +363,18 @@ string Ethernet::whatsMissing()
       {
       missing = "to ";
       }
+    if (!mEthertype.hasValue())
+      {
+      missing = "ethertype ";
+      }
     return "Failed to complete the field(s): " + missing;
     }
   return "";  
+  }
+
+Element* Ethernet::getNewBlank()
+  {
+  Ethernet* ethernet = new Ethernet();
+  return (Element*) ethernet;
   }
 

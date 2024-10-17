@@ -41,12 +41,21 @@ void StringField::setAuto(const char* inString) throw (Exception)
   wasAutoSet();
   }
 
-string StringField::getString()
+string StringField::getString() const
+  {
+  if (isString())
+    {
+    return *mString;
+    }
+  return getStringFromBinary();  
+  }
+
+string StringField::getStringFromBinary() const
   {
   return ByteString::getString();
   }
 
-bool StringField::getString(string& stringval)
+bool StringField::getStringFromBinary(string& stringval) const
   {
   if (hasValue())
     {
@@ -54,6 +63,11 @@ bool StringField::getString(string& stringval)
     return true;
     }
   return false;
+  }
+
+bool StringField::getString(string& stringval) const
+  {
+  return Field::getString(stringval);
   }
 
 uchar* StringField::copyTo(uchar* toPtr)
@@ -88,8 +102,21 @@ bool StringField::analyze(uchar*& fromPtr, ulong& remainingSize, ulong fieldSize
 
 bool StringField::match(StringField& other)
   {
-  if (isPrintable() && other.hasValue())
+  if (isComparable() && other.hasValue())
     {
+    if (isString() || other.isString())
+      {
+      if (hasInputChar()) // The captured (other) packet must print getString the same way as this in order to have a correct match 
+        {
+        other.setInputChar(true); 
+        }
+      else
+        {
+        other.setInputChar(false); 
+        }
+      return matchByString(other);
+      }
+
     if (!ByteString::match(other))
       {
       return false;

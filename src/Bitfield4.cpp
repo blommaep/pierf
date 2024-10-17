@@ -39,10 +39,10 @@ void Bitfield4::setOffset(uchar offset) throw (Exception)
   mOffset = offset;
   }
 
-uchar* Bitfield4::copyTo(uchar* toPtr)
+uchar* Bitfield4::copyTo(uchar* toPtr) 
   {
   // add zero's at the proper place
-  uchar temp = mData << mOffset;
+  uchar temp = mData << mOffset; // For once and for all: there is confusion in my code due to confusiong about the meaning of the mOffset. mOffset is the offset (number of bits), for the starting position of the field, right to left, or in other words, the number of bits between the LSB of the total byte/word boundary and the LSB of the field, So mOffset=0 if the field is in bits 4-7 for Bitfield4.
 
   // Two masks are needed to mask out the part of what is there that needs to be kept
   ushort mask1 = 0xF0 << mOffset;

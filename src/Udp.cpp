@@ -11,8 +11,11 @@
 
 #include "Udp.hpp"
 #include "IpHdr.hpp"
+#include "Ipv6.hpp"
 #include <sstream>
+#include <string.h>
 #include <iostream> 
+#include <typeinfo>
 
 Udp::Udp()
   :mChecksumIpRetrieved(false)
@@ -22,7 +25,7 @@ Udp::Udp()
   mLength.displayDecimal();
   }
 
-void Udp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception)
+void Udp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
   {
   char* autoStr=NULL;
   int i=0;
@@ -31,22 +34,22 @@ void Udp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory
     if (!strcmp(attr[i],"sourceport"))
       {
       i++;
-      setSourcePort(attr[i++]);
+      setSourcePort(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"destport"))
       {
       i++;
-      setDestPort(attr[i++]);
+      setDestPort(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"length"))
       {
       i++;
-      setLength(attr[i++]);
+      setLength(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"checksum"))
       {
       i++;
-      setChecksum(attr[i++]);
+      setChecksum(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"auto"))
       {
@@ -86,11 +89,11 @@ void Udp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory
   
   }
 
-void Udp::setSourcePort(const char* sourcePort) throw (Exception)
+void Udp::setSourcePort(const char* sourcePort, bool storeAsString) throw (Exception)
   {
   try
     {
-    mSourcePort.setManual(sourcePort);
+    mSourcePort.setManual(sourcePort, storeAsString);
     }
   catch (Exception e)
     {
@@ -98,11 +101,11 @@ void Udp::setSourcePort(const char* sourcePort) throw (Exception)
     }
   }
 
-void Udp::setDestPort(const char* destPort) throw (Exception)
+void Udp::setDestPort(const char* destPort, bool storeAsString) throw (Exception)
   {
   try
     {
-    mDestPort.setManual(destPort);
+    mDestPort.setManual(destPort, storeAsString);
     }
   catch (Exception e)
     {
@@ -110,11 +113,11 @@ void Udp::setDestPort(const char* destPort) throw (Exception)
     }
   }
 
-void Udp::setLength(const char* length) throw (Exception)
+void Udp::setLength(const char* length, bool storeAsString) throw (Exception)
   {
   try
     {
-    mLength.setManual(length);
+    mLength.setManual(length, storeAsString);
     }
   catch (Exception e)
     {
@@ -123,11 +126,11 @@ void Udp::setLength(const char* length) throw (Exception)
   }
 
 
-void Udp::setChecksum(const char* checkSum) throw (Exception)
+void Udp::setChecksum(const char* checkSum, bool storeAsString) throw (Exception)
   {
   try
     {
-    mChecksum.setManual(checkSum);
+    mChecksum.setManual(checkSum, storeAsString);
     }
   catch (Exception e)
     {
@@ -230,7 +233,7 @@ uchar* Udp::copyTo(uchar* toPtr)
 
 uchar* Udp::copyTail(uchar* toPtr)
   {
-  if (!mChecksum.hasValue())
+  if (!mChecksum.isManual())
     {
     mChecksum.addToSum(mContentStart,toPtr);
     mChecksum.calculateCarry();
@@ -326,12 +329,14 @@ bool Udp::tryComplete(ElemStack& stack)
     ushort length = 8; // start by counting the size of the udp header itself
     bool calcLength = !mLength.isManual(); //calculate if it hasn't been set
     mIpPseudoHdrChecksum.reset();
+    mChecksumIpRetrieved = false;
     if (!isAuto())
       {
       calcLength=false;
       }
     vector<Element*>::iterator iter;
     IpHdr* ip=NULL;
+    Ipv6* ipv6=NULL;
     for (iter=stack.begin();iter != stack.end();iter++)
       {
       Element* elem = *iter;
@@ -340,6 +345,11 @@ bool Udp::tryComplete(ElemStack& stack)
         if (typeid(*elem) == typeid(IpHdr))
           {
           ip = (IpHdr*) elem; // we (may) need ip for checksum calculation
+          state = eFoundIp;
+          }
+        else if (typeid(*elem) == typeid(Ipv6))
+          {
+          ipv6 = (Ipv6*) elem; // we (may) need ip for checksum calculation
           state = eFoundIp;
           }
         }
@@ -357,11 +367,21 @@ bool Udp::tryComplete(ElemStack& stack)
               // If IP header has variables, this flag will also be false: must recalculate every time
               }
             }
+          else if (ipv6 != NULL)
+            {
+            ipv6->tryComplete(stack); // protocol may need to be enherited by IP, so, try to complete it now
+            if (!mChecksumIpRetrieved)
+              {
+              mChecksumIpRetrieved = ipv6->addPseudoHeaderChecksum(mIpPseudoHdrChecksum);
+              // If IP header has variables, this flag will also be false: must recalculate every time
+              }
+            }
           }
         else
           {
           state = eIdle; // it was not the ip layer for this udp
           ip = NULL;
+          ipv6 = NULL;
           }
         }
       else // in all other states, need to get the length for calculating contentlength
@@ -418,3 +438,8 @@ string Udp::whatsMissing()
   return "";
   }
 
+Element* Udp::getNewBlank()
+  {
+  Udp* udp = new Udp();
+  return (Element*) udp;
+  }

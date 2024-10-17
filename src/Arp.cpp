@@ -15,6 +15,8 @@
 #include <fstream>
 #include <sstream>
 #include "VarContainer.hpp"
+#include <string.h>
+#include <typeinfo>
 
 //// OVERLOADED CLASSES FOR DEDICATED FIELD INTERPRETATIONS ////
 
@@ -78,7 +80,7 @@ void ArpType::setDefault(const char* inString) throw (Exception)
     }
   }
 
-string ArpType::getString()
+string ArpType::getStringFromBinary() const
   {
   string retval;
   if (hasValue())
@@ -96,7 +98,7 @@ string ArpType::getString()
   return retval;
   }
 
-bool ArpType::getString(string& stringval)
+bool ArpType::getStringFromBinary(string& stringval) const
   {
   if (hasValue())
     {
@@ -115,25 +117,7 @@ Arp::Arp()
   {
   }
 
-Arp::Arp(char* type, char* sourceMac, char* destMac, char* sourceIp, char* destIp) throw (Exception)
-  {
-  setType(type);
-  mSourceMac.setManual(sourceMac);
-  mDestMac.setManual(destMac);
-  mSourceIp.setManual(sourceIp);
-  mDestIp.setManual(destIp);
-  }
-
-Arp::Arp(char* sourceMac, char* sourceIp, char* destIp) throw (Exception) 
-  { // Only Arp req requires only source...
-  mArpType.setManualFromValue(1); // arp request has opcode 1
-  mSourceMac.setManual(sourceMac);
-  mDestMac.setDefault("FF:FF:FF:FF:FF:FF");
-  mSourceIp.setManual(sourceIp);
-  mDestIp.setManual(destIp);
-  }
-
-void Arp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception)
+void Arp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
   {
   char* autoStr=NULL;
   int i=0;
@@ -142,27 +126,27 @@ void Arp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory
     if (!strcmp(attr[i],"fromMac"))
       {
       i++;
-      setSourceMac(attr[i++]);
+      mSourceMac.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"toMac"))
       {
       i++;
-      setDestMac(attr[i++]);
+      mDestMac.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"fromIp"))
       {
       i++;
-      setSourceIp(attr[i++]);
+      mSourceIp.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"toIp"))
       {
       i++;
-      setDestIp(attr[i++]);
+      mDestIp.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"type"))
       {
       i++;
-      setType(attr[i++]);
+      setType(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"auto"))
       {
@@ -206,9 +190,9 @@ void Arp::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory
     }
   }
 
-void Arp::setType(const char* type) throw (Exception)
+void Arp::setType(const char* type, bool storeAsString) throw (Exception)
   {
-  mArpType.setManual(type);
+  mArpType.setManual(type, storeAsString);
 
   if (!mDestMac.isManual())
     {
@@ -221,22 +205,22 @@ void Arp::setType(const char* type) throw (Exception)
 
 void Arp::setSourceMac(const char* sourceMac) throw (Exception)
   {
-  mSourceMac.setManual(sourceMac);
+  mSourceMac.setManual(sourceMac, false);
   }
 
 void Arp::setDestMac(const char* destMac) throw (Exception)
   {
-  mDestMac.setManual(destMac);
+  mDestMac.setManual(destMac, false);
   }
 
 void Arp::setSourceIp(const char* sourceIp) throw (Exception)
   {
-  mSourceIp.setManual(sourceIp);
+  mSourceIp.setManual(sourceIp, false);
   }
 
 void Arp::setDestIp(const char* destIp) throw (Exception)
   {
-  mDestIp.setManual(destIp);
+  mDestIp.setManual(destIp, false);
   }
 
 string Arp::getTypeString()
@@ -456,4 +440,8 @@ bool Arp::match(Element* other)
   return true;  
   }
 
-
+Element* Arp::getNewBlank()
+  {
+  Arp* arp =  new Arp();
+  return (Element*) arp;
+  }

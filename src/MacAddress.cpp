@@ -108,7 +108,7 @@ void MacAddress::setAddressFromMcastIp(ulong mcastIp) throw (Exception)
   wasAutoSet(); // asked to calculate, so certainly auto
   }
 
-string MacAddress::getString()
+string MacAddress::getStringFromBinary() const
   {
   stringstream retval;
   retval.setf(ios::uppercase); // print hex in uppercase
@@ -124,11 +124,11 @@ string MacAddress::getString()
   return retval.str();
   }
 
-bool MacAddress::getString(string& stringval)
+bool MacAddress::getStringFromBinary(string& stringval) const
   {
   if (hasValue())
     {
-    stringval = getString();
+    stringval = getStringFromBinary();
     return true;
     }
   return false;  
@@ -163,13 +163,20 @@ bool MacAddress::analyze(uchar*& fromPtr, ulong& remainingSize)
 
 bool MacAddress::match(const MacAddress& other)
   {
-  if (isPrintable() && other.hasValue())
+  if (isComparable() && other.hasValue())
     {
-    for (int i=0;i<6;i++)
+    if (isString() || other.isString())
       {
-      if (mAddress[i] != other.mAddress[i])
+      return matchByString(other);
+      }
+    else
+      {
+      for (int i=0;i<6;i++)
         {
-        return false;
+        if (mAddress[i] != other.mAddress[i])
+          {
+          return false;
+          }
         }
       }
     }

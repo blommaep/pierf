@@ -49,8 +49,9 @@ class Packet: public PlayStep
     bool getAnalysisReady();
     void setRawPacket(uchar* rawPacket, ulong rawSize) throw (Exception);
     void analyse() throw (Exception);
-    bool match(Packet* otherPacket);
+    bool match(Packet* otherPacket); // backward compatible, always binary match
     // Element and send tasks
+    bool compare(Packet* otherPacket, bool matchByString); // no mixed mode currently, may need to merge these again later...?
     void push_back(Element* elem);
     bool tryComplete(bool final);
     void setPort(Port* outport);

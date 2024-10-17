@@ -12,6 +12,7 @@
 # For license of the packages included here, see inside the packages
 # This Makefile was created for cygwin/mingw platform. The pcap library used is the windows one. Other platforms should be possible but currently not built...
 
+CFLAGS := -fpermissive 
 OSTYPE := ${shell uname -s | sed -r "s/^([A-Za-z_]+).*/\1/"} #string part without version indicating the platform (e.g. CYGWIN-NT)
 OSTYPE := ${strip ${OSTYPE}}
 
@@ -32,6 +33,11 @@ ZTHREADPK2 := $(patsubst %.tar.gz,%2.tar.gz,$(ZTHREADPKG))
 ZTHREADTAR := $(patsubst %.tar.gz,%.tar,$(ZTHREADPK2))
 ZTHREADDIR := $(patsubst %.tar.gz,%,$(ZTHREADPKG))
 
+PCREPKG := $(wildcard pcre-*.tar.gz)
+PCREPK2 := $(patsubst %.tar.gz,%2.tar.gz,$(PCREPKG))
+PCRETAR:= $(patsubst %.tar.gz,%.tar,$(PCREPK2))
+PCREDIR := $(patsubst %.tar.gz,%,$(PCREPKG))
+
 CCOUNTPKG  := $(wildcard c_count-*.tar.gz)
 CCOUNTDIR  := $(patsubst %.tar.gz,%,$(CCOUNTPKG))
 
@@ -41,9 +47,15 @@ CCOUNTDIR  := $(patsubst %.tar.gz,%,$(CCOUNTPKG))
 #PTHREADDIR := $(patsubst %.tar.gz,%,$(PTHREADPKG))
 
 ifeq ($(OSTYPE),CYGWIN_NT)
-	MKLIBS = expat/.libs/libexpat.a winpcap/lib/libwpcap.a zthread/src/.libs/libZThread.a
+	MKLIBS = expat/.libs/libexpat.a winpcap/lib/libwpcap.a zthread/src/.libs/libZThread.a c_count/c_count.exe pcre/.libs/libpcre.a
 else
-	MKLIBS = expat/.libs/libexpat.a zthread/src/.libs/libZThread.a libpcap/libpcap.a
+	MKLIBS = expat/.libs/libexpat.a zthread/src/.libs/libZThread.a libpcap/libpcap.a c_count/c_count pcre/.libs/libpcre.a 
+endif
+
+ifeq ($(OSTYPE),CYGWIN_NT)
+	CFLAGS_PCRE = "-O2 -mno-cygwin -Wall"
+else
+	CFLAGS_PCRE = "-O2"
 endif
 
 
@@ -109,15 +121,34 @@ zthread/src/.libs/libZThread.a: zthread/Makefile
 	echo Building zthread for $(OSTYPE)
 	${MAKE} -C zthread
 
-c_count/Makefile:
+pcre/Makefile:
+	echo Configuring pcre for $(OSTYPE)
+	cp ${PCREPKG} ${PCREPK2}
+	gzip -d ${PCREPK2}
+	tar -xvf ${PCRETAR}
+	rm -f ${PCRETAR}
+	mv ${PCREDIR} pcre
+	cd pcre && CFLAGS=${CFLAGS_PCRE} ./configure --disable-cpp --disable-shared --enable-newline-is-anycrlf --enable-utf8 --enable-unicode-properties
+
+pcre/.libs/libpcre.a: pcre/Makefile
+	echo Building libpcre - perl compatible regex
+	${MAKE} -C pcre
+
+c_count/makefile:
 	cp ${CCOUNTPKG} c_count.tar.gz
 	gunzip c_count.tar.gz
 	tar -xvf c_count.tar
+	rm c_count.tar
 	mv ${CCOUNTDIR} c_count
-	cd c_count && dos2unix *
+	cd c_count && dos2unix *.c *.h configure *.sh
+	cd c_count && chmod +x configure *.sh
 	cd c_count && ./configure
 
-c_count/c_count.exe: c_count/Makefile
+c_count/c_count.exe: c_count/makefile
+	echo Building c_count for $(OSTYPE)
+	${MAKE} -C c_count
+
+c_count/c_count: c_count/makefile
 	echo Building c_count for $(OSTYPE)
 	${MAKE} -C c_count
 
@@ -137,3 +168,4 @@ clean:
 	rm -rf expat
 	rm -rf winpcap
 	rm -rf c_count
+

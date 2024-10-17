@@ -36,8 +36,8 @@ class IpAddress: public Field
     void setManualFromValue(const char* inString) throw (Exception);
     void setAuto(const char* inString) throw (Exception);
     ulong getAddress();
-    string getString();
-    bool getString(string& stringval);
+    string getStringFromBinary() const;
+    bool getStringFromBinary(string& stringval) const;
     uchar* copyTo(uchar* toPtr);
     uchar* copyTo(ulong* toPtr);
     bool analyze(uchar*& fromPtr, ulong& remainingSize); 

@@ -28,11 +28,17 @@ class MatchStep: public Seq
   private:
     Packet* mMatchPacket; // packet to match with
     FirstOfStep* mFirstOfStep; // parent. Needed to get the packet and to set the match flag
+    bool mMatchByString;
+    enum MatchMethod {eAnalyze,eCompare};
+    MatchMethod mMatchMethod;
   public:
     MatchStep();
     ~MatchStep();
     void setMatchPacket(Packet* matchPacket);
     void setFirstOfStep(FirstOfStep* firstOfStep);
+    void setMatchByString(const char* byString);
+    void setMatchMethod(const char* matchMethod);
+    bool getMatchByString();
     void play();
   };
 

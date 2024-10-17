@@ -35,11 +35,11 @@ class Udp: public Element
     uchar* mContentStart; // used for checksum calculation
   public:
     Udp();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception);
-    void setSourcePort(const char* sourcePort) throw (Exception);
-    void setDestPort(const char* destPort) throw (Exception);
-    void setLength(const char* length) throw (Exception);
-    void setChecksum(const char* checkSum) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
+    void setSourcePort(const char* sourcePort, bool storeAsString) throw (Exception);
+    void setDestPort(const char* destPort, bool storeAsString) throw (Exception);
+    void setLength(const char* length, bool storeAsString) throw (Exception);
+    void setChecksum(const char* checkSum, bool storeAsString) throw (Exception);
     string getString();
     bool getString(string& stringval, const char* fieldName);
     ulong getSize();
@@ -54,6 +54,7 @@ class Udp: public Element
     bool tryComplete(ElemStack& stack);
     string whatsMissing();
     bool match(Element* other);
+    Element* getNewBlank();
   };
 
 #endif

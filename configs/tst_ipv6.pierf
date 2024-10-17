@@ -1,0 +1,180 @@
+<pierf>
+<port id="loopback" type="loopback" outfile="loopback.cap" silent="true"/>
+
+<var type="string" id="$eth1" value="00:00:00:01:01:01" const="no"/>
+<var type="string" id="$eth2" value="00:00:00:02:02:02" const="no"/>
+<var id="$ethertype1" type="string" const="no" value="0x0" />
+<var id="$dscp1" type="string" const="no" value="63" />
+<var id="$flowlabel1" type="string" const="no" value="1" />
+<var id="$version1" type="string" const="no" value="0" />
+<var id="$ipv6addr1" type="string" const="no" value="fc00::3:1" />
+<var id="$ipv6addr2" type="string" const="no" value="fc00::4:1" />
+<var id="$protocol1" type="string" const="no" value="icmp" />
+<var id="$contentlength1" type="string" const="no" value="99" />
+<var id="$ttl1" type="string" const="no" value="20" />
+<var id="$udpport1" type="string" const="no" value="20" />
+<var id="$udpport2" type="string" const="no" value="20" />
+<var id="$udplength1" type="string" const="no" value="20" />
+<var id="$checksum1" type="string" const="no" value="20" />
+<var id="$tcpport1" type="string" const="no" value="20" />
+<var id="$tcpport2" type="string" const="no" value="20" />
+<var id="$sequencenr1" type="string" const="no" value="20" />
+<var id="$acknowledgenr1" type="string" const="no" value="20" />
+<var id="$flag1" type="string" const="no" value="20" />
+<var id="$windowsize1" type="string" const="no" value="20" />
+<var id="$urgentpointer1" type="string" const="no" value="20" />
+<var id="$options1" type="string" const="no" value="20" />
+
+<scene id="main">
+<seq>
+
+<!-- IPV6: ETHERNET / IPV6 / UDP test -->
+
+<packet port="loopback">
+  <eth from="02:02:02:02:02:03" to="00:13:21:61:3D:F2" />
+  <ipv6 from="fc00::1" to="fc00::1" trafficClass="0xAB" flowLabel="0x12345" hopLimit="0xEF"/>
+  <udp sourceport="1234" destport="1235" />
+  <raw>12:34:56:78:09:AB:CD:EF</raw>
+</packet>
+
+<receive port="loopback" nomatch="next">
+  <firstof>
+    <match>
+      <eth>
+        <assign-variable name="$eth1" value="field(from)" />
+        <assign-variable name="$eth2" value="field(to)" />
+        <assign-variable name="$ethertype1" value="field(ethertype)" />
+      </eth>
+      <ipv6>
+        <assign-variable name="$ipv6addr1" value="field(from)" />
+        <assign-variable name="$ipv6addr2" value="field(to)" />
+        <assign-variable name="$version1" value="field(version)" />
+        <assign-variable name="$dscp1" value="field(trafficClass)" />
+        <assign-variable name="$flowlabel1" value="field(flowLabel)" />
+        <assign-variable name="$contentlength1" value="field(payloadLength)" />
+        <assign-variable name="$protocol1" value="field(nextHeader)" />
+        <assign-variable name="$ttl1" value="field(hopLimit)" />
+      </ipv6>
+      <udp>
+        <assign-variable name="$udpport1" value="field(sourceport)" />
+        <assign-variable name="$udpport2" value="field(destport)" />
+        <assign-variable name="$udplength1" value="field(length)" />
+        <assign-variable name="$checksum1" value="field(checksum)" />
+      </udp>
+      <raw />
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test on ipv6 NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="$eth1" to="$eth2" ethertype="$ethertype1" />
+  <ipv6 from="$ipv6addr1" to="$ipv6addr2" version="$version1" trafficClass="$dscp1" flowLabel="$flowlabel1" payloadLength="$contentlength1" nextHeader="$protocol1" hopLimit="$ttl1"/>
+  <udp sourceport="$udpport1" destport="$udpport2" length="$udplength1" checksum="$checksum1"  />
+  <raw>12:34:56:78:09:AB:CD:EF</raw>
+</packet>
+
+<receive port="loopback" nomatch="next">
+  <firstof>
+    <match>
+      <eth from="02:02:02:02:02:03" to="00:13:21:61:3D:F2" ethertype="0x86DD" />
+      <ipv6 from="fc00::1" to="fc00::1" version="6" trafficClass="0xAB" flowLabel="0x12345" payloadLength="16" nextHeader="udp" hopLimit="0xEF"/>
+      <udp sourceport="1234" destport="1235" length="16" />
+      <raw />
+      <seq>
+        <text>Loopback test on ipv6 OK</text>
+      </seq>
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test on ipv6 NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+
+
+<!-- TCP/IPV6: ETHERNET / VLANS/ IPV6 / TCP test -->
+
+<packet port="loopback">
+  <eth from="02:02:02:02:02:03" to="00:13:21:61:3D:F2" />
+  <vlans stack="701/7:702/1" />
+  <ipv6 from="fc00::1" to="fc00::1" trafficClass="0xAB" flowLabel="0x12345" hopLimit="0xEF"/>
+  <tcp sourceport="8081" destport="8082" sequencenr="0x1234" acknowledgenr="0x5678" flags="syn+ack+fin+rst/psh+urg+ecn+con" windowsize="0xAB" urgentpointer="0x12" options="0x01" />
+  <raw>12:34:56:78:09:AB:CD:EF</raw>
+</packet>
+
+<receive port="loopback" nomatch="next">
+  <firstof>
+    <match>
+      <eth>
+        <assign-variable name="$eth1" value="field(from)" />
+        <assign-variable name="$eth2" value="field(to)" />
+        <assign-variable name="$ethertype1" value="field(ethertype)" />
+      </eth>
+      <ipv6>
+        <assign-variable name="$ipv6addr1" value="field(from)" />
+        <assign-variable name="$ipv6addr2" value="field(to)" />
+        <assign-variable name="$version1" value="field(version)" />
+        <assign-variable name="$dscp1" value="field(trafficClass)" />
+        <assign-variable name="$flowlabel1" value="field(flowLabel)" />
+        <assign-variable name="$contentlength1" value="field(payloadLength)" />
+        <assign-variable name="$protocol1" value="field(nextHeader)" />
+        <assign-variable name="$ttl1" value="field(hopLimit)" />
+      </ipv6>
+      <udp>
+        <assign-variable name="$udpport1" value="field(sourceport)" />
+        <assign-variable name="$udpport2" value="field(destport)" />
+        <assign-variable name="$udplength1" value="field(length)" />
+        <assign-variable name="$checksum1" value="field(checksum)" />
+      </udp>
+      <raw />
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test on ipv6 NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+<packet port="loopback">
+  <eth from="$eth1" to="$eth2" ethertype="$ethertype1" />
+  <ipv6 from="$ipv6addr1" to="$ipv6addr2" version="$version1" trafficClass="$dscp1" flowLabel="$flowlabel1" payloadLength="$contentlength1" nextHeader="$protocol1" hopLimit="$ttl1"/>
+  <udp sourceport="$udpport1" destport="$udpport2" length="$udplength1" checksum="$checksum1"  />
+  <raw>12:34:56:78:09:AB:CD:EF</raw>
+</packet>
+
+<receive port="loopback" nomatch="next">
+  <firstof>
+    <match>
+      <eth from="02:02:02:02:02:03" to="00:13:21:61:3D:F2" ethertype="0x86DD" />
+      <ipv6 from="fc00::1" to="fc00::1" version="6" trafficClass="0xAB" flowLabel="0x12345" payloadLength="16" nextHeader="udp" hopLimit="0xEF"/>
+      <udp sourceport="1234" destport="1235" length="16" />
+      <raw />
+      <seq>
+        <text>Loopback test on ipv6 OK</text>
+      </seq>
+    </match>
+    <match>
+      <eth /> 
+      <seq>
+        <text>Loopback test on ipv6 NOK</text>
+      </seq>      
+    </match>
+  </firstof>
+</receive>
+
+</seq>
+</scene>
+
+<play scene="main" />
+</pierf>

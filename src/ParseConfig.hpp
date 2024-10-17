@@ -43,7 +43,7 @@ class ParseConfig
   private:
   ZThread::ThreadedExecutor mThreadedExecutor;
 
-  enum State {eIdle, ePierf, ePort, eInclude, eLog, eScene, eSeq, ePacket, eSleep, eReceive, eMirror, ePrint, eFirstOf, eMatch, eRaw, eEth, eVlans,eArp,eIpHdr, eIcmp, eIgmp, eIgmpV3Query, eIgmpV3Report, eIgmpGroupRecord, eIgmpV3Source, eUdp, ePlay, eCounter, eVar, eText, eShaper, eMultiShaper, eVarAssign};
+  enum State {eIdle, ePierf, ePort, eInclude, eLog, eScene, eSeq, ePacket, eSleep, eReceive, eMirror, ePrint, eFirstOf, eMatch, eRaw, eEth, eVlans,eArp,eIpHdr, eIpv6, eIcmp, eIgmp, eIgmpV3Query, eIgmpV3Report, eIgmpGroupRecord, eIgmpV3Source, eUdp, eTcp, ePlay, eCounter, eVar, eText, eShaper, eMultiShaper, eVarAssign, eSignature};
 
   vector<State> mStateStack;
 
@@ -61,12 +61,13 @@ class ParseConfig
   map<string,Scene*> mScenes;
   map<string,Port*> mPorts;
   map<string,Shaper*> mShapers;
+  map<string,Seq*> mSeqs;
+  bool mCurrentSequenceUpdateAllowed;
   Port* mCurPort;
   Scene* mCurScene;
   Seq* mCurSeq;
   deque<Seq*> mSeqStack;
-  MatchStep* mCurMatch;
-  deque<MatchStep*> mMatchStack;
+ deque<MatchStep*> mMatchStack;
   Packet* mCurrentPacket; // no deque for Packet because we avoid packet match and seq to be mixed in match tag
   Element* mCurElem; // current element
   Raw* mCurRaw;
@@ -79,7 +80,8 @@ class ParseConfig
   IgmpGroupRec* mCurIgmpGroupRec;
   StringStep* mCurText;
   MultiShaperStep* mCurMultiShaper;
- 
+  MatchStep* mCurMatch;
+  
   State curState();
   string getParserLine();
   void parserException(const string& msg) throw (Exception);

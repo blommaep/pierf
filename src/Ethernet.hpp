@@ -30,7 +30,8 @@ class Ethernet: public Element
   public:
     Ethernet();
     Ethernet(MacAddress& from, MacAddress& to) throw (Exception);
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
+    // set interfaces only kept for backward compatibility. parseAttrib is the only function relevant for xml parsing and will also assure string save
     void setFrom(MacAddress& from);
     void setTo(MacAddress& to);
     void setFrom(const char* from);
@@ -50,6 +51,7 @@ class Ethernet: public Element
     ulong getTailSize();
     bool tryComplete(ElemStack& stack);
     string whatsMissing();
+    Element* getNewBlank();
   };
 
 #endif

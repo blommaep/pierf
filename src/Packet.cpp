@@ -13,7 +13,9 @@
 #include "Port.hpp"
 #include "Ethernet.hpp"
 #include "Raw.hpp"
+#include "SignatureElem.hpp"
 #include <sstream>
+#include <typeinfo>
 
 Packet::Packet()
   : mOutPort(NULL), mRawPacket(NULL), mRawSize(0), mAllocSize(0), mAuto(eAutoEnherit),mBinaryReady(false),mAnalysisReady(false), mHasVar(false), mShaper(NULL)
@@ -108,6 +110,9 @@ void Packet::analyse() throw (Exception)
     bool succeed = true;
     Element* curelem = eth;
     Element* nextelem = eth->analyze_GetNextElem();
+
+//    curelem->analyze_Tail(packetpos,remainingSize); Not useful to do analyse_Tail on eth, so just skipping
+
     while (remainingSize > 0 && nextelem != NULL && succeed)
       {
       push_back(curelem);
@@ -115,7 +120,20 @@ void Packet::analyse() throw (Exception)
       succeed = curelem->analyze_Head(packetpos,remainingSize);
       if (succeed)
         {
+        succeed = curelem->analyze_Tail(packetpos,remainingSize); // must take from the back of the packet
+        }
+      if (succeed)
+        {
         nextelem = curelem->analyze_GetNextElem();
+
+        // special trick to distinghuish signature (from raw)
+        if (remainingSize >= 8 && nextelem == NULL)
+          {
+          if (*packetpos == 0xCD and *(packetpos+1) == 0x40)
+            {
+            nextelem = new SignatureElem;
+            }
+          }
         }
       }
     push_back(curelem); // the last one still to be pushed
@@ -128,26 +146,28 @@ void Packet::analyse() throw (Exception)
       push_back(raw);
       }
 
-    // Now the analyseTail
-    vector<Element *>::reverse_iterator riter;
+    // analyse_Tail used to be done by reverse iteration, but not anymore. (Virtual optimization as there is currently no Element that requires analyse_Tail) Kept as a sample
+//    vector<Element *>::reverse_iterator riter;
 
-    for (riter = mElems.rbegin();(riter != mElems.rend() && succeed);riter++)
-      {
-      curelem = *riter;
-      curelem->analyze_Tail(packetpos,remainingSize);
-      }
+//    for (riter = mElems.rbegin();(riter != mElems.rend() && succeed);riter++)
+//      {
+//      curelem = *riter;
+//      curelem->analyze_Tail(packetpos,remainingSize);
+//      }
 
     }
 
   mAnalysisReady = true;
   }
 
-bool Packet::match(Packet* otherPacket)
+bool Packet::match(Packet* otherPacket) 
   {
   if (!mAnalysisReady ||!otherPacket->mAnalysisReady)
     {
     return false; // calling at a time match is not possible.
     }
+
+  // self is supposed to be the user defined "match" packet, other is the captured packet
   vector<Element *>::iterator iterSelf;
   vector<Element *>::iterator iterOther;
   
@@ -159,6 +179,7 @@ bool Packet::match(Packet* otherPacket)
     Element* elemOther = *iterOther;
 
     // there will be a protective typeid check in the match of every element, so no need to do it here.
+    elemSelf->copyVar(); // Will update value based on variables if applicable (value-state=eVar)
     if (!elemSelf->match(elemOther)) 
       {
       return false; // RETURN STATEMENT IN LOOP!
@@ -186,6 +207,81 @@ bool Packet::match(Packet* otherPacket)
   return true;
   }
 
+bool Packet::compare(Packet* otherPacket, bool matchByString) // assumed to be executed by captured packet, otherPacket is the user defined "match" Packet.
+  {
+  if (!mBinaryReady)
+    {
+    throw Exception("Trying to do analysis while no binary packet was available. Code bug?");
+    }
+
+  if (!mRawSize > 0)
+    {
+    throw Exception("Trying to analyse a packet of size 0???");
+    }
+
+  vector<Element *>::iterator iterSelf;
+  vector<Element *>::iterator iterOther;
+
+  uchar* packetpos = mRawPacket;
+  ulong remainingSize = mRawSize;
+  
+  
+  for (iterOther = otherPacket->mElems.begin();
+       iterOther != otherPacket->mElems.end();
+       iterOther++ ) // Only need to match for as much as the own packet (matching packet) is defined, therefore looping on self.
+    {
+    Element* elemOther = *iterOther;
+    Element* elemSelf = elemOther->getNewBlank();
+    push_back(elemSelf); // must be deleted with the Packet, so as a first thing, add it to the stack
+
+    // tbd: for Raw: make sure somehow that also if size is automatically set, it has a correct value and only that size is captured
+    if (typeid(*elemOther) == typeid(Raw))
+      {
+      if (!matchByString) // for string match, size can only be determined by explicit configuration. For binary match, make sure to capture only the relevant size, also if it is not explicitly configured
+        {
+        Raw* rawSelf = (Raw*) elemSelf;
+        Raw* rawOther = (Raw*) elemOther;
+        rawSelf->copySize(rawOther); // must not only copy value, but also value state
+        }
+      }
+
+    if (!elemSelf->analyze_Head(packetpos,remainingSize))
+      {
+      return false; // analysis of an element fails if remainingSize is too small... In that case, there can't be a match.
+       // RETURN STATEMENT IN LOOP!
+      }
+
+    if (!elemSelf->analyze_Tail(packetpos,remainingSize))
+      {
+      return false; // analysis of an element fails if remainingSize is too small... In that case, there can't be a match.
+       // RETURN STATEMENT IN LOOP!
+      }
+
+    // tbd: this must move after the analyzetail, cf. below note
+    elemOther->copyVar(); // Will update value based on variables if applicable (value-state=eVar)
+    if (!elemOther->match(elemSelf)) 
+      {
+      return false; // RETURN STATEMENT IN LOOP!
+      }
+    }
+
+
+  // Match is considered SUCCESS !!! if reached here
+  // Must now execute the variable assigns
+  for (iterSelf = mElems.begin(), iterOther = otherPacket->mElems.begin();
+       iterSelf != mElems.end() && iterOther != otherPacket->mElems.end();
+       iterSelf++, iterOther++) // If reached here, both packets should actually have exactly same number and type of elements.
+    {
+    Element* elemSelf = *iterSelf;
+    Element* elemOther = *iterOther;
+
+    elemOther->playVarAssigns(elemSelf);
+    }
+
+
+  return true; 
+  }
+
 void Packet::push_back(Element* elem)
   {
   mElems.push_back(elem);
@@ -202,7 +298,7 @@ bool Packet::tryComplete(bool final)
     {
     return true;
     }
- 
+
   // Going from top to bottom, because the elements themselves will go from 
   // bottom to top and enherit from upper layers...
   vector<Element *>::reverse_iterator riter;
@@ -282,6 +378,7 @@ bool Packet::tryComplete(bool final)
 void Packet::sendTo(Port& outport) throw (Exception)
   {
   bool complete;
+
   try
     {
     complete = tryComplete(true);

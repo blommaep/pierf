@@ -34,10 +34,10 @@ class IgmpGroupRec: public Element // in fact sub-element
     string getTypeString();
   public:
     IgmpGroupRec();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
     void setType(const char* type) throw (Exception);
-    void setMcastAddress(const char* mcastAddr) throw (Exception);
-    void addSource(char* srcAddr) throw (Exception);
+    void setMcastAddress(const char* mcastAddr, bool storeAsString) throw (Exception);
+    void addSource(char* srcAddr, bool storeAsString) throw (Exception);
     string getString();
     bool getString(string& stringval, const char* fieldName);
     ulong getSize();
@@ -53,6 +53,7 @@ class IgmpGroupRec: public Element // in fact sub-element
     string whatsMissing();
     IpAddress getDestIp();
     bool match(Element* other);
+    Element* getNewBlank();
   };
 
 #endif

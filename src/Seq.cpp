@@ -13,6 +13,7 @@
 
 #include <iostream> // for cout and cin
 #include <fstream>
+#include <typeinfo>
 
 Seq::Seq()
   :mAuto (eAutoEnherit), mRepeat(1)
@@ -24,8 +25,23 @@ Seq::~Seq()
   vector<PlayStep *>::iterator iter;
   for (iter = mPlaySteps.begin();iter != mPlaySteps.end();iter++)
     {
-    PlayStep* playstep= *iter;
-    delete playstep;
+    PlayStep* playStep= *iter;
+    if (typeid(*playStep) == typeid(Seq))
+      {
+      Seq* seq = (Seq*) playStep;
+      if (seq->isRef())
+        {
+        // don't delete named sequences here, will be deleted as last
+        }
+      else
+        {
+        delete playStep;
+        }
+      }
+    else
+      {
+      delete playStep;
+      }
     }
   }
 
@@ -69,3 +85,12 @@ int Seq::size()
   return mPlaySteps.size();
   }
 
+void Seq::setName(char* name)
+  {
+  mName = name;
+  }
+
+bool Seq::isRef()
+  {
+  return mName.size() > 0;
+  }

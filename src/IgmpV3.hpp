@@ -45,16 +45,16 @@ class IgmpV3: public Element
   public:
     IgmpV3();
     ~IgmpV3();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception);
-    void setType(const char* type) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
+    void setType(const char* type, bool storeAsString) throw (Exception);
     void setResponseTime(const char* responseTime) throw (Exception);
     void setChecksum(const char* checksum) throw (Exception);
-    void setSFlag(const char* sflag) throw (Exception);
-    void setQrv(const char* qrv) throw (Exception);
-    void setQqic(const char* qqic) throw (Exception);
-    void setMcastIp(const char* mcastIp) throw (Exception);
-    void addSource(const char* srcIp) throw (Exception);
-    IgmpGroupRec* addGroupRecord(const char* type, const char* mcastIp) throw (Exception);
+    void setSFlag(const char* sflag, bool storeAsString) throw (Exception);
+    void setQrv(const char* qrv, bool storeAsString) throw (Exception);
+    void setQqic(const char* qqic, bool storeAsString) throw (Exception);
+    void setMcastIp(const char* mcastIp, bool storeAsString) throw (Exception);
+    void addSource(const char* srcIp, bool storeAsString) throw (Exception);
+    IgmpGroupRec* addGroupRecord(const char* type, const char* mcastIp, bool storeAsString) throw (Exception);
     string getString();
     bool getString(string& stringval, const char* fieldName);
     ulong getSize();
@@ -71,6 +71,7 @@ class IgmpV3: public Element
     IpAddress getDestIp();
     uchar getType();
     bool match(Element* other);
+    Element* getNewBlank();
   };
 
 #endif

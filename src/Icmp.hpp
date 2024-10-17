@@ -45,8 +45,8 @@ class IcmpType: public Bitfield8
       {
       Bitfield8::setAuto(inValue);
       }
-    string getString();
-    bool getString(string& stringval);
+    string getStringFromBinary() const;
+    bool getStringFromBinary(string& stringval) const;
   };
 
 
@@ -68,11 +68,11 @@ class Icmp: public Element
     string getTypeString();
   public:
     Icmp();
-    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception);
-    void setType(const char* strType) throw (Exception);
-    void setCode(const char* strCode) throw (Exception);
-    void setChecksum(const char* strChecksum) throw (Exception);
-    void setId(const char* strId) throw (Exception);
+    void parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception);
+    void setType(const char* strType, bool storeAsString) throw (Exception);
+    void setCode(const char* strCode, bool storeAsString) throw (Exception);
+    void setChecksum(const char* strChecksum, bool storeAsString) throw (Exception);
+    void setId(const char* strId, bool storeAsString) throw (Exception);
     void setSequenceNr(const char* strSeq) throw (Exception);
     void setOffset(const char* strOffset) throw (Exception);
     void setNexthopMtu(const char* strMtu) throw (Exception);
@@ -95,6 +95,7 @@ class Icmp: public Element
     bool tryComplete(ElemStack& stack);
     string whatsMissing();
     bool match(Element* other);
+    Element* getNewBlank();
   };
 
 #endif

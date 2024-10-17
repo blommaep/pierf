@@ -13,6 +13,8 @@
 #include "VarContainer.hpp"
 
 #include <sstream>
+#include <string.h>
+#include <typeinfo> 
 
 IgmpV3::IgmpV3()
   {
@@ -27,7 +29,7 @@ IgmpV3::~IgmpV3()
     }
   }
 
-void IgmpV3::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory) throw (Exception)
+void IgmpV3::parseAttrib(const char** attr, AutoObject* parent, bool checkMandatory, bool storeAsString) throw (Exception)
   { 
   char* autoStr=NULL;
   int i=0;
@@ -41,42 +43,42 @@ void IgmpV3::parseAttrib(const char** attr, AutoObject* parent, bool checkMandat
     else if (!strcmp(attr[i],"type"))
       {
       i++;
-      setType(attr[i++]);
+      setType(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"to"))
       {
       i++;
-      setMcastIp(attr[i++]);
+      setMcastIp(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"responsetime"))
       {
       i++;
-      setResponseTime(attr[i++]);
+      mResponseTime.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"checksum"))
       {
       i++;
-      setChecksum(attr[i++]);
+      mChecksum.setManual(attr[i++], false);
       }
     else if (!strcmp(attr[i],"sflag"))
       {
       i++;
-      setSFlag(attr[i++]);
+      setSFlag(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"qrv"))
       {
       i++;
-      setQrv(attr[i++]);
+      setQrv(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"qqic"))
       {
       i++;
-      setQqic(attr[i++]);
+      setQqic(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"nrrecords"))
       {
       i++;
-      mNrRecords.setManual(attr[i++]);
+      mNrRecords.setManual(attr[i++], storeAsString);
       }
     else if (!strcmp(attr[i],"auto"))
       {
@@ -85,8 +87,8 @@ void IgmpV3::parseAttrib(const char** attr, AutoObject* parent, bool checkMandat
       }
     else
       {
-      throw Exception("Unexepected attribute: " + string(attr[i]) + " in <igmp> tag.");
       i++;
+      //throw Exception("Unexepected attribute: " + string(attr[i]) + " in <igmp> tag.");
       }
     }
 
@@ -106,52 +108,59 @@ void IgmpV3::parseAttrib(const char** attr, AutoObject* parent, bool checkMandat
     }
   }
 
-void IgmpV3::setType(const char* type) throw (Exception)
+void IgmpV3::setType(const char* type, bool storeAsString) throw (Exception)
   {
-  if (type[0] == '$')
+  if (storeAsString)
     {
-    Var* var = VarContainer::getVar(type);
-    if (var==NULL)
-      {
-      throw Exception ("Undefined variable used to assign type in <igmp> tag: " + string(type));
-      }
-    type = var->getStringValue().c_str();
-    }
-
-  if (!strcmp(type,"query"))
-    {
-    mType.setManualFromValue((uchar) 0x11);
-    mResponseTime.setDefault((ushort) 100);
-    mSFlag.setDefault((uchar) 0x0);
-    mSFlag.setOffset(3);
-    mQrv.setDefault((uchar) 0x2); // default robustness
-    mQqic.setDefault((uchar) 125); // default: default query time
-    }
-  else if (!strcmp(type,"report"))
-    {
-    mType.setManualFromValue((uchar) 0x22);
+    mType.setManual(type, storeAsString);
     }
   else
     {
-    mType.setManual(type);
+    if (type[0] == '$')
+      {
+      Var* var = VarContainer::getVar(type);
+      if (var==NULL)
+        {
+        throw Exception ("Undefined variable used to assign type in <igmp> tag: " + string(type));
+        }
+      type = var->getStringValue().c_str();
+      }
+
+    if (!strcmp(type,"query"))
+      {
+      mType.setManualFromValue((uchar) 0x11);
+      mResponseTime.setDefault((ushort) 100);
+      mSFlag.setDefault((uchar) 0x0);
+      mSFlag.setOffset(3);
+      mQrv.setDefault((uchar) 0x2); // default robustness
+      mQqic.setDefault((uchar) 125); // default: default query time
+      }
+    else if (!strcmp(type,"report"))
+      {
+      mType.setManualFromValue((uchar) 0x22);
+      }
+    else
+      {
+      mType.setManual(type, storeAsString);
+      }
     }
   }
 
 void IgmpV3::setResponseTime(const char* responseTime) throw (Exception)
   {
-  mResponseTime.setManual(responseTime);
+  mResponseTime.setManual(responseTime, false);
   }
 
 void IgmpV3::setChecksum(const char* checksum) throw (Exception)
   {
-  mChecksum.setManual(checksum);
+  mChecksum.setManual(checksum, false);
   }
 
-void IgmpV3::setSFlag(const char* sflag) throw (Exception)
+void IgmpV3::setSFlag(const char* sflag, bool storeAsString) throw (Exception)
   {
   if (mType.getValue() == 0x11)
     {
-    mSFlag.setManual(sflag);
+    mSFlag.setManual(sflag, storeAsString);
     }
   else
     {
@@ -159,11 +168,11 @@ void IgmpV3::setSFlag(const char* sflag) throw (Exception)
     }
   }
 
-void IgmpV3::setQrv(const char* qrv) throw (Exception)
+void IgmpV3::setQrv(const char* qrv, bool storeAsString) throw (Exception)
   {
   if (mType.getValue() == 0x11)
     {
-    mQrv.setManual(qrv);
+    mQrv.setManual(qrv, storeAsString);
     }
   else
     {
@@ -171,11 +180,11 @@ void IgmpV3::setQrv(const char* qrv) throw (Exception)
     }
   }
 
-void IgmpV3::setQqic(const char* qqic) throw (Exception)
+void IgmpV3::setQqic(const char* qqic, bool storeAsString) throw (Exception)
   {
   if (mType.getValue() == 0x11)
     {
-    mQqic.setManual(qqic);
+    mQqic.setManual(qqic, storeAsString);
     }
   else
     {
@@ -183,11 +192,11 @@ void IgmpV3::setQqic(const char* qqic) throw (Exception)
     }
   }
 
-void IgmpV3::setMcastIp(const char* mcastIp) throw (Exception)
+void IgmpV3::setMcastIp(const char* mcastIp, bool storeAsString) throw (Exception)
   {
   if (mType.getValue() == 0x11)
     {
-    mMcastIp.setManual(mcastIp);
+    mMcastIp.setManual(mcastIp, storeAsString);
     }
   else
     {
@@ -195,18 +204,18 @@ void IgmpV3::setMcastIp(const char* mcastIp) throw (Exception)
     }
   }
 
-void IgmpV3::addSource(const char* srcIp) throw (Exception)
+void IgmpV3::addSource(const char* srcIp, bool storeAsString) throw (Exception)
   {
   if (mType.getValue() != 0x11)
     {
     throw Exception("Adding a source for an igmp V3 message type that is not a query: " + mType.getString());
     }
   IpAddress ip;
-  ip.setManual(srcIp);
+  ip.setManual(srcIp, storeAsString);
   mSourceList.push_back(ip);
   }
 
-IgmpGroupRec* IgmpV3::addGroupRecord(const char* type, const char* mcastIp) throw (Exception)
+IgmpGroupRec* IgmpV3::addGroupRecord(const char* type, const char* mcastIp, bool storeAsString) throw (Exception)
   {
   if (mType.getValue() != 0x22)
     {
@@ -214,7 +223,7 @@ IgmpGroupRec* IgmpV3::addGroupRecord(const char* type, const char* mcastIp) thro
     }
   IgmpGroupRec* record = new IgmpGroupRec();
   record->setType(type);
-  record->setMcastAddress(mcastIp);
+  record->setMcastAddress(mcastIp, storeAsString);
   mGroupList.push_back(record);
   return record;
   }
@@ -603,15 +612,6 @@ bool IgmpV3::match(Element* other)
     }
   IgmpV3* otherIgmp = (IgmpV3*) other;
 
-    Bitfield8 mType;
-    Bitfield8 mResponseTime;
-    ChecksumIp mChecksum;
-
-    // for the query only
-//    Bitfield16 mNrRecords; // nrSources or nrGroupRecords
-    vector<IpAddress> mSourceList; // for query
-    vector<IgmpGroupRec*> mGroupList; // for report
-
   if (!mType.match(otherIgmp->mType))
     {
     return false;
@@ -687,3 +687,8 @@ bool IgmpV3::match(Element* other)
   return true;  
   }
 
+Element* IgmpV3::getNewBlank()
+  {
+  IgmpV3* igmpV3 = new IgmpV3();
+  return (Element*) igmpV3;
+  }

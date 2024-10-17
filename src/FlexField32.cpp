@@ -213,7 +213,7 @@ bool FlexField32::hasValue()
   int i;
   for (i=0;i<4;i++)
     {
-    if (mValueStates.mChar[i] = eUndef)
+    if (mValueStates.mChar[i] == eUndef)
       {
       return false;
       }
@@ -221,7 +221,7 @@ bool FlexField32::hasValue()
   return true;
   }
 
-string FlexField32::getString()
+string FlexField32::getStringFromBinary() const
   {
   stringstream retval;
   //  retval.setf(ios::uppercase); // print hex in uppercase
@@ -279,7 +279,7 @@ string FlexField32::getString()
   return retval.str();
   }
 
-bool FlexField32::getString(string& stringval)
+bool FlexField32::getStringFromBinary(string& stringval) const
   {
   if (mValueState == eUndef)
     {
@@ -292,7 +292,12 @@ bool FlexField32::getString(string& stringval)
   return true;
   }
 
-bool FlexField32::getString(string& stringval, const string& fieldname)
+string FlexField32::getString() const
+  {
+  return Field::getString();
+  }
+
+bool FlexField32::getString(string& stringval, const string& fieldname) const
   {
   stringstream retval;
   bool ok = false;
@@ -388,6 +393,11 @@ bool FlexField32::match(FlexField32& other)
   {
   if (isPrintable() && other.hasValue())
     {
+    if (isString() || other.isString())
+      {
+      return matchByString(other);
+      }
+    
     if (mData.uLong != other.mData.uLong) //unused bytes should be reset, so compare can be done easily
       {
       return false;

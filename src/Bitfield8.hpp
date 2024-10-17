@@ -23,12 +23,14 @@ class Bitfield8: public Field
   {
   protected:
     uchar mData;
+    uchar mOffset; // in case the 8 bits are not aligned with byte boundaries
     enum DisplayType {eHex, eDec, eChar}; //Hex, Decimal or ascii char display
     DisplayType mDisplayType;
     void stringToVal(const char* inString) throw (Exception);
     void setVal(ushort val) throw (Exception);
   public:
     Bitfield8();
+    void setOffset(uchar offset) throw (Exception);
     void setDefault(const char* inString) throw (Exception);
     void setManualFromValue(const char* inString) throw (Exception);
     void setAuto(const char* inString) throw (Exception);
@@ -37,8 +39,8 @@ class Bitfield8: public Field
     void setAuto(const uchar inValue);
     void displayDecimal();
     void displayChar();
-    string getString();
-    bool getString(string& stringval);
+    string getStringFromBinary() const;
+    bool getStringFromBinary(string& stringval) const;
     uchar getValue();
     bool operator==(unsigned int value);
     bool operator!=(unsigned int value);
