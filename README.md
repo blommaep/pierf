@@ -7,6 +7,7 @@ The source was maintained on sourceforge until release 0.137.0 - some binaries u
 # ToC
 + [Legal Notice](#legal-notice)
 + [Introduction](#introduction)
++ [Installation](#installation)
 + [Very brief summary of packet layers](#very-brief-summary-of-packet-layers)
 + [Sending a basic packet](#sending-a-basic-packet)
 
@@ -29,6 +30,17 @@ Some of the features:
 - Send out packets at a predefined rate. Cf. tst_shaper.pierf. Also multiple streams in (quasi-)parallel possible. Cf. tst_multishaper.pierf
 - Use variables to dynamically assign values to a field. E.g. for port scanning, mac flooding, etc. Also useful for field values that keep coming back or for a flexible tuning of configs. Cf. configs/tst_var.pierf
 - Assign variables to fields of received (captured) packets. Cf. configs/icmp.pierf
+
+# Installation
+
+No installation. Build (old fashioned make) or download zipped release files with executable.
+Unzip release files on the correct platform, the result is ready to use
+- until v0.195.0 : cygwin and linux 32 bit executables, statically linked to include all libraries, are provided. 
+- v0.213.0 : linux 64 bit executable with dynamically linked libpcap: install libpcap per your linux distro practice
+
+Further manuals and help:
+See [pierf.html](https://htmlpreview.github.io/?https://github.com/blommaep/pierf/blob/main/src/pierf.html)
+(A few brief items also below)
 
 # Very brief summary of packet layers
 
@@ -92,10 +104,6 @@ Clarification of the above example:
 - A packet consists of a series of layers. In this example, an arp request in a stacked vlan (outer 700, inner 120), over ethernet. Currently, the layers in a packet have no correlation, so, e.g. in this case, you must explicitly specify the source mac address both in the ethernet and in the arp layer.
 - A sequence can contain more then packets. E.g. a delay (<sleep milliseconds="...">) was added here. In this case, two arp requests will be sent with 100 milliseconds delay between them.
 - Finally, there's one tag left: the <play> tag. This is the only one that effectively does something. It sends all the packets defined in the <scene> tag.
-
-# Further manuals and help
-
-See [pierf.html](https://htmlpreview.github.io/?https://github.com/blommaep/pierf/blob/main/src/pierf.html)
 
 # Legal Notice
 

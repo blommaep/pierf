@@ -1,0 +1,10 @@
+src/objs/*
+src/pierf
+src/quickCount
+pierf
+quickCount
+src/lib/*/
+src/lib/*.tar.gz
+src/lib/*.zip
+src/*.zip
+*.zip

@@ -49,7 +49,8 @@ CCOUNTDIR  := $(patsubst %.tar.gz,%,$(CCOUNTPKG))
 ifeq ($(OSTYPE),CYGWIN_NT)
 	MKLIBS = expat/.libs/libexpat.a winpcap/lib/libwpcap.a zthread/src/.libs/libZThread.a c_count/c_count.exe pcre/.libs/libpcre.a
 else
-	MKLIBS = expat/.libs/libexpat.a zthread/src/.libs/libZThread.a libpcap/libpcap.a c_count/c_count pcre/.libs/libpcre.a 
+    # building zthread is considered hopeless. Better build it from ubuntu dev package
+	MKLIBS = expat/.libs/libexpat.a libpcap/libpcap.a c_count/c_count pcre/.libs/libpcre.a 
 endif
 
 ifeq ($(OSTYPE),CYGWIN_NT)
@@ -140,8 +141,8 @@ c_count/makefile:
 	tar -xvf c_count.tar
 	rm c_count.tar
 	mv ${CCOUNTDIR} c_count
-	cd c_count && dos2unix *.c *.h configure *.sh
-	cd c_count && chmod +x configure *.sh
+	cd c_count && dos2unix *.c *.h configure 
+	cd c_count && chmod +x configure 
 	cd c_count && ./configure
 
 c_count/c_count.exe: c_count/makefile
